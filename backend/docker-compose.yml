@@ -1,0 +1,46 @@
+services:
+  auth:
+    build:
+      context: .
+      dockerfile: ./apps/auth/Dockerfile
+      target: development
+    command: yarn start:dev auth
+    env_file:
+      - ./apps/auth/.env
+    ports:
+      - '8000:8000'
+    volumes:
+      - .:/usr/src/app
+
+  notifications:
+    build:
+      context: .
+      dockerfile: ./apps/notifications/Dockerfile
+      target: development
+    command: yarn start:dev notifications
+    env_file:
+      - ./apps/notifications/.env
+    ports:
+      - '8002:8002'
+    volumes:
+      - .:/usr/src/app
+
+  organization:
+    build:
+      context: .
+      dockerfile: ./apps/organization/Dockerfile
+      target: development
+    command: yarn start:dev organization
+    env_file:
+      - ./apps/organization/.env
+    ports:
+      - '8004:8004'
+    volumes:
+      - .:/usr/src/app
+
+  postgres:
+    image: postgres
+    env_file:
+      - .env
+    ports:
+      - '5433:5432'
