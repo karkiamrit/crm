@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Inject,
   Param,
   Post,
   Put,
@@ -14,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { OrganizationsService } from './organization.service';
 import { CreateOrganizationsDto } from './dto/create-organization.dto';
-import { CurrentUser, JwtAuthGuard, Roles, User } from '@app/common';
+import {  JwtAuthGuard, Roles  } from '@app/common';
 import { ApiOperation, ApiBearerAuth, ApiParam, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { UpdateOrganizationsDto } from './dto/update-organization.dto';
 import { OrganizationReponseDto } from './responses/organization.response.dto';

@@ -22,7 +22,13 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 
-import {  ApiOperation, ApiParam, ApiBody, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiParam,
+  ApiBody,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { UserResponse } from './responses/users.response';
 import { EventPattern } from '@nestjs/microservices';
 
@@ -33,7 +39,11 @@ export class UsersController {
   @Post('signup')
   @ApiOperation({ summary: 'Sign up a new user' })
   @ApiBody({ type: CreateUserDto })
-  @ApiResponse({ status: 201, description: 'The user has been successfully created.', type: UserResponse })
+  @ApiResponse({
+    status: 201,
+    description: 'The user has been successfully created.',
+    type: UserResponse,
+  })
   async signUp(@Body() createUserDto: CreateUserDto) {
     return await this.usersService.create(createUserDto);
   }
@@ -41,7 +51,11 @@ export class UsersController {
   @Get('me')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get current user' })
-  @ApiResponse({ status: 200, description: 'Return the current user.', type: UserResponse})
+  @ApiResponse({
+    status: 200,
+    description: 'Return the current user.',
+    type: UserResponse,
+  })
   @UseGuards(JwtAuthGuard)
   async getMe(@CurrentUser() user: User) {
     return user;
@@ -52,7 +66,11 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update current user' })
   @ApiBody({ type: UpdateUserDto })
-  @ApiResponse({ status: 200, description: 'The user has been successfully updated.', type: UserResponse})
+  @ApiResponse({
+    status: 200,
+    description: 'The user has been successfully updated.',
+    type: UserResponse,
+  })
   async updateMe(
     @CurrentUser() user: User,
     @Body() updateUserDto: UpdateUserDto,
@@ -66,7 +84,11 @@ export class UsersController {
   @Roles('Admin')
   @ApiOperation({ summary: 'Delete a user' })
   @ApiParam({ name: 'id', required: true })
-  @ApiResponse({ status: 200, description: 'The user has been successfully deleted.', type: UserResponse})
+  @ApiResponse({
+    status: 200,
+    description: 'The user has been successfully deleted.',
+    type: UserResponse,
+  })
   async deleteUser(@Param('id') id: number) {
     return await this.usersService.delete(id);
   }
@@ -77,7 +99,11 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get a user by ID' })
   @ApiParam({ name: 'id', required: true })
-  @ApiResponse({ status: 200, description: 'Return the user.', type: UserResponse})
+  @ApiResponse({
+    status: 200,
+    description: 'Return the user.',
+    type: UserResponse,
+  })
   async getUser(@Param('id') id: number) {
     return await this.usersService.getOne({ id });
   }
@@ -89,7 +115,11 @@ export class UsersController {
   @ApiOperation({ summary: 'Update a user by ID' })
   @ApiParam({ name: 'id', required: true })
   @ApiBody({ type: UpdateUserDtoAdmin })
-  @ApiResponse({ status: 200, description: 'The user has been successfully updated.', type: UserResponse})
+  @ApiResponse({
+    status: 200,
+    description: 'The user has been successfully updated.',
+    type: UserResponse,
+  })
   async updateUser(
     @Param('id') id: number,
     @Body() updateUserDto: UpdateUserDtoAdmin,
@@ -102,7 +132,11 @@ export class UsersController {
   @Roles('Admin')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all users' })
-  @ApiResponse({ status: 200, description: 'Return all users.', type:[UserResponse]})
+  @ApiResponse({
+    status: 200,
+    description: 'Return all users.',
+    type: [UserResponse],
+  })
   async getAllUsers(@Query() query: any): Promise<User[]> {
     return this.usersService.findAll(query);
   }
@@ -112,7 +146,11 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Change password' })
   @ApiBody({ type: UpdatePasswordDto })
-  @ApiResponse({ status: 200, description: 'The password has been successfully changed.', type:UserResponse})
+  @ApiResponse({
+    status: 200,
+    description: 'The password has been successfully changed.',
+    type: UserResponse,
+  })
   async changePassword(
     @Body() updatePasswordDto: UpdatePasswordDto,
     @CurrentUser() user: User,
@@ -126,7 +164,15 @@ export class UsersController {
   // }
 
   @EventPattern('get_all_users')
-  async getOrganizationUsers(data: { where: { organizationId: number }; options: ExtendedFindOptions<User> }): Promise<User[]> {
+  async getOrganizationUsers(data: {
+    where: { organizationId: number };
+    options: ExtendedFindOptions<User>;
+  }): Promise<User[]> {
     return this.usersService.findAll(data.options);
+  }
+
+  @EventPattern('update_user')
+  async modifyUser(data: { id: number; update: Partial<User> }): Promise<User> {
+    return this.usersService.update(data.id, data.update);
   }
 }

@@ -22,6 +22,18 @@ export class CreateUserDto {
   @IsNumber()
   organizationId: number;
 
+  // @ApiProperty({ 
+  //   type: RoleDto, 
+  //   isArray: true, 
+  //   example: [{ name: 'Admin' }, { name: 'User' }], 
+  //   description: 'The roles of the user.' 
+  // })
+  // @IsOptional()
+  // @IsArray()
+  // roles?: RoleDto[];
+}
+
+export class CreateUserAdminDto extends CreateUserDto {
   @ApiProperty({ 
     type: RoleDto, 
     isArray: true, 
@@ -32,3 +44,4 @@ export class CreateUserDto {
   @IsArray()
   roles?: RoleDto[];
 }
+

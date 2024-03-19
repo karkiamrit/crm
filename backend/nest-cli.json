@@ -43,6 +43,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/organization/tsconfig.app.json"
       }
+    },
+    "agents": {
+      "type": "application",
+      "root": "apps/agents",
+      "entryFile": "main",
+      "sourceRoot": "apps/agents/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/agents/tsconfig.app.json"
+      }
     }
   },
   "monorepo": true,

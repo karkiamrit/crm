@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { OrganizationModule } from './organization.module';
+import { AgentsModule } from './agents.module';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from 'nestjs-pino';
 import { Transport } from '@nestjs/microservices';
@@ -9,14 +9,14 @@ import { json } from 'express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(OrganizationModule);
+  const app = await NestFactory.create(AgentsModule);
 
   app.use(json());
   const config = new DocumentBuilder()
-    .setTitle('Organization')
-    .setDescription('The Organization API is a microservice for organization crud. It is used to manage organization.')
+    .setTitle('Agent')
+    .setDescription('The Agent API is a microservice for agent crud. It is used to manage agent.')
     .setVersion('1.0')
-    .addTag('organization')
+    .addTag('agent')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document); 
