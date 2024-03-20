@@ -6,7 +6,7 @@ export class Agent extends AbstractEntity<Agent>{
     @Column({unique : true})
     reference_no: string;
 
-    @Column()
+    @Column('simple-array')
     documents: string[];
 
     @Column()

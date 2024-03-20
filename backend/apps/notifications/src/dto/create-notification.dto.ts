@@ -6,9 +6,13 @@ export class CreateNotificationsDto {
   @IsString()
   title: string;
 
-  @ApiProperty({ description: 'The message of the notification.', example: 'Notification Message' })
+  @ApiProperty({ description: 'The HTML content of the notification.', example: '<p>Notification HTML Content</p>' })
   @IsString()
-  message: string;
+  html_content: string;
+
+  @ApiProperty({ description: 'The text content of the notification.', example: 'Notification Text Content' })
+  @IsString()
+  text_content: string;
 
   @ApiProperty({ description: 'The subject of the notification.', example: 'Notification Subject' })
   @IsString()

@@ -7,10 +7,15 @@ export class UpdateNotificationsDto {
   @IsString()
   title?: string;
 
-  @ApiProperty({ description: 'The updated message of the notification.', example: 'Updated Notification Message', required: false })
+  @ApiProperty({ description: 'The updated HTML content of the notification.', example: '<p>Updated Notification HTML Content</p>', required: false })
   @IsOptional()
   @IsString()
-  message?: string;
+  html_content?: string;
+
+  @ApiProperty({ description: 'The updated text content of the notification.', example: 'Updated Notification Text Content', required: false })
+  @IsOptional()
+  @IsString()
+  text_content?: string;
 
   @ApiProperty({ description: 'The updated subject of the notification.', example: 'Updated Notification Subject', required: false })
   @IsOptional()

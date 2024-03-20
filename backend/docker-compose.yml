@@ -38,6 +38,19 @@ services:
     volumes:
       - .:/usr/src/app
 
+  agents:
+    build:
+      context: .
+      dockerfile: ./apps/agents/Dockerfile
+      target: development
+    command: yarn start:dev agents
+    env_file:
+      - ./apps/agents/.env
+    ports:
+      - '8006:8006'
+    volumes:
+      - .:/usr/src/app
+
   postgres:
     image: postgres
     env_file:

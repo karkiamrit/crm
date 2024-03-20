@@ -8,6 +8,7 @@ import { NotifyEmailDto } from './dto/notify-email.dto';
 import { otpEmailDto, resetPasswordEmailDto } from './dto/email.dto';
 import { UpdateNotificationsDto } from './dto/update-notification.dto';
 import { ExtendedFindOptions } from '@app/common';
+import { template } from 'lodash';
 
 @Injectable()
 export class NotificationsService {
@@ -43,7 +44,9 @@ export class NotificationsService {
     return this.notificationsRepository.findOneAndDelete({ id });
   }
 
-  async findAll(options: ExtendedFindOptions<Notification>): Promise<Notification[]> {
+  async findAll(
+    options: ExtendedFindOptions<Notification>,
+  ): Promise<Notification[]> {
     return this.notificationsRepository.findAll(options);
   }
 
@@ -56,7 +59,9 @@ export class NotificationsService {
       from: this.configService.get('SMTP_USER'),
       to: email,
       subject: notificationEmaildto.subject,
-      text: notificationEmaildto.message,
+      text: template(notificationEmaildto.text_content)({
+        value: notificationEmaildto.html_content,
+      }),
     });
     return notification;
   }
@@ -68,10 +73,12 @@ export class NotificationsService {
     const notification = await this.notificationsRepository.findOne({ id: id });
     if (!notification) return false;
     console.log(data);
-    notification.message = notification.message.replace(
-      'temporary',
-      data.otpCode,
-    );
+    notification.text_content = template(notification.text_content)({
+      value: data.otpCode,
+    });
+    notification.html_content = template(notification.html_content)({
+      value: data.otpCode,
+    });
     await this.sendEmail(notification, data.email);
   }
 
@@ -81,10 +88,12 @@ export class NotificationsService {
   ): Promise<Notification | boolean> {
     const notification = await this.notificationsRepository.findOne({ id: id });
     if (!notification) return false;
-    notification.message = notification.message.replace(
-      'temporary',
-      data.resetPasswordUrl,
-    );
+    notification.text_content = template(notification.text_content)({
+      value: data.resetPasswordUrl,
+    });
+    notification.html_content = template(notification.html_content)({
+      value: data.resetPasswordUrl,
+    });
     console.log(notification);
     await this.sendEmail(notification, data.email);
   }

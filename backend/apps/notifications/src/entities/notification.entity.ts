@@ -6,8 +6,11 @@ export class Notification extends AbstractEntity<Notification> {
   @Column()
   title: string;
 
-  @Column()
-  message: string;
+  @Column({nullable:true})
+  html_content: string;
+
+  @Column({nullable:true})
+  text_content: string;
 
   @Column()
   subject: string;
