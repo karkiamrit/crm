@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAgentsDto } from './dto/create-agent.dto';
 import { UpdateAgentsDto } from './dto/update-agent.dto';
 import { Agent } from './entities/agent.entity';
@@ -8,6 +8,7 @@ import { AUTH_SERVICE, ExtendedFindOptions, Role, User } from '@app/common';
 import { promisify } from 'util';
 import { unlink } from 'fs';
 import { randomUUID } from 'crypto';
+import { basename, join } from 'path';
 
 @Injectable()
 export class AgentsService {
@@ -30,19 +31,14 @@ export class AgentsService {
   async create(createAgentsDto: CreateAgentsDto, user: User) {
     const agent = new Agent(createAgentsDto);
     agent.userId = user.id;
-    agent.reference_no= randomUUID();
+    agent.reference_no = randomUUID();
     await this.agentsRepository.create(agent);
 
-    // Prepare the update data
-    const updateData = {
-      id: user.id,
-      update: {
-        roles: [...user.roles, 'Agent'],
-      },
-    };
- 
+    // Create a new role object
+    const role = 'Agent';
+    const userId = user.id;
     // Send the update request to the user microservice
-    this.usersService.send('modifyUser', updateData).subscribe({
+    this.usersService.send('update_user_role', { userId, role }).subscribe({
       next: (response) => console.log(`User updated successfully: ${response}`),
       error: (error) => console.error(`Failed to update user: ${error}`),
     });
@@ -103,17 +99,35 @@ export class AgentsService {
 
   async deleteDocument(id: number, filename: string): Promise<Agent> {
     const agent = await this.agentsRepository.findOne({ id });
-    const index = agent.documents.findIndex((doc) => doc.includes(filename));
+
+    if (!agent) {
+      throw new NotFoundException(`Agent with ID ${id} not found`);
+    }
+
+    const fullFilename = join('uploads', filename);
+    const index = agent.documents.findIndex((doc) => doc === fullFilename);
+
     if (index !== -1) {
       const unlinkAsync = promisify(unlink);
-      await unlinkAsync(agent.documents[index]); // delete the file
+      try {
+        await unlinkAsync(fullFilename); // delete the file
+      } catch (error) {
+        throw new NotFoundException(`File ${filename} not found`);
+      }
+
       agent.documents.splice(index, 1); // remove the file from the documents array
+
+      await this.agentsRepository.create(agent); // save the updated agent
     }
-    return this.agentsRepository.findOneAndUpdate({ id }, agent);
+
+    return agent;
   }
 
-  async getAgentByUserId(id: number): Promise<Agent>{
+  async getAgentByUserId(id: number): Promise<Agent> {
     const agent = await this.agentsRepository.findOne({ userId: id });
+    if (!agent) {
+      throw new Error('Agent not found');
+    }
     return agent;
   }
 }

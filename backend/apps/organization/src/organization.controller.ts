@@ -114,7 +114,7 @@ export class OrganizationsController {
     return this.organizationsService.getOne(id);
   }
 
-  @Get(':1/users')
+  @Get(':id/users')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get users associated with organization' })
   @ApiBearerAuth()
@@ -124,7 +124,7 @@ export class OrganizationsController {
     return this.organizationsService.getUsersByOrganizationId(organizationId, query);
   }
 
-  @Put(':id/upload-logo')
+  @Put(':id/update-logo')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Upload organization logo' })

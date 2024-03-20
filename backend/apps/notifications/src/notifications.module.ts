@@ -17,10 +17,14 @@ import { NotificationsRepository } from './notifications.repository';
       validationSchema: Joi.object({
         HTTP_PORT: Joi.number().required(),
         TCP_PORT: Joi.number().required(),
+        // SMTP_USER: Joi.string().required(),
+        // GOOGLE_OAUTH_CLIENT_ID: Joi.string().required(),
+        // GOOGLE_OAUTH_CLIENT_SECRET: Joi.string().required(),
+        // GOOGLE_OAUTH_REFRESH_TOKEN: Joi.string().required(),
+        SMTP_HOST: Joi.string().required(),
+        SMTP_PORT: Joi.number().required(),
         SMTP_USER: Joi.string().required(),
-        GOOGLE_OAUTH_CLIENT_ID: Joi.string().required(),
-        GOOGLE_OAUTH_CLIENT_SECRET: Joi.string().required(),
-        GOOGLE_OAUTH_REFRESH_TOKEN: Joi.string().required(),
+        SMTP_PASSWORD: Joi.string().required(),
       }),
     }),
     ClientsModule.registerAsync([

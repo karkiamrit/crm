@@ -46,6 +46,7 @@ export class AuthService {
       throw new BadRequestException('User not found');
     }
     const otp = await this.otpService.create(user);
+    console.log(otp)
     this.notificationsService
       .send('send_otp', { email, otpCode: otp.code })
       .subscribe();

@@ -17,9 +17,9 @@ export class CreateAgentsDto {
   @ApiProperty({ description: 'The phone number of the agent.', example: 'Agent Phone' })
   @IsString()
   phone: string;
- 
-  @ApiProperty({ description: 'The documents of the agent.', example: ['/Document1', '/Document2'] })
-  @IsArray()
-  @IsString({ each: true })
+
+}
+
+export class CreateAgentsDtoWithDocuments extends CreateAgentsDto {
   documents: string[];
 }

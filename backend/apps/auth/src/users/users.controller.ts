@@ -7,20 +7,15 @@ import {
   Post,
   Put,
   Query,
-  UploadedFile,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
-import { CurrentUser, ExtendedFindOptions, Roles } from '@app/common';
+import { CurrentUser, ExtendedFindOptions, Role, Roles } from '@app/common';
 import { User } from '@app/common';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { UpdateUserDto, UpdateUserDtoAdmin } from './dto/update-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
 
 import {
   ApiOperation,
@@ -173,6 +168,12 @@ export class UsersController {
 
   @EventPattern('update_user')
   async modifyUser(data: { id: number; update: Partial<User> }): Promise<User> {
-    return this.usersService.update(data.id, data.update);
+    return this.usersService.userUpdateAdmin(data.id, data.update);
   }
+
+  @EventPattern('update_user_role')
+  async modifyUserRole( data:{userId: number, role: string} ): Promise<User>  {
+    return this.usersService.updateUserRole(data.userId, data.role);
+  }
+
 }

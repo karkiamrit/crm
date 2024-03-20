@@ -14,7 +14,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AgentsService } from './agents.service';
-import { CreateAgentsDto } from './dto/create-agent.dto';
+import { CreateAgentsDto, CreateAgentsDtoWithDocuments } from './dto/create-agent.dto';
 import {  CurrentUser, JwtAuthGuard, Roles, User  } from '@app/common';
 import { ApiOperation, ApiBearerAuth, ApiParam, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { UpdateAgentDtoAdmin, UpdateAgentsDto } from './dto/update-agent.dto';
@@ -53,8 +53,9 @@ export class AgentsController {
     @Body() createAgentsDto: CreateAgentsDto,
     @CurrentUser() user: User
   ) {
-    createAgentsDto.documents = files.map(file => file.path);
-    return await this.agentsService.create(createAgentsDto, user);
+    const documents = files.map(file => file.path);
+    const createAgentsDtoWithDocuments: CreateAgentsDtoWithDocuments = { ...createAgentsDto, documents };
+    return await this.agentsService.create(createAgentsDtoWithDocuments, user);
   }
 
   @Put(':id')
@@ -81,7 +82,7 @@ export class AgentsController {
   @ApiResponse({ status: 200, description: 'The agent has been successfully updated.', type: AgentResponseDto})
   async updateAgentByAdmin(
     @Param('id') id: number,
-    @Body() updateAgentsDto: UpdateAgentsDto,
+    @Body() updateAgentsDto: UpdateAgentDtoAdmin,
   ) {
     return this.agentsService.update(id, updateAgentsDto);
   }
@@ -108,6 +109,19 @@ export class AgentsController {
     return this.agentsService.findAll(query);
   }
 
+
+  @Get('myprofile')
+  @UseGuards(JwtAuthGuard)
+  @Roles('Agent') 
+  @ApiOperation({ summary: 'Get current logged in agent profile' })
+  @ApiBearerAuth()
+  @ApiParam({ name: 'id', required: true, description: 'The id of the agent' })
+  @ApiResponse({ status: 200, description: 'Return the agent.', type: AgentResponseDto})
+  async getCurrentAgentProfile(@CurrentUser() user: User) {
+    console.log("I am here");
+    return this.agentsService.getAgentByUserId(user.id);
+  }
+
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @Roles('Admin')
@@ -119,16 +133,6 @@ export class AgentsController {
     return this.agentsService.getOne(id);
   }
 
-  @Get(':id')
-  @UseGuards(JwtAuthGuard)
-  @Roles('Agent')
-  @ApiOperation({ summary: 'Get a agent by id' })
-  @ApiBearerAuth()
-  @ApiParam({ name: 'id', required: true, description: 'The id of the agent' })
-  @ApiResponse({ status: 200, description: 'Return the agent.', type: AgentResponseDto})
-  async getCurrentAgentProfile(@CurrentUser() user: User) {
-    return this.agentsService.getAgentByUserId(user.id);
-  }
 
   @Get(':1/users')
   @UseGuards(JwtAuthGuard)
@@ -202,6 +206,4 @@ export class AgentsController {
   ): Promise<Agent> {
     return this.agentsService.deleteDocument(id, filename);
   }
-
-
 }

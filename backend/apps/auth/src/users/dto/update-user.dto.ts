@@ -31,5 +31,5 @@ export class UpdateUserDtoAdmin extends UpdateUserDto {
   @ApiProperty({example: '1', description: 'The id of organization'})
   @IsOptional()
   @IsNumber()
-  organizationId: number;
+  organizationId?: number;
 }

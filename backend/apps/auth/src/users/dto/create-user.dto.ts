@@ -1,12 +1,14 @@
 import {
   IsArray,
   IsEmail,
+  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsStrongPassword,
 } from 'class-validator';
 import { RoleDto } from './role.dto';
 import { ApiProperty } from '@nestjs/swagger';
+import { Status } from '@app/common';
 
 
 export class CreateUserDto {
@@ -19,6 +21,7 @@ export class CreateUserDto {
   password: string;
 
   @ApiProperty({example: '1', description: 'The id of organization'})
+  @IsNotEmpty()
   @IsNumber()
   organizationId: number;
 
@@ -43,5 +46,10 @@ export class CreateUserAdminDto extends CreateUserDto {
   @IsOptional()
   @IsArray()
   roles?: RoleDto[];
+
+  @ApiProperty({ description: 'The status of the user.', enum: ['Live', 'Inactive'], example: 'Live' })
+  @IsOptional()
+  status?: Status;
+
 }
 

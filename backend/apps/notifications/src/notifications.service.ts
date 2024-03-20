@@ -17,14 +17,23 @@ export class NotificationsService {
     private readonly configService: ConfigService,
   ) {}
 
+  // private readonly transporter = nodemailer.createTransport({
+  //   service: 'gmail',
+  //   auth: {
+  //     type: 'OAuth2',
+  //     user: this.configService.get('SMTP_USER'),
+  //     clientId: this.configService.get('GOOGLE_OAUTH_CLIENT_ID'),
+  //     clientSecret: this.configService.get('GOOGLE_OAUTH_CLIENT_SECRET'),
+  //     refreshToken: this.configService.get('GOOGLE_OAUTH_REFRESH_TOKEN'),
+  //   },
+  // });
   private readonly transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: this.configService.get('SMTP_HOST'),
+    port: this.configService.get('SMTP_PORT'),
+    secure: false, // true for 465, false for other ports
     auth: {
-      type: 'OAuth2',
       user: this.configService.get('SMTP_USER'),
-      clientId: this.configService.get('GOOGLE_OAUTH_CLIENT_ID'),
-      clientSecret: this.configService.get('GOOGLE_OAUTH_CLIENT_SECRET'),
-      refreshToken: this.configService.get('GOOGLE_OAUTH_REFRESH_TOKEN'),
+      pass: this.configService.get('SMTP_PASSWORD'),
     },
   });
 

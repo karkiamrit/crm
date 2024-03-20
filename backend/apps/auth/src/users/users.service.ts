@@ -1,5 +1,6 @@
 import {
   Injectable,
+  NotFoundException,
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
@@ -9,36 +10,62 @@ import * as bcrypt from 'bcryptjs';
 import { GetUserDto } from './dto/get-user.dto';
 import { ExtendedFindOptions, Role, User } from '@app/common';
 import { Status } from '@app/common';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserDto, UpdateUserDtoAdmin } from './dto/update-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
+import { UpdateAgentDtoAdmin } from '../../../agents/src/dto/update-agent.dto';
+import { RolesRepository } from './roles.repository';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    private readonly usersRepository: UsersRepository,
+    private readonly rolesRepository: RolesRepository,
+    ) {}
 
-  async create(createUserDto: CreateUserDto) {
-    await this.validateCreateUser(createUserDto);
-    const user = new User({
-      ...createUserDto,
-      password: await bcrypt.hash(createUserDto.password, 10),
-      roles: [new Role({name: 'User'})],
+    async create(createUserDto: CreateUserDto) {
+      await this.validateCreateUser(createUserDto);
+      const user = new User({
+        ...createUserDto,
+        password: await bcrypt.hash(createUserDto.password, 10),
+      });
+      user.status = Status.Live;
     
-    });
-    user.status = Status.Live;
-    return this.usersRepository.create(user);
-  }
-  
-  async adminCreate(createUserAdminDto: CreateUserAdminDto) {
-    await this.validateCreateUser(createUserAdminDto);
-    const user = new User({
-      ...createUserAdminDto,
-      password: await bcrypt.hash(createUserAdminDto.password, 10),
-      roles: createUserAdminDto.roles?.length ? createUserAdminDto.roles.map((roleDto) => new Role(roleDto)) : [new Role({name: 'User'})], // default role is 'User' if no roles are provided
-    });
-    user.status = Status.Live;
-    return this.usersRepository.create(user);
-  }
+      let savedRole = await this.rolesRepository.findOne({ name: 'User' });
+   
+      if(!savedRole){
+        const role = new Role({name:'User'});
+        savedRole = await this.rolesRepository.create(role);
+      }
+      user.roles = [savedRole];
+    
+      return this.usersRepository.create(user);
+    }
+    
 
+    async adminCreate(createUserAdminDto: CreateUserAdminDto) {
+      await this.validateCreateUser(createUserAdminDto);
+      
+      const user = new User({
+        email: createUserAdminDto.email,
+        password: await bcrypt.hash(createUserAdminDto.password, 10),
+        organizationId: createUserAdminDto.organizationId,
+        status: createUserAdminDto.status || Status.Live,
+      });
+    
+      const roles = [];
+      for (const roleDto of createUserAdminDto.roles || []) {
+        let savedRole = await this.rolesRepository.findOne({ name: roleDto.name });
+        if (!savedRole) {
+          const role = new Role({ name: roleDto.name });
+          savedRole = await this.rolesRepository.create(role);
+        }
+        roles.push(savedRole);
+      }
+      user.roles = roles;
+    
+      return this.usersRepository.create(user);
+    }
+  
   private async validateCreateUser(createUserDto: CreateUserDto) {
     try {
       await this.usersRepository.findOne({ email: createUserDto.email });
@@ -69,6 +96,37 @@ export class UsersService {
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     return this.usersRepository.findOneAndUpdate({ id }, updateUserDto);
+  }
+
+  async userUpdateAdmin(id: number, updateUserDtoAdmin: UpdateUserDtoAdmin) {
+    const user = await this.usersRepository.findOne({id:id});
+    console.log(updateUserDtoAdmin)
+    if (updateUserDtoAdmin.roles) {
+      const roles = updateUserDtoAdmin.roles.map(roleDto => new Role(roleDto));
+      user.roles = roles;
+      delete updateUserDtoAdmin.roles;
+    }
+  
+    Object.assign(user, updateUserDtoAdmin);
+  
+    return this.usersRepository.findOneAndUpdate({id:id},user);
+  }
+
+  async updateUserRole(id:number, role: string){
+    let updatedRole:Role;
+    try {
+      updatedRole = await this.rolesRepository.findOne({name:role});
+    } catch (error) {
+      const myrole= new Role({name:role});
+      updatedRole = await this.rolesRepository.create(myrole);
+    }
+    
+    const user = await this.usersRepository.findOne({id:id});
+    console.log(updatedRole)
+    console.log(user.roles)
+    user.roles = user.roles.concat(updatedRole);
+
+    return this.usersRepository.create(user);
   }
 
   async delete(id: number) {
