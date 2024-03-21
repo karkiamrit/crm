@@ -12,6 +12,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AgentsModule);
 
   app.use(json());
+
   const config = new DocumentBuilder()
     .setTitle('Agent')
     .setDescription('The Agent API is a microservice for agent crud. It is used to manage agent.')

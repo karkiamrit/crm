@@ -88,7 +88,10 @@ export class NotificationsService {
     notification.html_content = template(notification.html_content)({
       value: data.otpCode,
     });
-    await this.sendEmail(notification, data.email);
+    if(!await this.sendEmail(notification, data.email)){
+      throw new Error('Email not sent');
+    }
+    
   }
 
   async sendResetPasswordEmail(
@@ -103,7 +106,8 @@ export class NotificationsService {
     notification.html_content = template(notification.html_content)({
       value: data.resetPasswordUrl,
     });
-    console.log(notification);
-    await this.sendEmail(notification, data.email);
+    if(!await this.sendEmail(notification, data.email)){
+      throw new Error('Email not sent');
+    }
   }
 }

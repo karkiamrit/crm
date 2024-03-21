@@ -37,6 +37,7 @@ async function bootstrap() {
   );
   app.use(cookieParser());
   app.useLogger(app.get(Logger));
+  app.enableCors();
 
   await app.startAllMicroservices();
   await app.listen(configService.get('HTTP_PORT'));

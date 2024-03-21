@@ -72,10 +72,12 @@ export class AuthService {
     await this.otpService.update(otp, otp.id);
 
     user.isVerified = true;
-    await this.usersRepository.findOneAndUpdate(
+    if(!await this.usersRepository.findOneAndUpdate(
       { id: user.id },
       { isVerified: true },
-    );
+    )){
+      throw new BadRequestException('User not found');
+    }
     return true;
   }
 
