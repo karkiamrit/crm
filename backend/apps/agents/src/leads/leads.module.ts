@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { LeadsService } from './leads.service';
 import { LeadsController } from './leads.controller';
 import { LeadsRepository } from './leads.repository';
@@ -9,9 +9,12 @@ import { Service } from './services/services.entity';
 import { AUTH_SERVICE, DatabaseModule } from '@app/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { LeadTimelineRepository } from './timelines/timelines.repository';
+import { AgentsModule } from '../agents.module';
 
 @Module({
   imports: [
+    forwardRef(() => AgentsModule), 
     DatabaseModule,
     DatabaseModule.forFeature([Leads, LeadTimeline, Product, Service, LeadsRepository]),
     ConfigModule.forRoot({
@@ -33,7 +36,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
     ]),
   ],
   controllers: [LeadsController],
-  providers: [LeadsService, LeadsRepository],
+  providers: [LeadsService, LeadsRepository, LeadTimelineRepository],
   exports: [LeadsService]
 })
 export class LeadsModule {}

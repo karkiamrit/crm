@@ -53,7 +53,10 @@ export class AgentsController {
     @Body() createAgentsDto: CreateAgentsDto,
     @CurrentUser() user: User
   ) {
-    const documents = files.map(file => file.path);
+    let documents:any;
+    if(files){
+      documents = files.map(file => file.path);
+    }
     const createAgentsDtoWithDocuments: CreateAgentsDtoWithDocuments = { ...createAgentsDto, documents };
     return await this.agentsService.create(createAgentsDtoWithDocuments, user);
   }

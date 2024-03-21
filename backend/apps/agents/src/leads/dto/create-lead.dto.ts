@@ -48,11 +48,6 @@ export class CreateLeadDto {
     @Type(() => CreateServiceInputDTO)
     service: CreateServiceInputDTO;
 
-    @IsNotEmpty()
-    @ValidateNested({ each: true })
-    @Type(() => CreateTimelineInputDTO)
-    timelines: CreateTimelineInputDTO[];
-
     @IsOptional()
     @IsArray()
     @IsString({each:true})

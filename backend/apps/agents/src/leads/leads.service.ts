@@ -9,50 +9,17 @@ import { unlink } from 'fs';
 import { LeadTimeline } from './timelines/timelines.entity';
 import { Product } from './products/products.entity';
 import { Service } from './services/services.entity';
-import { Subject } from 'rxjs';
+import { LeadTimelineRepository } from './timelines/timelines.repository';
+import { AgentsService } from '../agents.service';
+import { join } from 'path';
 
 @Injectable()
 export class LeadsService {
-  private leadsSubject = new Subject<Leads>();
-
   constructor(
     private readonly leadsRepository: LeadsRepository,
-  ) {
-    this.leadsSubject.subscribe(async (newLead: Leads) => {
-      const oldLead = await this.leadsRepository.findOne({ id: newLead.id });
-
-      // Compare newLead and oldLead and get the changes
-      const changes = this.getChanges(oldLead, newLead);
-
-      // Create a new LeadTimeline for each change
-      changes.forEach(async (change) => {
-        const timeline = new LeadTimeline({
-          lead: newLead,
-          attribute: change.key,
-          value: change.newValue,
-        });
-        newLead.timelines.push(timeline);
-      });
-      await this.leadsRepository.create(newLead);
-    });
-  }
-
-  getChanges(oldLead: Leads, newLead: Leads) {
-    const changes = [];
-
-    // Compare each property of oldLead and newLead
-    for (const key in oldLead) {
-      if (oldLead[key] !== newLead[key]) {
-        changes.push({
-          key: key,
-          oldValue: oldLead[key],
-          newValue: newLead[key],
-        });
-      }
-    }
-
-    return changes;
-  }
+    private readonly leadTimelineRepository: LeadTimelineRepository,
+    private readonly agentService: AgentsService
+  ) {}
 
   async create(createLeadDto: CreateLeadDto, user: User) {
     // Convert CreateTimelineInputDTO[] to LeadTimeline[]
@@ -64,65 +31,56 @@ export class LeadsService {
     if (createLeadDto.service) {
       service = new Service(createLeadDto.service);
     }
-    if (createLeadDto.timelines) {
-      timelines = createLeadDto.timelines.map(
-        (timelineDto) => new LeadTimeline(timelineDto),
-      );
-    }
     // Create a new Leads entity
     const lead = new Leads({
       ...createLeadDto,
       service,
-      timelines,
       product,
     });
+    
+    const agent = await this.agentService.getAgentByUserId(user.id);
+    if(agent){
+      lead.agent = agent;
+    }
 
     await this.leadsRepository.create(lead);
 
     return lead;
   }
 
+
   async update(id: number, updateLeadsDto: UpdateLeadDto) {
-    // Find the lead
-    const lead = await this.leadsRepository.findOne({ id });
-  
-    if (!lead) {
-      throw new NotFoundException(`Lead with ID ${id} not found`);
-    }
-  
-    // Convert UpdateProductInputDTO to Product
-    if (updateLeadsDto.product) {
-      lead.product = new Product(updateLeadsDto.product);
-    }
-  
-    // Convert UpdateServiceInputDTO to Service
-    if (updateLeadsDto.service) {
-      lead.service = new Service(updateLeadsDto.service);
-    }
-  
-    // Convert UpdateTimelineInputDTO[] to LeadTimeline[]
-    if (updateLeadsDto.timelines) {
-      lead.timelines = updateLeadsDto.timelines.map(
-        (timelineDto) => new LeadTimeline(timelineDto),
-      );
-    }
-  
-    // Update the other fields
-    lead.address = updateLeadsDto.address ?? lead.address;
-    lead.details = updateLeadsDto.details ?? lead.details;
-    lead.status = updateLeadsDto.status ?? lead.status;
-    lead.phone = updateLeadsDto.phone ?? lead.phone;
-    lead.email = updateLeadsDto.email ?? lead.email;
-    lead.name = updateLeadsDto.name ?? lead.name;
-    lead.priority = updateLeadsDto.priority ?? lead.priority;
-    lead.source = updateLeadsDto.source ?? lead.source;
-    lead.documents = updateLeadsDto.documents ?? lead.documents;
-  
-    // Save the updated lead
-    await this.leadsRepository.findOneAndUpdate({id}, lead);
-  
-    return lead;
+  // Find the lead
+  const lead = await this.leadsRepository.findOne({ id });
+
+  if (!lead) {
+    throw new NotFoundException(`Lead with ID ${id} not found`);
   }
+
+  // List of attributes to check for changes
+  const attributes = ['product', 'service', 'address', 'details', 'status', 'phone', 'email', 'name', 'priority', 'source', 'documents'];
+
+  // Check each attribute for changes
+  for (const attribute of attributes) {
+    if (updateLeadsDto[attribute] && updateLeadsDto[attribute] !== lead[attribute]) {
+      // Update the attribute
+      lead[attribute] = updateLeadsDto[attribute];
+
+      // Create a new LeadTimeline for the updated attribute
+      const timeline = new LeadTimeline({lead: lead, attribute: attribute, value: updateLeadsDto[attribute]});
+      // Save the LeadTimeline entity to the database
+      await this.leadTimelineRepository.create(timeline);
+
+      // Add the LeadTimeline entity to the timelines array of the lead
+      lead.timelines.push(timeline);
+    }
+  }
+
+  // Save the updated lead
+  await this.leadsRepository.create(lead);
+
+  return lead;
+}
 
   async delete(id: number) {
     return this.leadsRepository.findOneAndDelete({ id });
@@ -159,13 +117,28 @@ export class LeadsService {
 
   async deleteDocument(id: number, filename: string): Promise<Leads> {
     const lead = await this.leadsRepository.findOne({ id });
-    const index = lead.documents.findIndex((doc) => doc.includes(filename));
+
+    if (!lead) {
+      throw new NotFoundException(`Agent with ID ${id} not found`);
+    }
+
+    const fullFilename = join('uploads', filename);
+    const index = lead.documents.findIndex((doc) => doc === fullFilename);
+
     if (index !== -1) {
       const unlinkAsync = promisify(unlink);
-      await unlinkAsync(lead.documents[index]); // delete the file
+      try {
+        await unlinkAsync(fullFilename); // delete the file
+      } catch (error) {
+        throw new NotFoundException(`File ${filename} not found`);
+      }
+
       lead.documents.splice(index, 1); // remove the file from the documents array
+
+      await this.leadsRepository.create(lead); // save the updated agent
     }
-    return this.leadsRepository.findOneAndUpdate({ id }, lead);
+
+    return lead;
   }
 
 }

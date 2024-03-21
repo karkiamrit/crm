@@ -35,5 +35,6 @@ import { LeadsModule } from './leads/leads.module';
   ],
   controllers: [AgentsController],
   providers: [AgentsService, AgentsRepository],
+  exports:[AgentsService, AgentsRepository]
 })
 export class AgentsModule {}

@@ -1,5 +1,6 @@
-import { AbstractEntity, User } from "@app/common";
-import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
+import { AbstractEntity } from "@app/common";
+import { Column, Entity, OneToMany, OneToOne } from "typeorm";
+import { Leads } from "../leads/entities/lead.entity";
 
 @Entity()
 export class Agent extends AbstractEntity<Agent>{
@@ -23,4 +24,9 @@ export class Agent extends AbstractEntity<Agent>{
 
     @Column()
     userId: number
+
+    @OneToMany(() => Leads, lead => lead.agent, { eager: true })
+    leads: Leads[];
+  
+  
 }

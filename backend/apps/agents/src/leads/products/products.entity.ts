@@ -3,6 +3,6 @@ import { Column, Entity  } from "typeorm";
 
 @Entity()
 export class Product extends AbstractEntity<Product> {
-    @Column()
+    @Column({nullable:true})
     name: string;
 }

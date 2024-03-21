@@ -1,10 +1,11 @@
 import { AbstractEntity } from "@app/common";
-import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from "typeorm";
 import { LeadTimeline } from "../timelines/timelines.entity";
 import { Product } from "../products/products.entity";
 import { Service } from "../services/services.entity";
+import { Agent } from "../../entities/agent.entity";
 
-export enum LeadsStatus{
+export enum     LeadsStatus{
     INITIAL= 'INITIAL',
     PENDING= 'PENDING',
     CONFIRMED= 'CONFIRMED',
@@ -42,7 +43,7 @@ export class Leads extends AbstractEntity<Leads>{
     @CreateDateColumn()
     createdAt: Date;
 
-    @Column()
+    @Column()  
     source: string; //eg: facebook, email etc
 
     @OneToMany(() => LeadTimeline, timeline => timeline.lead, {eager:true, onDelete: 'CASCADE'})
@@ -59,4 +60,7 @@ export class Leads extends AbstractEntity<Leads>{
     @Column('simple-array',{nullable:true})
     documents: string[];
 
+    @ManyToOne(() => Agent, agent => agent.leads)
+    @JoinColumn({ name: 'agentId' }) // This column will be added to the Lead table
+    agent: Agent;
 }

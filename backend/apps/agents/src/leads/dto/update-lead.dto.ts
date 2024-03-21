@@ -48,10 +48,10 @@ export class UpdateLeadDto {
     @Type(() => UpdateServiceInputDTO)
     service?: UpdateServiceInputDTO;
 
-    @IsOptional()
-    @ValidateNested({ each: true })
-    @Type(() => UpdateTimelineInputDTO)
-    timelines?: UpdateTimelineInputDTO[];
+    // @IsOptional()
+    // @ValidateNested({ each: true })
+    // @Type(() => UpdateTimelineInputDTO)
+    // timelines?: UpdateTimelineInputDTO[];
 
     @IsOptional()
     @IsArray()

@@ -15,9 +15,15 @@ import {
 } from '@nestjs/common';
 import { LeadsService } from './leads.service';
 import { CreateLeadDto } from './dto/create-lead.dto';
-import {  CurrentUser, JwtAuthGuard, Roles, User  } from '@app/common';
-import { ApiOperation, ApiBearerAuth, ApiParam, ApiBody, ApiResponse } from '@nestjs/swagger';
-import {  UpdateLeadDto } from './dto/update-lead.dto';
+import { CurrentUser, JwtAuthGuard, Roles, User } from '@app/common';
+import {
+  ApiOperation,
+  ApiBearerAuth,
+  ApiParam,
+  ApiBody,
+  ApiResponse,
+} from '@nestjs/swagger';
+import { UpdateLeadDto } from './dto/update-lead.dto';
 import { Leads } from './entities/lead.entity';
 import { diskStorage } from 'multer';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
@@ -25,10 +31,8 @@ import { extname } from 'path';
 
 @Controller('leads')
 export class LeadsController {
-  constructor(
-    private readonly leadsService: LeadsService,
-    ) {}
-    
+  constructor(private readonly leadsService: LeadsService) {}
+
   @Post()
   @UseGuards(JwtAuthGuard)
   @Roles('Agent')
@@ -36,7 +40,8 @@ export class LeadsController {
   @ApiBearerAuth()
   @ApiBody({ type: CreateLeadDto })
   @UseInterceptors(
-    FilesInterceptor('documents', 10, { // 'documents' is the name of the field that should contain the files
+    FilesInterceptor('documents', 10, {
+      // 'documents' is the name of the field that should contain the files
       storage: diskStorage({
         destination: './uploads', // specify the path where the files should be saved
         filename: (req, file, callback) => {
@@ -49,10 +54,18 @@ export class LeadsController {
   async create(
     @UploadedFiles() files: Express.Multer.File[],
     @Body() createLeadsDto: CreateLeadDto,
-    @CurrentUser() user: User
+    @CurrentUser() user: User,
   ) {
-    createLeadsDto.documents = files.map(file => file.path);
-    return await this.leadsService.create(createLeadsDto, user);
+    let documents:any;
+    if(files){
+      documents = files.map((file) => file.path);
+    }
+    
+    const createLeadsDtoWithDocuments: CreateLeadDto = {
+      ...createLeadsDto,
+      documents,
+    };
+    return await this.leadsService.create(createLeadsDtoWithDocuments, user);
   }
 
   @Put(':id')
@@ -60,12 +73,13 @@ export class LeadsController {
   @Roles('Agent')
   @ApiOperation({ summary: 'Update a lead' })
   @ApiBearerAuth()
-  @ApiParam({ name: 'id', required: true, description: 'The id of the lead to update' })
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'The id of the lead to update',
+  })
   @ApiBody({ type: UpdateLeadDto })
-  async update(
-    @Param('id') id: number,
-    @Body() updateLeadsDto: UpdateLeadDto,
-  ) {
+  async update(@Param('id') id: number, @Body() updateLeadsDto: UpdateLeadDto) {
     return this.leadsService.update(id, updateLeadsDto);
   }
 
@@ -74,7 +88,11 @@ export class LeadsController {
   @Roles('Agent')
   @ApiOperation({ summary: 'Delete a lead' })
   @ApiBearerAuth()
-  @ApiParam({ name: 'id', required: true, description: 'The id of the lead to delete' })
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'The id of the lead to delete',
+  })
   async delete(@Param('id') id: number) {
     return this.leadsService.delete(id);
   }
@@ -84,7 +102,7 @@ export class LeadsController {
   @Roles('Admin')
   @ApiOperation({ summary: 'Get all leads' })
   @ApiBearerAuth()
-  async findAll(@Query() query: any): Promise<Leads[]>{
+  async findAll(@Query() query: any): Promise<Leads[]> {
     return this.leadsService.findAll(query);
   }
 
@@ -113,7 +131,10 @@ export class LeadsController {
   @Roles('Lead')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Upload lead documents' })
-  @ApiResponse({ status: 200, description: 'The documents have been successfully uploaded.'})
+  @ApiResponse({
+    status: 200,
+    description: 'The documents have been successfully uploaded.',
+  })
   @UseInterceptors(
     FilesInterceptor('documents', 10, {
       storage: diskStorage({
@@ -127,9 +148,9 @@ export class LeadsController {
   )
   async addDocuments(
     @UploadedFiles() files: Express.Multer.File[],
-    @Param('id') id: number
+    @Param('id') id: number,
   ): Promise<Leads> {
-    const documents = files.map(file => file.path);
+    const documents = files.map((file) => file.path);
     return this.leadsService.addDocuments(id, documents);
   }
 
@@ -138,7 +159,10 @@ export class LeadsController {
   @Roles('Admin')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update a document of an lead' })
-  @ApiResponse({ status: 200, description: 'The document has been successfully updated.'})
+  @ApiResponse({
+    status: 200,
+    description: 'The document has been successfully updated.',
+  })
   @UseInterceptors(
     FileInterceptor('document', {
       storage: diskStorage({
@@ -152,7 +176,7 @@ export class LeadsController {
   async updateDocument(
     @UploadedFile() file: Express.Multer.File,
     @Param('id') id: number,
-    @Param('filename') filename: string
+    @Param('filename') filename: string,
   ): Promise<Leads> {
     return this.leadsService.updateDocument(id, filename, file.path);
   }
@@ -162,13 +186,14 @@ export class LeadsController {
   @Roles('Admin')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete a document of an lead' })
-  @ApiResponse({ status: 200, description: 'The document has been successfully deleted.'})
+  @ApiResponse({
+    status: 200,
+    description: 'The document has been successfully deleted.',
+  })
   async deleteDocument(
     @Param('id') id: number,
-    @Param('filename') filename: string
+    @Param('filename') filename: string,
   ): Promise<Leads> {
     return this.leadsService.deleteDocument(id, filename);
   }
-
-
 }

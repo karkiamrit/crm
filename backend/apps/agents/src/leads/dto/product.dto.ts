@@ -1,7 +1,7 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class CreateProductInputDTO {
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
     name: string;
 }
