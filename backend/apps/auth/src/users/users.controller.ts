@@ -158,14 +158,16 @@ export class UsersController {
   //   this.usersService.findAll(query);
   // }
 
-  @EventPattern('get_all_users')
+  @EventPattern('get_all_users_by_organization_id')
   async getOrganizationUsers(data: {
     where: { organizationId: number };
     options: ExtendedFindOptions<User>;
   }): Promise<User[]> {
-    return this.usersService.findAll(data.options);
+    const { where, options } = data;
+    options.where = { ...options.where, ...where };
+    return this.usersService.findAll(options);
   }
-
+  
   @EventPattern('update_user')
   async modifyUser(data: { id: number; update: Partial<User> }): Promise<User> {
     return this.usersService.userUpdateAdmin(data.id, data.update);

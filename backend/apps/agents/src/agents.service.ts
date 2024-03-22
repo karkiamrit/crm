@@ -46,6 +46,24 @@ export class AgentsService {
     return agent;
   }
 
+  async createAgentAdmin(createAgentsDto: CreateAgentsDto, id: number) {
+    const agent = new Agent(createAgentsDto);
+    agent.userId = id;
+    agent.reference_no = randomUUID();
+    await this.agentsRepository.create(agent);
+
+    // Create a new role object
+    const role = 'Agent';
+    const userId = id;
+    // Send the update request to the user microservice
+    this.usersService.send('update_user_role', { userId, role }).subscribe({
+      next: (response) => console.log(`User updated successfully: ${response}`),
+      error: (error) => console.error(`Failed to update user: ${error}`),
+    });
+
+    return agent;
+  }
+
   async update(id: number, updateAgentsDto: UpdateAgentsDto) {
     return this.agentsRepository.findOneAndUpdate({ id }, updateAgentsDto);
   }
@@ -62,19 +80,19 @@ export class AgentsService {
     return this.agentsRepository.findOne({ id });
   }
 
-  async getUsersByAgentId(
-    agentId: number,
-    options: ExtendedFindOptions<User>,
-  ): Promise<User[]> {
-    return new Promise((resolve, reject) => {
-      this.usersService
-        .send<User[]>('get_all_users', { where: { agentId }, options })
-        .subscribe({
-          next: (users) => resolve(users),
-          error: (error) => reject(error),
-        });
-    });
-  }
+  // async getUserByAgentId(
+  //   agentId: number,
+  //   options: ExtendedFindOptions<User>,
+  // ): Promise<User[]> {
+  //   return new Promise((resolve, reject) => {
+  //     this.usersService
+  //       .send<User[]>('get_all_users', { where: { agentId }, options })
+  //       .subscribe({
+  //         next: (users) => resolve(users),
+  //         error: (error) => reject(error),
+  //       });
+  //   });
+  // }
 
   async addDocuments(id: number, documents: string[]): Promise<Agent> {
     const agent = await this.agentsRepository.findOne({ id });

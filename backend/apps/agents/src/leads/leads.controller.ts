@@ -97,6 +97,15 @@ export class LeadsController {
     return this.leadsService.delete(id);
   }
 
+  @Get("myleads")
+  @UseGuards(JwtAuthGuard)
+  @Roles('Admin')
+  @ApiOperation({ summary: 'Get all leads' })
+  @ApiBearerAuth()
+  async findLeadsOfCurrentAgent(@Query() query: any, @CurrentUser() user: User): Promise<Leads[]> {
+    return this.leadsService.findAllLeadsOfAgent(query, user);
+  }
+  
   @Get()
   @UseGuards(JwtAuthGuard)
   @Roles('Admin')
@@ -105,6 +114,7 @@ export class LeadsController {
   async findAll(@Query() query: any): Promise<Leads[]> {
     return this.leadsService.findAll(query);
   }
+
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
@@ -115,16 +125,6 @@ export class LeadsController {
   async getOne(@Param('id') id: number) {
     return this.leadsService.getOne(id);
   }
-
-  // @Get(':id')
-  // @UseGuards(JwtAuthGuard)
-  // @Roles('Lead')
-  // @ApiOperation({ summary: 'Get a lead by id' })
-  // @ApiBearerAuth()
-  // @ApiParam({ name: 'id', required: true, description: 'The id of the lead' })
-  // async getCurrentLeadProfile(@CurrentUser() user: User) {
-  //   return this.leadsService.getLeadByUserId(user.id);
-  // }
 
   @Patch(':id/upload-documents')
   @UseGuards(JwtAuthGuard)

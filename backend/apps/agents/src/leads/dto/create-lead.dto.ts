@@ -3,7 +3,6 @@ import { LeadsStatus } from "../entities/lead.entity";
 import { CreateProductInputDTO } from "./product.dto";
 import { Type } from "class-transformer";
 import { CreateServiceInputDTO } from "./service.dto";
-import { CreateTimelineInputDTO } from "./timeline.dto";
 
 export class CreateLeadDto {
     @IsNotEmpty()
@@ -52,5 +51,4 @@ export class CreateLeadDto {
     @IsArray()
     @IsString({each:true})
     documents: string[];
-
 }

@@ -40,7 +40,6 @@ export class UsersService {
     
       return this.usersRepository.create(user);
     }
-    
 
     async adminCreate(createUserAdminDto: CreateUserAdminDto) {
       await this.validateCreateUser(createUserAdminDto);

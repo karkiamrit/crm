@@ -1,6 +1,8 @@
-import React from "react";
-
+"use client";
+import useAuth from "@/app/hooks/useAuth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 export function NavBarHorizontal() {
+  let { loggedIn, userData } = useAuth();
   return (
     <div>
       <header className="">
@@ -80,24 +82,28 @@ export function NavBarHorizontal() {
               <div className="flex items-center ml-4 lg:ml-0">
                 <button
                   type="button"
-                  className="rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600"
+                  className="rounded-full focus:outline-none "
                   id="options-menu-button"
                   aria-expanded="false"
                   aria-haspopup="true"
                 >
-                  <span className="flex items-center justify-between w-full">
+                  <span className="flex items-center justify-between w-full ">
                     <span className="flex items-center justify-between min-w-0 space-x-3">
-                      <img
-                        className="flex-shrink-0 object-cover bg-gray-300 rounded-full w-7 h-7"
-                        src="https://landingfoliocom.imgix.net/store/collection/clarity-dashboard/images/horizontal-menu/1/avatar-female.png"
-                        alt=""
-                      />
-                      <span className="flex-1 hidden min-w-0 md:flex">
-                        <span className="text-sm font-medium text-gray-900 truncate">
-                          {" "}
-                          Wade Warren{" "}
-                        </span>
-                      </span>
+                      {loggedIn && userData && (
+                        <div className="w-full flex items-center justify-between gap-2">
+                          <Avatar>
+                            {/* <AvatarImage src=""/> */}
+                            <AvatarFallback>{userData.email.substring(0,2).toUpperCase()}</AvatarFallback>
+                          </Avatar>
+
+                          <span className="flex-1 hidden min-w-0 md:flex">
+                            <span className="text-sm font-medium text-gray-900 truncate">
+                              {" "}
+                              {userData.email.split('@')[0]}{" "}
+                            </span>
+                          </span>
+                        </div>
+                      )}
                     </span>
                     <svg
                       className="flex-shrink-0 w-4 h-4 ml-2 text-gray-400 group-hover:text-gray-500"
@@ -119,9 +125,7 @@ export function NavBarHorizontal() {
             </div>
           </div>
         </div>
-
       </header>
     </div>
   );
 }
-

@@ -3,7 +3,6 @@ import { LeadsStatus } from "../entities/lead.entity";
 import { UpdateProductInputDTO } from "./product.dto";
 import { Type } from "class-transformer";
 import { UpdateServiceInputDTO } from "./service.dto";
-import { UpdateTimelineInputDTO } from "./timeline.dto";
 
 export class UpdateLeadDto {
     @IsOptional()

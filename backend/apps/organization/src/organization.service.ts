@@ -47,7 +47,7 @@ export class OrganizationsService {
   ): Promise<User[]> {
     return new Promise((resolve, reject) => {
       this.usersService
-        .send<User[]>('get_all_users', { where: { organizationId }, options })
+        .send<User[]>('get_all_users_by_organization_id', { where: { organizationId }, options })
         .subscribe({
           next: (users) => resolve(users),
           error: (error) => reject(error),

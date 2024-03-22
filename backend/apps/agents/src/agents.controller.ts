@@ -32,7 +32,7 @@ export class AgentsController {
     
   @Post()
   @UseGuards(JwtAuthGuard)
-  @Roles('Admin')
+  @Roles('Agent')
   @ApiOperation({ summary: 'Create a new agent' })
   @ApiBearerAuth()
   @ApiBody({ type: CreateAgentsDto })
@@ -59,6 +59,37 @@ export class AgentsController {
     }
     const createAgentsDtoWithDocuments: CreateAgentsDtoWithDocuments = { ...createAgentsDto, documents };
     return await this.agentsService.create(createAgentsDtoWithDocuments, user);
+  }
+
+  @Post()
+  @UseGuards(JwtAuthGuard)
+  @Roles('Admin')
+  @ApiOperation({ summary: 'Create a new agent' })
+  @ApiBearerAuth()
+  @ApiBody({ type: CreateAgentsDto })
+  @ApiResponse({ status: 201, description: 'The agent has been successfully created.', type: AgentResponseDto})
+  @UseInterceptors(
+    FilesInterceptor('documents', 10, { // 'documents' is the name of the field that should contain the files
+      storage: diskStorage({
+        destination: './uploads', // specify the path where the files should be saved
+        filename: (req, file, callback) => {
+          const name = Date.now() + extname(file.originalname); // generate a unique filename
+          callback(null, name);
+        },
+      }),
+    }),
+  )
+  async adminCreate(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Body() createAgentsDto: CreateAgentsDto,
+    @Body('userId') userId: number,
+  ) {
+    let documents:any;
+    if(files){
+      documents = files.map(file => file.path);
+    }
+    const createAgentsDtoWithDocuments: CreateAgentsDtoWithDocuments = { ...createAgentsDto, documents };
+    return await this.agentsService.createAgentAdmin(createAgentsDtoWithDocuments, userId);
   }
 
   @Put(':id')
@@ -121,7 +152,6 @@ export class AgentsController {
   @ApiParam({ name: 'id', required: true, description: 'The id of the agent' })
   @ApiResponse({ status: 200, description: 'Return the agent.', type: AgentResponseDto})
   async getCurrentAgentProfile(@CurrentUser() user: User) {
-    console.log("I am here");
     return this.agentsService.getAgentByUserId(user.id);
   }
 
@@ -137,16 +167,16 @@ export class AgentsController {
   }
 
 
-  @Get(':1/users')
-  @UseGuards(JwtAuthGuard)
-  @Roles('Agent')
-  @ApiOperation({ summary: 'Get users associated with agent' })
-  @ApiBearerAuth()
-  @ApiParam({ name: 'id', required: true, description: 'The id of the agent' })
-  @ApiResponse({ status: 200, description: 'Return the agent.', type: AgentResponseDto})
-  async getUsersByAgent(@Param('id') agentId: number, @Query() query:any) {
-    return this.agentsService.getUsersByAgentId(agentId, query);
-  }
+  // @Get(':1/users')
+  // @UseGuards(JwtAuthGuard)
+  // @Roles('Agent')
+  // @ApiOperation({ summary: 'Get users associated with agent' })
+  // @ApiBearerAuth()
+  // @ApiParam({ name: 'id', required: true, description: 'The id of the agent' })
+  // @ApiResponse({ status: 200, description: 'Return the agent.', type: AgentResponseDto})
+  // async getUsersByAgent(@Param('id') agentId: number, @Query() query:any) {
+  //   return this.agentsService.getUserByAgentId(agentId, query);
+  // }
 
   @Patch(':id/upload-documents')
   @UseGuards(JwtAuthGuard)
