@@ -7,7 +7,7 @@ interface VerticalDashboardState {
 
 const useVerticalDashboard = create<VerticalDashboardState>((set) => ({
   // Initial selected section
-  selectedSection: 'dashboard',
+  selectedSection: '/dashboard',
 
   // Set selected section action
   setSelectedSection: (section) =>

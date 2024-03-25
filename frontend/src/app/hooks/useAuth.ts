@@ -1,12 +1,18 @@
-import { LocalStore } from "@/store/localstore";
-import axios from "axios";
 import { useState, useEffect } from "react";
+import axios from "axios";
+import { LocalStore } from "@/store/localstore";
 
-const getUserDataFromToken = async (): Promise<any | null> => {
+interface User {
+  email: string;
+  id: number;
+  organizationId: number;
+}
+const getUserDataFromToken = async (token: any) => {
+  if (!token) return null;
   try {
     const response = await axios.get("http://localhost:8000/users/me", {
       headers: {
-        Authorization: `Bearer ${LocalStore.getAccessToken()}`,
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.data;
@@ -16,38 +22,54 @@ const getUserDataFromToken = async (): Promise<any | null> => {
   }
 };
 
-const isLoggedIn = (): boolean => {
-  const token = LocalStore.getAccessToken();
-  return token !== null;
-};
-
-const useAuth = (): { loggedIn: boolean; userData: any | null } => {
-  const [loggedIn, setLoggedIn] = useState<boolean>(isLoggedIn());
-  const [userData, setUserData] = useState<any | null>(null);
+const useAuth = () => {
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [userData, setUserData] = useState<User | null>(null);
+  const [isClient, setIsClient] = useState(false); // State to track client-side rendering
+  const [loading, setLoading] = useState(true); // New state to track loading status
+  const [wasLoggedIn, setWasLoggedIn] = useState(false); // New state variable
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const user = await getUserDataFromToken();
-        if (user) {
-          setUserData(user);
-          setLoggedIn(true);
-        } else {
-          setUserData(null);
-          setLoggedIn(false);
-        }
-      } catch (error) {
-        console.error("Error in useAuth useEffect:", error);
-        setUserData(null);
-        setLoggedIn(false);
-      }
-    };
+    setIsClient(true); // Set to true once the component mounts
+    const token = LocalStore.getAccessToken();
 
-    fetchData(); // Call fetchData only once when the component mounts
+    if (token) {
+      getUserDataFromToken(token)
+        .then((user) => {
+          if (user) {
+            setUserData(user);
+            setLoggedIn(true);
+            setWasLoggedIn(true); // Set wasLoggedIn to true when user logs in
+          }
+          setLoading(false); // Set loading to false after user data is fetched
+        })
+        .catch((error) => {
+          console.error("Error in useAuth useEffect:", error);
+          setLoading(false); // Ensure loading is false even if there's an error
+        });
+    } else {
+      setLoading(false); // No token means not loading
+    }
+  }, []);
 
-    const handleAuthChange = () => {
-      setLoggedIn(isLoggedIn());
-      fetchData();
+  useEffect(() => {
+    // Only reload the page if the user was previously logged in
+    if (!loggedIn && wasLoggedIn) {
+      LocalStore.reload();
+    }
+  }, [loggedIn, wasLoggedIn]);
+
+  useEffect(() => {
+    if (!isClient) return;
+
+    const handleAuthChange = async () => {
+      setLoading(true); // Start loading when auth status changes
+      const token = LocalStore.getAccessToken();
+      setLoggedIn(!!token);
+      await getUserDataFromToken(token).then((user) => {
+        setUserData(user);
+        setLoading(false); // Stop loading once user data is fetched
+      });
     };
 
     window.addEventListener("storage", handleAuthChange);
@@ -55,9 +77,9 @@ const useAuth = (): { loggedIn: boolean; userData: any | null } => {
     return () => {
       window.removeEventListener("storage", handleAuthChange);
     };
-  }, []); // Use an empty dependency array to run the effect only once
+  }, [isClient]); // Re-run when isClient changes
 
-  return { loggedIn, userData };
+  return { loggedIn, userData, loading };
 };
 
 export default useAuth;

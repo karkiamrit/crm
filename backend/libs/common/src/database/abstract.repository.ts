@@ -170,8 +170,6 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
 
     const qb = this.entityRepository.createQueryBuilder('entity');
     if (options.range) {
-     
-
       let range = options.range;
       if (typeof options.range === 'string') {
         try {
@@ -180,23 +178,31 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
           throw new Error('Invalid range parameter');
         }
       }
-    
+
       if (!Array.isArray(range)) {
         throw new Error('Range must be an array');
       }
-    
+
       range.forEach((rangeCondition) => {
         if (validProperties.includes(rangeCondition.property)) {
           const lower = rangeCondition.lower;
           const upper = rangeCondition.upper;
           if (rangeCondition.property === 'source') {
             const regex = new RegExp(`[${lower}-${upper}]`);
-            qb.andWhere(`entity.${rangeCondition.property} ~ :regex`, { regex: regex.source });
+            qb.andWhere(`entity.${rangeCondition.property} ~ :regex`, {
+              regex: regex.source,
+            });
           } else {
-            const lowerCondition = isNaN(Number(lower)) ? `entity.${rangeCondition.property} >= :lower` : `entity.${rangeCondition.property} >= :lower::integer`;
-            const upperCondition = isNaN(Number(upper)) ? `entity.${rangeCondition.property} <= :upper` : `entity.${rangeCondition.property} <= :upper::integer`;
-            qb.andWhere(lowerCondition, { lower: lower })
-              .andWhere(upperCondition, { upper: upper });
+            const lowerCondition = isNaN(Number(lower))
+              ? `entity.${rangeCondition.property} >= :lower`
+              : `entity.${rangeCondition.property} >= :lower::integer`;
+            const upperCondition = isNaN(Number(upper))
+              ? `entity.${rangeCondition.property} <= :upper`
+              : `entity.${rangeCondition.property} <= :upper::integer`;
+            qb.andWhere(lowerCondition, { lower: lower }).andWhere(
+              upperCondition,
+              { upper: upper },
+            );
           }
         }
       });
@@ -213,41 +219,99 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
       }
     }
 
-    // Create a query builder
-    // const qb = this.entityRepository.createQueryBuilder('entity');
+    // if (options.order) {
+    //   // Handling enum sorting
+    //   for (const [key, value] of Object.entries(options.order)) {
+    //     if (validProperties.includes(key) && typeof value === 'string') {
+    //       // Treat enum properties as strings
+    //       const propertyType = this.entityRepository.metadata.columns.find(
+    //         (column) => column.propertyName === key,
+    //       )?.type;
+    //       if (propertyType === 'enum') {
+    //         orderOption[`entity.${key}`] =
+    //           `entity.${key} ${value.toUpperCase()}`;
+    //       } else {
+    //         orderOption[`entity.${key}`] =
+    //           value.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+    //       }
+    //     }
+    //   }
+    // }
+
+    // Object.entries(where).forEach(([key, value]) => {
+    //   if (validProperties.includes(key)) {
+    //     if (
+    //       value instanceof Object &&
+    //       '_value' in value &&
+    //       Array.isArray(value._value) &&
+    //       value._value.length === 2
+    //     ) {
+    //       const lower = value._value[0];
+    //       const upper = value._value[1];
+    //       if (isNaN(Number(lower)) || isNaN(Number(upper))) {
+    //         // If lower or upper is not a number, treat them as strings
+    //         qb.andWhere(`entity.${key} >= :lower`, {
+    //           lower: `'${lower}'`,
+    //         }).andWhere(`entity.${key} <= :upper`, { upper: `'${upper}'` });
+    //       } else {
+    //         // If lower and upper are both numbers, treat them as numbers
+    //         qb.andWhere(`entity.${key} BETWEEN :lower AND :upper`, {
+    //           lower: Number(lower),
+    //           upper: Number(upper),
+    //         });
+    //       }
+    //     } else {
+    //       qb.andWhere(`entity.${key} = :value`, { value });
+    //     }
+    //   } else {
+    //     // If the property is not a valid property, it might be a relation
+    //     qb.leftJoinAndSelect(`entity.${key}`, key).andWhere(
+    //       `${key}.id = :value`,
+    //       { value },
+    //     );
+    //   }
+    // });
 
     Object.entries(where).forEach(([key, value]) => {
       if (validProperties.includes(key)) {
-        if (
-          value instanceof Object &&
-          '_value' in value &&
-          Array.isArray(value._value) &&
-          value._value.length === 2
-        ) {
-          const lower = value._value[0];
-          const upper = value._value[1];
-          if (isNaN(Number(lower)) || isNaN(Number(upper))) {
-            // If lower or upper is not a number, treat them as strings
-            qb.andWhere(`entity.${key} >= :lower`, { lower: `'${lower}'` })
-              .andWhere(`entity.${key} <= :upper`, { upper: `'${upper}'` });
+          if (
+              value instanceof Object &&
+              '_value' in value &&
+              Array.isArray(value._value) &&
+              value._value.length === 2
+          ) {
+              const lower = value._value[0];
+              const upper = value._value[1];
+              if (isNaN(Number(lower)) || isNaN(Number(upper))) {
+                  // If lower or upper is not a number, treat them as strings
+                  qb.andWhere(`entity.${key} >= :lower`, { lower: `'${lower}'` })
+                      .andWhere(`entity.${key} <= :upper`, { upper: `'${upper}'` });
+              } else {
+                  // If lower and upper are both numbers, treat them as numbers
+                  qb.andWhere(`entity.${key} BETWEEN :lower AND :upper`, {
+                      lower: Number(lower),
+                      upper: Number(upper),
+                  });
+              }
           } else {
-            // If lower and upper are both numbers, treat them as numbers
-            qb.andWhere(`entity.${key} BETWEEN :lower AND :upper`, {
-              lower: Number(lower),
-              upper: Number(upper),
-            });
+              // Treat enum properties as strings
+              const propertyType = this.entityRepository.metadata.columns.find(column => column.propertyName === key)?.type;
+              if (propertyType === 'enum') {
+                  qb.andWhere(`entity.${key} = :value`, { value: value.toString() });
+              }
+              else {
+                  qb.andWhere(`entity.${key} = :value`, { value });
+              }
           }
-        } else {
-          qb.andWhere(`entity.${key} = :value`, { value });
-        }
       } else {
-        // If the property is not a valid property, it might be a relation
-        qb.leftJoinAndSelect(`entity.${key}`, key).andWhere(
-          `${key}.id = :value`,
-          { value },
-        );
+          // If the property is not a valid property, it might be a relation
+          qb.leftJoinAndSelect(`entity.${key}`, key).andWhere(
+              `${key}.id = :value`,
+              { value },
+          );
       }
-    });
+  });
+  
 
     // Apply ordering
     Object.entries(orderOption).forEach(([key, value]) => {

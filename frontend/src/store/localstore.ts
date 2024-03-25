@@ -8,6 +8,12 @@ export class LocalStore {
     return '';
   }
 
+  static reload(){
+    if (typeof window !== 'undefined') {
+      window.location.reload();
+    }
+  }
+
   static set(key: string, value: string) {
     if (typeof window !== 'undefined') {
       localStorage.setItem(key, value);

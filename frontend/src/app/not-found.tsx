@@ -11,7 +11,7 @@ const handleClick = async () => {
     const response = await axios.post("http://localhost:8000/auth/logout", {
       headers: {
         Authorization: `Bearer ${LocalStore.getAccessToken()}`,
-      },
+      }
     }
     ); 
     console.log('here')

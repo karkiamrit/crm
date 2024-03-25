@@ -28,10 +28,14 @@ import { Leads } from './entities/lead.entity';
 import { diskStorage } from 'multer';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { extname } from 'path';
+import { AgentsService } from '../agents.service';
 
 @Controller('leads')
 export class LeadsController {
-  constructor(private readonly leadsService: LeadsService) {}
+  constructor(
+    private readonly leadsService: LeadsService,
+    private readonly agentService: AgentsService,
+  ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
@@ -56,11 +60,11 @@ export class LeadsController {
     @Body() createLeadsDto: CreateLeadDto,
     @CurrentUser() user: User,
   ) {
-    let documents:any;
-    if(files){
+    let documents: any;
+    if (files) {
       documents = files.map((file) => file.path);
     }
-    
+
     const createLeadsDtoWithDocuments: CreateLeadDto = {
       ...createLeadsDto,
       documents,
@@ -97,15 +101,22 @@ export class LeadsController {
     return this.leadsService.delete(id);
   }
 
-  @Get("myleads")
+  @Get('myleads')
   @UseGuards(JwtAuthGuard)
-  @Roles('Admin')
+  @Roles('Agent')
   @ApiOperation({ summary: 'Get all leads' })
   @ApiBearerAuth()
-  async findLeadsOfCurrentAgent(@Query() query: any, @CurrentUser() user: User): Promise<Leads[]> {
-    return this.leadsService.findAllLeadsOfAgent(query, user);
+  async findLeadsOfCurrentAgent(
+    @Query() query: any,
+    @CurrentUser() user: User,
+  ): Promise<Leads[]> {
+    const agent = await this.agentService.getAgentByUserId(user.id);
+    if(agent){
+      query.agent = agent.id;
+    }
+    return this.leadsService.findAllLeadsOfAgent(query );
   }
-  
+
   @Get()
   @UseGuards(JwtAuthGuard)
   @Roles('Admin')
@@ -114,7 +125,6 @@ export class LeadsController {
   async findAll(@Query() query: any): Promise<Leads[]> {
     return this.leadsService.findAll(query);
   }
-
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)

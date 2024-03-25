@@ -95,6 +95,7 @@ export function NavBarHorizontal() {
                             {/* <AvatarImage src=""/> */}
                             <AvatarFallback>{userData.email.substring(0,2).toUpperCase()}</AvatarFallback>
                           </Avatar>
+                        
 
                           <span className="flex-1 hidden min-w-0 md:flex">
                             <span className="text-sm font-medium text-gray-900 truncate">

@@ -24,7 +24,6 @@ export function NavBarVertical() {
   const handleLinkClick = (link: string) => {
     setSelectedLink(link);
     LocalStore.setVerticalNavBarState(link);
-    
   };
 
   const navItems1: NavItem[] = [

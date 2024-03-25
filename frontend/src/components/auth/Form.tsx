@@ -79,7 +79,8 @@ export default function AuthForm() {
     if (response.data) {
       LocalStore.remove('jwt');
       LocalStore.setAccessToken(response.data);
-      router.push("/dashboard");
+      router.push("/");
+      LocalStore.reload();
     }
    
     

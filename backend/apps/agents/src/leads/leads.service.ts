@@ -13,6 +13,7 @@ import { LeadTimelineRepository } from './timelines/timelines.repository';
 import { AgentsService } from '../agents.service';
 import { join } from 'path';
 
+
 @Injectable()
 export class LeadsService {
   constructor(
@@ -110,12 +111,9 @@ export class LeadsService {
 
   async findAllLeadsOfAgent(
     options: ExtendedFindOptions<Leads>,
-    user: User
+
   ): Promise<Leads[]> {
-    const agent = await this.agentService.getAgentByUserId(user.id);
-    options.where = {
-      ...options.where,
-    };
+    
   
     return this.leadsRepository.findAll(options);
   }

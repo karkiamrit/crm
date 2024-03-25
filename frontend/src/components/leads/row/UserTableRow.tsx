@@ -2,7 +2,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import React from "react";
 
 interface TableRowProps {
-  imageUrl: string;
   name: string;
   email: string;
   phone: string;
@@ -11,7 +10,6 @@ interface TableRowProps {
 }
 
 const TableRow: React.FC<TableRowProps> = ({
-  imageUrl,
   name,
   email,
   phone,
