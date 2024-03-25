@@ -38,69 +38,6 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
     return this.entityManager.save(entity);
   }
 
-  // async findAll(options: ExtendedFindOptions<T>): Promise<T[]> {
-  //   // Define a list of valid properties
-  //   const validProperties = this.entityRepository.metadata.columns.map(
-  //     (column) => column.propertyName,
-  //   );
-
-  //   // Construct the where clause
-  //   const where = Object.keys(options).reduce((conditions, key) => {
-  //     if (validProperties.includes(key) && key !== 'range' && key !== 'order') {
-  //       conditions[key] = options[key];
-  //     }
-  //     return conditions;
-  //   }, {} as FindOptionsWhere<T>);
-
-  //   if (options.range) {
-  //     let range = options.range;
-  //     if (typeof options.range === 'string') {
-  //       try {
-  //         range = JSON.parse(options.range);
-  //       } catch (err) {
-  //         throw new Error('Invalid range parameter');
-  //       }
-  //     }
-
-  //     if (!Array.isArray(range)) {
-  //       throw new Error('Range must be an array');
-  //     }
-
-  //     range.forEach((rangeCondition) => {
-  //       if (validProperties.includes(rangeCondition.property)) {
-  //         where[rangeCondition.property] = Between(
-  //           rangeCondition.lower,
-  //           rangeCondition.upper,
-  //         );
-  //       }
-  //     });
-  //   }
-
-  //   // Extract pagination options
-  //   const { skip, take } = options;
-
-  //   let orderOption = {};
-  //   if (options.order) {
-  //     console.log(Object.entries(options.order));
-  //     for (const [key, value] of Object.entries(options.order)) {
-  //       // Changed this line
-  //       console.log(key, value, typeof value);
-  //       if (validProperties.includes(key) && typeof value === 'string') {
-  //         orderOption[key] = value.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
-  //       }
-  //     }
-  //   }
-
-  //   // Call the find method with the constructed where clause, pagination options, and order options
-  //   return this.entityRepository.find({
-  //     where,
-  //     skip,
-  //     take,
-  //     order: orderOption,
-  //     relations: options.relations,
-  //   });
-  // }
-
   async findOne(where: FindOptionsWhere<T>): Promise<T> {
     const entity = await this.entityRepository.findOne({ where });
     if (!entity) {
@@ -219,99 +156,98 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
       }
     }
 
-    // if (options.order) {
-    //   // Handling enum sorting
-    //   for (const [key, value] of Object.entries(options.order)) {
-    //     if (validProperties.includes(key) && typeof value === 'string') {
-    //       // Treat enum properties as strings
-    //       const propertyType = this.entityRepository.metadata.columns.find(
-    //         (column) => column.propertyName === key,
-    //       )?.type;
-    //       if (propertyType === 'enum') {
-    //         orderOption[`entity.${key}`] =
-    //           `entity.${key} ${value.toUpperCase()}`;
-    //       } else {
-    //         orderOption[`entity.${key}`] =
-    //           value.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
-    //       }
-    //     }
-    //   }
-    // }
-
-    // Object.entries(where).forEach(([key, value]) => {
-    //   if (validProperties.includes(key)) {
-    //     if (
-    //       value instanceof Object &&
-    //       '_value' in value &&
-    //       Array.isArray(value._value) &&
-    //       value._value.length === 2
-    //     ) {
-    //       const lower = value._value[0];
-    //       const upper = value._value[1];
-    //       if (isNaN(Number(lower)) || isNaN(Number(upper))) {
-    //         // If lower or upper is not a number, treat them as strings
-    //         qb.andWhere(`entity.${key} >= :lower`, {
-    //           lower: `'${lower}'`,
-    //         }).andWhere(`entity.${key} <= :upper`, { upper: `'${upper}'` });
-    //       } else {
-    //         // If lower and upper are both numbers, treat them as numbers
-    //         qb.andWhere(`entity.${key} BETWEEN :lower AND :upper`, {
-    //           lower: Number(lower),
-    //           upper: Number(upper),
-    //         });
-    //       }
+    //   Object.entries(where).forEach(([key, value]) => {
+    //     if (validProperties.includes(key)) {
+    //         if (
+    //             value instanceof Object &&
+    //             '_value' in value &&
+    //             Array.isArray(value._value) &&
+    //             value._value.length === 2
+    //         ) {
+    //             const lower = value._value[0];
+    //             const upper = value._value[1];
+    //             if (isNaN(Number(lower)) || isNaN(Number(upper))) {
+    //                 // If lower or upper is not a number, treat them as strings
+    //                 qb.andWhere(`entity.${key} >= :lower`, { lower: `'${lower}'` })
+    //                     .andWhere(`entity.${key} <= :upper`, { upper: `'${upper}'` });
+    //             } else {
+    //                 // If lower and upper are both numbers, treat them as numbers
+    //                 qb.andWhere(`entity.${key} BETWEEN :lower AND :upper`, {
+    //                     lower: Number(lower),
+    //                     upper: Number(upper),
+    //                 });
+    //             }
+    //         } else {
+    //             // Treat enum properties as strings
+    //             const propertyType = this.entityRepository.metadata.columns.find(column => column.propertyName === key)?.type;
+    //             if (propertyType === 'enum') {
+    //                 qb.andWhere(`entity.${key} = :value`, { value: value.toString() });
+    //             }
+    //             else {
+    //                 qb.andWhere(`entity.${key} = :value`, { value });
+    //             }
+    //         }
     //     } else {
-    //       qb.andWhere(`entity.${key} = :value`, { value });
+    //         // If the property is not a valid property, it might be a relation
+    //         qb.leftJoinAndSelect(`entity.${key}`, key).andWhere(
+    //             `${key}.id = :value`,
+    //             { value },
+    //         );
     //     }
-    //   } else {
-    //     // If the property is not a valid property, it might be a relation
-    //     qb.leftJoinAndSelect(`entity.${key}`, key).andWhere(
-    //       `${key}.id = :value`,
-    //       { value },
-    //     );
-    //   }
     // });
 
-    Object.entries(where).forEach(([key, value]) => {
+    Object.entries(where).forEach(([key, value], index) => {
       if (validProperties.includes(key)) {
-          if (
-              value instanceof Object &&
-              '_value' in value &&
-              Array.isArray(value._value) &&
-              value._value.length === 2
-          ) {
-              const lower = value._value[0];
-              const upper = value._value[1];
-              if (isNaN(Number(lower)) || isNaN(Number(upper))) {
-                  // If lower or upper is not a number, treat them as strings
-                  qb.andWhere(`entity.${key} >= :lower`, { lower: `'${lower}'` })
-                      .andWhere(`entity.${key} <= :upper`, { upper: `'${upper}'` });
-              } else {
-                  // If lower and upper are both numbers, treat them as numbers
-                  qb.andWhere(`entity.${key} BETWEEN :lower AND :upper`, {
-                      lower: Number(lower),
-                      upper: Number(upper),
-                  });
-              }
+        if (
+          value instanceof Object &&
+          '_value' in value &&
+          Array.isArray(value._value) &&
+          value._value.length === 2
+        ) {
+          const lower = value._value[0];
+          const upper = value._value[1];
+          if (isNaN(Number(lower)) || isNaN(Number(upper))) {
+            // If lower or upper is not a number, treat them as strings
+            const condition = `entity.${key} BETWEEN :lower AND :upper`;
+            const parameters = { lower: `'${lower}'`, upper: `'${upper}'` };
+            index === 0
+              ? qb.where(condition, parameters)
+              : qb.andWhere(condition, parameters);
           } else {
-              // Treat enum properties as strings
-              const propertyType = this.entityRepository.metadata.columns.find(column => column.propertyName === key)?.type;
-              if (propertyType === 'enum') {
-                  qb.andWhere(`entity.${key} = :value`, { value: value.toString() });
-              }
-              else {
-                  qb.andWhere(`entity.${key} = :value`, { value });
-              }
+            // If lower and upper are both numbers, treat them as numbers
+            const condition = `entity.${key} BETWEEN :lower AND :upper`;
+            const parameters = { lower: Number(lower), upper: Number(upper) };
+            index === 0
+              ? qb.where(condition, parameters)
+              : qb.andWhere(condition, parameters);
           }
+        } else {
+          // Treat enum properties as strings
+          const propertyType = this.entityRepository.metadata.columns.find(
+            (column) => column.propertyName === key,
+          )?.type;
+          if (propertyType === 'enum') {
+            const condition = `entity.${key} = :value`;
+            const parameters = { value: value.toString() };
+            index === 0
+              ? qb.where(condition, parameters)
+              : qb.andWhere(condition, parameters);
+          } else {
+            const condition = `entity.${key} = :${key}`;
+            const parameters = { [key]: value };
+            index === 0
+              ? qb.where(condition, parameters)
+              : qb.andWhere(condition, parameters);
+          }
+        }
       } else {
-          // If the property is not a valid property, it might be a relation
-          qb.leftJoinAndSelect(`entity.${key}`, key).andWhere(
-              `${key}.id = :value`,
-              { value },
-          );
+        // If the property is not a valid property, it might be a relation
+        qb.leftJoinAndSelect(`entity.${key}`, key).andWhere(
+          `${key}.id = :value`,
+          { value },
+        );
       }
-  });
-  
+    });
 
     // Apply ordering
     Object.entries(orderOption).forEach(([key, value]) => {
