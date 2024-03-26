@@ -12,6 +12,8 @@ RUN yarn install
 
 RUN yarn add @nestjs/cli
 
+RUN yarn add nest
+
 COPY . .
 
 RUN yarn run build
