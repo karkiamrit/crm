@@ -9,7 +9,6 @@ import {
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { FindManyOptions, Between } from 'typeorm';
 
-
 interface RangeCondition {
   property: string;
   lower: string;
@@ -24,20 +23,16 @@ export interface ExtendedFindOptions<T>
   relations?: string[];
 }
 
-
 export abstract class AbstractRepository<T extends AbstractEntity<T>> {
   protected abstract readonly logger: Logger;
   constructor(
     private readonly entityRepository: Repository<T>, //to get type information around our queries,
     private readonly entityManager: EntityManager, // use save entities in our relational database using instances of these entities
-    
   ) {}
-  
+
   getMetadata() {
     return this.entityRepository.metadata;
   }
-
-  
 
   async create(entity: T): Promise<T> {
     return this.entityManager.save(entity);
@@ -111,78 +106,6 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
     }, {} as FindOptionsWhere<T>);
 
     const qb = this.entityRepository.createQueryBuilder('entity');
-    if (options.range) {
-      let range = options.range;
-      if (typeof options.range === 'string') {
-        try {
-          range = JSON.parse(options.range);
-        } catch (err) {
-          throw new Error('Invalid range parameter');
-        }
-      }
-
-      if (!Array.isArray(range)) {
-        throw new Error('Range must be an array');
-      }
-
-      // range.forEach((rangeCondition) => {
-      //   if (validProperties.includes(rangeCondition.property)) {
-      //     const lower = rangeCondition.lower;
-      //     const upper = rangeCondition.upper;
-      //     if (rangeCondition.property === 'source') {
-      //       const regex = new RegExp(`[${lower}-${upper}]`);
-      //       qb.andWhere(`entity.${rangeCondition.property} ~ :regex`, {
-      //         regex: regex.source,
-      //       });
-      //     } else {
-      //       const lowerCondition = isNaN(Number(lower))
-      //         ? `entity.${rangeCondition.property} >= :lower`
-      //         : `entity.${rangeCondition.property} >= :lower::integer`;
-      //       const upperCondition = isNaN(Number(upper))
-      //         ? `entity.${rangeCondition.property} <= :upper`
-      //         : `entity.${rangeCondition.property} <= :upper::integer`;
-      //       qb.andWhere(lowerCondition, { lower: lower }).andWhere(
-      //         upperCondition,
-      //         { upper: upper },
-      //       );
-      //     }
-      //   }
-      // });
-      let isFirstCondition = true;
-range.forEach((rangeCondition) => {
-  if (validProperties.includes(rangeCondition.property)) {
-    const lower = rangeCondition.lower;
-    const upper = rangeCondition.upper;
-    if (rangeCondition.property === 'source') {
-      const regex = new RegExp(`[${lower}-${upper}]`);
-      isFirstCondition
-        ? qb.where(`entity.${rangeCondition.property} ~ :regex`, {
-            regex: regex.source,
-          })
-        : qb.orWhere(`entity.${rangeCondition.property} ~ :regex`, {
-            regex: regex.source,
-          });
-    } else {
-      const lowerCondition = isNaN(Number(lower))
-        ? `entity.${rangeCondition.property} >= :lower`
-        : `entity.${rangeCondition.property} >= :lower::integer`;
-      const upperCondition = isNaN(Number(upper))
-        ? `entity.${rangeCondition.property} <= :upper`
-        : `entity.${rangeCondition.property} <= :upper::integer`;
-      isFirstCondition
-        ? qb.where(lowerCondition, { lower: lower }).andWhere(
-            upperCondition,
-            { upper: upper },
-          )
-        : qb.orWhere(lowerCondition, { lower: lower }).andWhere(
-            upperCondition,
-            { upper: upper },
-          );
-    }
-    isFirstCondition = false;
-  }
-});
-    }
 
     const { skip, take } = options;
 
@@ -194,13 +117,15 @@ range.forEach((rangeCondition) => {
         }
       }
     }
-   
-    
+    let isFirstCondition = true;
     Object.entries(where).forEach(([key, value], index) => {
+      let condition: any;
+      let parameters: any;
       const metadata = this.getMetadata();
-      const relationNames = metadata.relations.map(relation => relation.propertyName);
+      const relationNames = metadata.relations.map(
+        (relation) => relation.propertyName,
+      );
       if (!relationNames.includes(key)) {
-        
         if (
           value instanceof Object &&
           '_value' in value &&
@@ -224,7 +149,6 @@ range.forEach((rangeCondition) => {
               ? qb.where(condition, parameters)
               : qb.andWhere(condition, parameters);
           }
-          
         } else {
           // Treat enum properties as strings
           const propertyType = this.entityRepository.metadata.columns.find(
@@ -251,7 +175,134 @@ range.forEach((rangeCondition) => {
           { value },
         );
       }
+      if (condition && parameters) {
+        isFirstCondition
+          ? qb.where(condition, parameters)
+          : qb.andWhere(condition, parameters);
+        isFirstCondition = false;
+      }
+      isFirstCondition = false;
     });
+
+    // if (options.range) {
+    //   let range = options.range;
+    //   if (typeof options.range === 'string') {
+    //     try {
+    //       range = JSON.parse(options.range);
+    //     } catch (err) {
+    //       throw new Error('Invalid range parameter');
+    //     }
+    //   }
+
+    //   if (!Array.isArray(range)) {
+    //     throw new Error('Range must be an array');
+    //   }
+
+    //   // range.forEach((rangeCondition) => {
+    //   //   if (validProperties.includes(rangeCondition.property)) {
+    //   //     const lower = rangeCondition.lower;
+    //   //     const upper = rangeCondition.upper;
+    //   //     if (rangeCondition.property === 'source') {
+    //   //       const regex = new RegExp(`[${lower}-${upper}]`);
+    //   //       qb.andWhere(`entity.${rangeCondition.property} ~ :regex`, {
+    //   //         regex: regex.source,
+    //   //       });
+    //   //     } else {
+    //   //       const lowerCondition = isNaN(Number(lower))
+    //   //         ? `entity.${rangeCondition.property} >= :lower`
+    //   //         : `entity.${rangeCondition.property} >= :lower::integer`;
+    //   //       const upperCondition = isNaN(Number(upper))
+    //   //         ? `entity.${rangeCondition.property} <= :upper`
+    //   //         : `entity.${rangeCondition.property} <= :upper::integer`;
+    //   //       qb.andWhere(lowerCondition, { lower: lower }).andWhere(
+    //   //         upperCondition,
+    //   //         { upper: upper },
+    //   //       );
+    //   //     }
+    //   //   }
+    //   // });
+
+    //   // Then, add the range conditions
+    //   range.forEach((rangeCondition) => {
+    //     if (validProperties.includes(rangeCondition.property)) {
+    //       const lower = rangeCondition.lower;
+    //       const upper = rangeCondition.upper;
+    //       if (rangeCondition.property === 'source') {
+    //         const regex = new RegExp(`[${lower}-${upper}]`);
+    //         isFirstCondition
+    //           ? qb.where(`entity.${rangeCondition.property} ~ :regex`, {
+    //               regex: regex.source,
+    //             })
+    //           : qb.andWhere(`entity.${rangeCondition.property} ~ :regex`, {
+    //               regex: regex.source,
+    //             });
+    //       } else {
+    //         const lowerCondition = isNaN(Number(lower))
+    //           ? `entity.${rangeCondition.property} >= :lower`
+    //           : `entity.${rangeCondition.property} >= :lower::integer`;
+    //         const upperCondition = isNaN(Number(upper))
+    //           ? `entity.${rangeCondition.property} <= :upper`
+    //           : `entity.${rangeCondition.property} <= :upper::integer`;
+    //         isFirstCondition
+    //           ? qb
+    //               .where(lowerCondition, { lower: lower })
+    //               .andWhere(upperCondition, { upper: upper })
+    //           : qb
+    //               .andWhere(lowerCondition, { lower: lower })
+    //               .andWhere(upperCondition, { upper: upper });
+    //       }
+    //       isFirstCondition = false;
+    //     }
+    //   });
+    // }
+
+    if (options.range) {
+      let range = options.range;
+      if (typeof options.range === 'string') {
+        try {
+          range = JSON.parse(options.range);
+        } catch (err) {
+          throw new Error('Invalid range parameter');
+        }
+      }
+    
+      if (!Array.isArray(range)) {
+        throw new Error('Range must be an array');
+      }
+      console.log(range)
+
+      range.forEach((rangeCondition) => {
+        if (validProperties.includes(rangeCondition.property)) {
+          const lower = rangeCondition.lower;
+          const upper = rangeCondition.upper;
+          if (rangeCondition.property === 'source') {
+            const regex = new RegExp(`[${lower}-${upper}]`);
+            isFirstCondition
+              ? qb.where(`entity.${rangeCondition.property} ~ :regex`, {
+                  regex: regex.source,
+                })
+              : qb.andWhere(`entity.${rangeCondition.property} ~ :regex`, {
+                  regex: regex.source,
+                });
+          } else {
+            const lowerCondition = isNaN(Number(lower))
+              ? `entity.${rangeCondition.property} >= :lower`
+              : `entity.${rangeCondition.property} >= :lower::integer`;
+            const upperCondition = isNaN(Number(upper))
+              ? `entity.${rangeCondition.property} <= :upper`
+              : `entity.${rangeCondition.property} <= :upper::integer`;
+            if (isFirstCondition) {
+              qb.where(lowerCondition, { lower: lower });
+              qb.andWhere(upperCondition, { upper: upper });
+            } else {
+              qb.andWhere(lowerCondition, { lower: lower });
+              qb.andWhere(upperCondition, { upper: upper });
+            }
+          }
+          isFirstCondition = true;
+        }
+      });
+    }
 
     // Apply ordering
     Object.entries(orderOption).forEach(([key, value]) => {
