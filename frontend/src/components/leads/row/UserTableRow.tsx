@@ -1,11 +1,12 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import React from "react";
+import { LeadsStatus } from "../Leads";
 
 interface TableRowProps {
   name: string;
   email: string;
   phone: string;
-  date: string;
+  status: LeadsStatus;
   country: string;
 }
 
@@ -13,7 +14,7 @@ const TableRow: React.FC<TableRowProps> = ({
   name,
   email,
   phone,
-  date,
+  status,
   country,
 }) => {
   const colors = ['bg-red-200', 'bg-blue-200', 'bg-green-200', 'bg-yellow-200', 'bg-purple-200']; // Add more colors as needed
@@ -26,7 +27,6 @@ const TableRow: React.FC<TableRowProps> = ({
     // Get a random color from the colors array
     const randomColorIndex = generateRandomIndex();
     const randomBackgroundColor = colors[randomColorIndex];
-
   return (
     <tr className="bg-white">
       <td className="px-4 py-3 text-sm font-bold text-gray-900 align-top lg:align-middle whitespace-nowrap">
@@ -88,7 +88,7 @@ const TableRow: React.FC<TableRowProps> = ({
                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
               />
             </svg>
-            {date}
+            {status}
           </div>
 
           <div className="flex items-center pt-3 space-x-4">
@@ -179,7 +179,7 @@ const TableRow: React.FC<TableRowProps> = ({
               d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
             />
           </svg>
-          {date}
+          {status}
         </div>
       </td>
 

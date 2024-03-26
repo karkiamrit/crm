@@ -111,10 +111,7 @@ export class LeadsService {
 
   async findAllLeadsOfAgent(
     options: ExtendedFindOptions<Leads>,
-
   ): Promise<Leads[]> {
-    
-  
     return this.leadsRepository.findAll(options);
   }
 

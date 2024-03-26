@@ -10,6 +10,8 @@ RUN which yarn || npm install -g yarn
 
 RUN yarn install
 
+RUN yarn add @nestjs/cli
+
 COPY . .
 
 RUN yarn run build

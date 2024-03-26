@@ -9,16 +9,13 @@ import {
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { FindManyOptions, Between } from 'typeorm';
 
+
 interface RangeCondition {
   property: string;
   lower: string;
   upper: string;
 }
-// export interface ExtendedFindOptions<T> extends FindManyOptions<T> {
-//   range?: RangeCondition[];
-//   query?: any;
-//   relations?: string[];
-// }
+
 export interface ExtendedFindOptions<T>
   extends Omit<FindManyOptions<T>, 'where'> {
   where?: FindManyOptions<T>['where'] | ((qb: SelectQueryBuilder<T>) => void);
@@ -27,12 +24,20 @@ export interface ExtendedFindOptions<T>
   relations?: string[];
 }
 
+
 export abstract class AbstractRepository<T extends AbstractEntity<T>> {
   protected abstract readonly logger: Logger;
   constructor(
     private readonly entityRepository: Repository<T>, //to get type information around our queries,
     private readonly entityManager: EntityManager, // use save entities in our relational database using instances of these entities
+    
   ) {}
+  
+  getMetadata() {
+    return this.entityRepository.metadata;
+  }
+
+  
 
   async create(entity: T): Promise<T> {
     return this.entityManager.save(entity);
@@ -120,29 +125,63 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
         throw new Error('Range must be an array');
       }
 
-      range.forEach((rangeCondition) => {
-        if (validProperties.includes(rangeCondition.property)) {
-          const lower = rangeCondition.lower;
-          const upper = rangeCondition.upper;
-          if (rangeCondition.property === 'source') {
-            const regex = new RegExp(`[${lower}-${upper}]`);
-            qb.andWhere(`entity.${rangeCondition.property} ~ :regex`, {
-              regex: regex.source,
-            });
-          } else {
-            const lowerCondition = isNaN(Number(lower))
-              ? `entity.${rangeCondition.property} >= :lower`
-              : `entity.${rangeCondition.property} >= :lower::integer`;
-            const upperCondition = isNaN(Number(upper))
-              ? `entity.${rangeCondition.property} <= :upper`
-              : `entity.${rangeCondition.property} <= :upper::integer`;
-            qb.andWhere(lowerCondition, { lower: lower }).andWhere(
-              upperCondition,
-              { upper: upper },
-            );
-          }
-        }
-      });
+      // range.forEach((rangeCondition) => {
+      //   if (validProperties.includes(rangeCondition.property)) {
+      //     const lower = rangeCondition.lower;
+      //     const upper = rangeCondition.upper;
+      //     if (rangeCondition.property === 'source') {
+      //       const regex = new RegExp(`[${lower}-${upper}]`);
+      //       qb.andWhere(`entity.${rangeCondition.property} ~ :regex`, {
+      //         regex: regex.source,
+      //       });
+      //     } else {
+      //       const lowerCondition = isNaN(Number(lower))
+      //         ? `entity.${rangeCondition.property} >= :lower`
+      //         : `entity.${rangeCondition.property} >= :lower::integer`;
+      //       const upperCondition = isNaN(Number(upper))
+      //         ? `entity.${rangeCondition.property} <= :upper`
+      //         : `entity.${rangeCondition.property} <= :upper::integer`;
+      //       qb.andWhere(lowerCondition, { lower: lower }).andWhere(
+      //         upperCondition,
+      //         { upper: upper },
+      //       );
+      //     }
+      //   }
+      // });
+      let isFirstCondition = true;
+range.forEach((rangeCondition) => {
+  if (validProperties.includes(rangeCondition.property)) {
+    const lower = rangeCondition.lower;
+    const upper = rangeCondition.upper;
+    if (rangeCondition.property === 'source') {
+      const regex = new RegExp(`[${lower}-${upper}]`);
+      isFirstCondition
+        ? qb.where(`entity.${rangeCondition.property} ~ :regex`, {
+            regex: regex.source,
+          })
+        : qb.orWhere(`entity.${rangeCondition.property} ~ :regex`, {
+            regex: regex.source,
+          });
+    } else {
+      const lowerCondition = isNaN(Number(lower))
+        ? `entity.${rangeCondition.property} >= :lower`
+        : `entity.${rangeCondition.property} >= :lower::integer`;
+      const upperCondition = isNaN(Number(upper))
+        ? `entity.${rangeCondition.property} <= :upper`
+        : `entity.${rangeCondition.property} <= :upper::integer`;
+      isFirstCondition
+        ? qb.where(lowerCondition, { lower: lower }).andWhere(
+            upperCondition,
+            { upper: upper },
+          )
+        : qb.orWhere(lowerCondition, { lower: lower }).andWhere(
+            upperCondition,
+            { upper: upper },
+          );
+    }
+    isFirstCondition = false;
+  }
+});
     }
 
     const { skip, take } = options;
@@ -155,49 +194,13 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
         }
       }
     }
-
-    //   Object.entries(where).forEach(([key, value]) => {
-    //     if (validProperties.includes(key)) {
-    //         if (
-    //             value instanceof Object &&
-    //             '_value' in value &&
-    //             Array.isArray(value._value) &&
-    //             value._value.length === 2
-    //         ) {
-    //             const lower = value._value[0];
-    //             const upper = value._value[1];
-    //             if (isNaN(Number(lower)) || isNaN(Number(upper))) {
-    //                 // If lower or upper is not a number, treat them as strings
-    //                 qb.andWhere(`entity.${key} >= :lower`, { lower: `'${lower}'` })
-    //                     .andWhere(`entity.${key} <= :upper`, { upper: `'${upper}'` });
-    //             } else {
-    //                 // If lower and upper are both numbers, treat them as numbers
-    //                 qb.andWhere(`entity.${key} BETWEEN :lower AND :upper`, {
-    //                     lower: Number(lower),
-    //                     upper: Number(upper),
-    //                 });
-    //             }
-    //         } else {
-    //             // Treat enum properties as strings
-    //             const propertyType = this.entityRepository.metadata.columns.find(column => column.propertyName === key)?.type;
-    //             if (propertyType === 'enum') {
-    //                 qb.andWhere(`entity.${key} = :value`, { value: value.toString() });
-    //             }
-    //             else {
-    //                 qb.andWhere(`entity.${key} = :value`, { value });
-    //             }
-    //         }
-    //     } else {
-    //         // If the property is not a valid property, it might be a relation
-    //         qb.leftJoinAndSelect(`entity.${key}`, key).andWhere(
-    //             `${key}.id = :value`,
-    //             { value },
-    //         );
-    //     }
-    // });
-
+   
+    
     Object.entries(where).forEach(([key, value], index) => {
-      if (validProperties.includes(key)) {
+      const metadata = this.getMetadata();
+      const relationNames = metadata.relations.map(relation => relation.propertyName);
+      if (!relationNames.includes(key)) {
+        
         if (
           value instanceof Object &&
           '_value' in value &&
@@ -221,6 +224,7 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
               ? qb.where(condition, parameters)
               : qb.andWhere(condition, parameters);
           }
+          
         } else {
           // Treat enum properties as strings
           const propertyType = this.entityRepository.metadata.columns.find(

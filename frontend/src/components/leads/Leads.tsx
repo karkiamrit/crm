@@ -10,136 +10,267 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import useAuth from "@/app/hooks/useAuth";
+
+export enum LeadsStatus {
+  INITIAL = "INITIAL",
+  PENDING = "PENDING",
+  CONFIRMED = "CONFIRMED",
+  REJECTED = "REJECTED",
+  COMPLETED = "COMPLETED",
+}
 interface Lead {
   name: string;
   email: string;
   phone: string;
-  createdAt: string;
+  status: LeadsStatus;
   address: string;
 }
 
-const titles = ["Name", "Email", "Phone", "Created At", "Address", "Actions"];
+interface Range {
+  property: string;
+  lower: string;
+  upper: string;
+}
+const titles = ["Name", "Email", "Phone", "Status", "Address", "Actions"];
 
 const LeadsPage: React.FC = () => {
+  const { userData, loading } = useAuth();
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [filter, setFilter] = useState<{ [key: string]: string }>({});
-  const [appliedFilter, setAppliedFilter] = useState<{ [key: string]: string }>({});
+  const [filter, setFilter] = useState<{ [property: string]: Range }>({});
+  const [tempFilter, setTempFilter] = useState<Range | null>(null);
+  const [hasMoreLeads, setHasMoreLeads] = useState(true);
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
-  const fetchLeads = async () => {
+  const fetchLeadsFromApi = async (url: string, appliedFilter: Range[]) => {
+    const rangeFields = ['name', 'email', 'address']; // Add other range fields here
+    const range = appliedFilter
+      .filter(f => rangeFields.includes(f.property))
+      .map(
+        (f) =>
+          `{"property":"${f.property}","lower":"${f.lower}","upper":"${f.upper}"}`
+      )
+      .join(",");
+    const where = appliedFilter
+      .filter(f => !rangeFields.includes(f.property))
+      .reduce((acc, f) => ({ ...acc, [f.property]: f.lower }), {});
+    console.log('Applied Filter:', range); // Log the applied filter
+    console.log('where',where);
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${LocalStore.getAccessToken()}`,
+      },
+      params: {
+        range: `[${range}]`,
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        ...where,
+      },
+    });
+  
+
+    const data = response.data;
+    if (data.length > pageSize) {
+      setHasMoreLeads(true);
+      data.pop(); // Remove the extra lead
+    } else {
+      setHasMoreLeads(false);
+    }
+    return Array.isArray(data) ? data : [];
+  };
+
+  const fetchLeads = async (appliedFilter: Range[]) => {
     try {
-      const response = await axios.get("http://localhost:8006/leads/myleads", {
-        headers: {
-          Authorization: `Bearer ${LocalStore.getAccessToken()}`,
+      const hasAgentRoleWithoutAdmin = userData?.roles.reduce(
+        (acc, role) => {
+          if (role.name === "Admin")
+            return { isAdmin: true, isAgent: acc.isAgent };
+          if (role.name === "Agent")
+            return { isAdmin: acc.isAdmin, isAgent: true };
+          return acc;
         },
-        params: appliedFilter,
-      });
-      const data = response.data;
-      return Array.isArray(data) ? data : [];
+        { isAdmin: false, isAgent: false }
+      );
+      if (
+        hasAgentRoleWithoutAdmin?.isAgent &&
+        !hasAgentRoleWithoutAdmin?.isAdmin
+      ) {
+        return fetchLeadsFromApi(
+          "http://localhost:8006/leads/myleads",
+          appliedFilter
+        );
+      } else {
+        console.log(appliedFilter)
+        return fetchLeadsFromApi("http://localhost:8006/leads", appliedFilter);
+      }
     } catch (error) {
       console.error("Error fetching leads:", error);
       return [];
     }
   };
 
-  // Add a function to handle the filter change
-  const handleFilterChange = (key: string, value: string) => {
-    setFilter((prevFilter) => ({
-      ...prevFilter,
-      [key]: value,
-    }));
+  const handleFilterChange = (range: Range) => {
+    setTempFilter(range);
   };
 
   const applyFilter = () => {
-    setAppliedFilter({ ...filter });
+    if (tempFilter) {
+      setFilter((prevFilter) => ({
+        ...prevFilter,
+        [tempFilter.property]: tempFilter,
+      }));
+      setTempFilter(null);
+    }
   };
 
-  // Add a function to clear the filter
-  const clearFilter = () => {
-    setFilter({});
+  const clearFilter = (property: string) => {
+    setFilter((prevFilter) => {
+      const newFilter = { ...prevFilter };
+      delete newFilter[property];
+      return newFilter;
+    });
   };
 
   useEffect(() => {
-    fetchLeads().then((fetchedLeads) => {
-      setLeads(fetchedLeads);
-    });
-  }, [appliedFilter]);
+    const newAppliedFilter = Object.values(filter).map((filter) => ({
+      ...filter,
+    }));
+    if (loading === false) {
+      fetchLeads(newAppliedFilter).then((newLeads) => {
+        setLeads(newLeads);
+      });
+    }
+  }, [filter, page, loading]); // Only re-run the effect if filter changes
+
+  useEffect(() => {
+    // This will run every time `leads` changes, causing the component to re-render
+  }, [leads]);
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-      {leads.length !== 0 && (
-        <div className="py-8">
-          <div className="overflow-x-auto">
-            <div className="inline-block min-w-full overflow-hidden align-middle border border-gray-200 shadow sm:rounded-lg">
-              <table className="min-w-full">
-                <thead>
-                  <tr>
-                    {titles.map((title, index) => (
-                      <th
-                        key={index}
-                        className={cn({
-                          "px-4 py-7 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider gap-3":
-                            true,
-                          "text-center justify-center items-center":
-                            title === "Actions",
-                        })}
-                      >
-                        <div className="flex justify-between gap-8">
-                          {title}
+      <div className="py-8">
+        <div className="overflow-x-auto">
+          <div className="inline-block min-w-full overflow-hidden align-middle border border-gray-200 shadow sm:rounded-lg">
+            <table className="min-w-full">
+              <thead>
+                <tr>
+                  {titles.map((title, index) => (
+                    <th
+                      key={index}
+                      className={cn({
+                        "px-4 py-7 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider gap-3":
+                          true,
+                        "text-center justify-center items-center":
+                          title === "Actions",
+                      })}
+                    >
+                      <div className="flex justify-between gap-8">
+                        {title}
 
-                          {title !== "Actions" && (
-                            <Popover>
-                              <PopoverTrigger>
-                                <Icon
-                                  type="list_filter"
-                                  width={20}
-                                  height={15}
-                                />
-                              </PopoverTrigger>
+                        {title !== "Actions" && (
+                          <Popover>
+                            <PopoverTrigger>
+                              <Icon type="list_filter" width={20} height={15} />
+                            </PopoverTrigger>
 
-                              <PopoverContent className="w-52">
-                                <div className="flex flex-col items-center gap-4">
+                            <PopoverContent className="w-52">
+                              <div className="flex flex-col items-center gap-4">
+                                {title !== "Status" && (
                                   <Input
                                     id="width"
                                     placeholder={`Search ${title}`}
                                     className="col-span-2 h-8"
-                                    onChange={(e) =>
-                                      handleFilterChange(
-                                        title.toLowerCase(),
-                                        e.target.value
-                                      )
-                                    }
+                                    onChange={(e) => {
+                                      handleFilterChange({
+                                        property: title.toLowerCase(),
+                                        lower: e.target.value,
+                                        upper: String.fromCharCode(
+                                          e.target.value.charCodeAt(0) + 1
+                                        ),
+                                      });
+                                    }}
                                   />
-                                  <div className="flex flex-row justify-center items-center gap-2">
-                                    <Button className="flex flex-row gap-2" onClick={applyFilter}>
-                                      Filter
-                                      <Icon
-                                        type="filter"
-                                        width={20}
-                                        height={15}
-                                        
-                                      />
-                                    </Button>
-                                    <Button
-                                      variant={"secondary"}
-                                      className="border-primary border text-primary"
-                                      onClick={clearFilter}
-                                    >
-                                      Clear
-                                    </Button>
-                                  </div>
+                                )}
+                                {title === "Status" && (
+                                  <Select
+                                    onValueChange={(selectedValue) => {
+                                      handleFilterChange({
+                                        property: title.toLowerCase(),
+                                        lower: selectedValue,
+                                        upper: selectedValue
+                                      });
+                                    }}
+                                  >
+                                    <SelectTrigger className="w-[180px]">
+                                      <SelectValue placeholder="Status" />
+                                    </SelectTrigger>
+
+                                    <SelectContent>
+                                      {Object.values(LeadsStatus).map(
+                                        (status) => (
+                                          <SelectItem
+                                            key={status}
+                                            value={status}
+                                          >
+                                            {status}
+                                          </SelectItem>
+                                        )
+                                      )}
+                                    </SelectContent>
+                                  </Select>
+                                )}
+                                <div className="flex flex-row justify-center items-center gap-2">
+                                  <Button
+                                    className="flex flex-row gap-2"
+                                    onClick={applyFilter}
+                                  >
+                                    Filter
+                                    <Icon
+                                      type="filter"
+                                      width={20}
+                                      height={15}
+                                    />
+                                  </Button>
+                                  <Button
+                                    variant={"secondary"}
+                                    className="border-primary border text-primary"
+                                    onClick={() =>
+                                      clearFilter(title.toLowerCase())
+                                    }
+                                  >
+                                    Clear
+                                  </Button>
                                 </div>
-                              </PopoverContent>
-                            </Popover>
-                          )}
-                        </div>
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
+                              </div>
+                            </PopoverContent>
+                          </Popover>
+                        )}
+                      </div>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              {leads.length !== 0 && (
                 <tbody className="bg-white divide-y divide-gray-200">
                   {leads &&
                     leads.map((lead, index) => (
@@ -148,22 +279,41 @@ const LeadsPage: React.FC = () => {
                         name={lead.name}
                         email={lead.email}
                         phone={lead.phone}
-                        date={new Date(lead.createdAt).toLocaleString()}
+                        status={lead.status}
                         country={lead.address}
                       />
                     ))}
                 </tbody>
-              </table>
-            </div>
+              )}
+            </table>
           </div>
+          <Pagination className="mt-10">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={() => setPage(page > 1 ? page - 1 : 1)}
+                />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink href="#" onClick={() => setPage(1)}>
+                  1
+                </PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={() => {
+                    if (hasMoreLeads) {
+                      setPage(page + 1);
+                    }
+                  }}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </div>
-      )}
-      {leads.length === 0 && (
-        <div className="flex items-center w-full lg:[900px] justify-center  h-[70vh] text-center text-primary text-4xl">
-          You don't have any leads till now. Please Add Some Leads Before
-          Viewing.
-        </div>
-      )}
+      </div>
     </div>
   );
 };

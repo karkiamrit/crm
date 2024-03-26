@@ -111,10 +111,10 @@ export class LeadsController {
     @CurrentUser() user: User,
   ): Promise<Leads[]> {
     const agent = await this.agentService.getAgentByUserId(user.id);
-    if(agent){
+    if (agent) {
       query.agent = agent.id;
     }
-    return this.leadsService.findAllLeadsOfAgent(query );
+    return this.leadsService.findAllLeadsOfAgent(query);
   }
 
   @Get()

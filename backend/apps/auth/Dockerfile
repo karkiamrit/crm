@@ -6,9 +6,13 @@ COPY package.json ./
 
 COPY yarn.lock ./
 
+
 RUN which yarn || npm install -g yarn
 
 RUN yarn install
+
+
+RUN yarn add @nestjs/cli
 
 COPY . .
 

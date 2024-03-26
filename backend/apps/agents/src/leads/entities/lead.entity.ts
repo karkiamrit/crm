@@ -5,7 +5,7 @@ import { Product } from "../products/products.entity";
 import { Service } from "../services/services.entity";
 import { Agent } from "../../entities/agent.entity";
 
-export enum     LeadsStatus{
+export enum LeadsStatus{
     INITIAL= 'INITIAL',
     PENDING= 'PENDING',
     CONFIRMED= 'CONFIRMED',
