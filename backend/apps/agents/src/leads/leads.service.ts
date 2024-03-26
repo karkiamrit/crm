@@ -41,7 +41,7 @@ export class LeadsService {
 
     const agent = await this.agentService.getAgentByUserId(user.id);
     if (agent) {
-      lead.agent = agent;
+      lead.agentId = agent.id;
     }
 
     await this.leadsRepository.create(lead);

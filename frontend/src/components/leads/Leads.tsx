@@ -29,6 +29,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+
+
 import useAuth from "@/app/hooks/useAuth";
 
 export enum LeadsStatus {
@@ -44,6 +46,7 @@ interface Lead {
   phone: string;
   status: LeadsStatus;
   address: string;
+  id: number;
 }
 
 interface Range {
@@ -57,37 +60,39 @@ const LeadsPage: React.FC = () => {
   const { userData, loading } = useAuth();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [filter, setFilter] = useState<{ [property: string]: Range }>({});
+  const [filterValues, setFilterValues] = useState<{
+    [property: string]: string;
+  }>({});
   const [tempFilter, setTempFilter] = useState<Range | null>(null);
   const [hasMoreLeads, setHasMoreLeads] = useState(true);
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
   const fetchLeadsFromApi = async (url: string, appliedFilter: Range[]) => {
-    const rangeFields = ['name', 'email', 'address']; // Add other range fields here
+    const rangeFields = ["name", "email", "address"]; // Add other range fields here
     const range = appliedFilter
-      .filter(f => rangeFields.includes(f.property))
+      .filter((f) => rangeFields.includes(f.property))
       .map(
         (f) =>
           `{"property":"${f.property}","lower":"${f.lower}","upper":"${f.upper}"}`
       )
       .join(",");
     const where = appliedFilter
-      .filter(f => !rangeFields.includes(f.property))
+      .filter((f) => !rangeFields.includes(f.property))
       .reduce((acc, f) => ({ ...acc, [f.property]: f.lower }), {});
-    console.log('Applied Filter:', range); // Log the applied filter
-    console.log('where',where);
+    console.log("Applied Filter:", range); // Log the applied filter
+    console.log("where", where);
     const response = await axios.get(url, {
       headers: {
         Authorization: `Bearer ${LocalStore.getAccessToken()}`,
       },
       params: {
+        ...where,
         range: `[${range}]`,
         skip: (page - 1) * pageSize,
         take: pageSize,
-        ...where,
       },
     });
-  
 
     const data = response.data;
     if (data.length > pageSize) {
@@ -104,7 +109,7 @@ const LeadsPage: React.FC = () => {
       const hasAgentRoleWithoutAdmin = userData?.roles.reduce(
         (acc, role) => {
           if (role.name === "Admin")
-            return { isAdmin: false, isAgent: acc.isAgent };
+            return { isAdmin: true, isAgent: acc.isAgent };
           if (role.name === "Agent")
             return { isAdmin: acc.isAdmin, isAgent: true };
           return acc;
@@ -120,7 +125,6 @@ const LeadsPage: React.FC = () => {
           appliedFilter
         );
       } else {
-        console.log(appliedFilter)
         return fetchLeadsFromApi("http://localhost:8006/leads", appliedFilter);
       }
     } catch (error) {
@@ -200,6 +204,16 @@ const LeadsPage: React.FC = () => {
                                     id="width"
                                     placeholder={`Search ${title}`}
                                     className="col-span-2 h-8"
+                                    value={
+                                      filterValues[title.toLowerCase()] || ""
+                                    }
+                                    onFocus={(event) => {
+                                      // This will prevent the input from selecting all text on focus
+                                      setTimeout(() => {
+                                        const len = event.target.value.length;
+                                        event.target.setSelectionRange(len, len);
+                                      }, 0);
+                                    }}
                                     onChange={(e) => {
                                       handleFilterChange({
                                         property: title.toLowerCase(),
@@ -208,6 +222,15 @@ const LeadsPage: React.FC = () => {
                                           e.target.value.charCodeAt(0) + 1
                                         ),
                                       });
+                                      setFilterValues((prev) => ({
+                                        ...prev,
+                                        [title.toLowerCase()]: e.target.value,
+                                      }));
+                                    }}
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter") {
+                                        applyFilter();
+                                      }
                                     }}
                                   />
                                 )}
@@ -217,9 +240,16 @@ const LeadsPage: React.FC = () => {
                                       handleFilterChange({
                                         property: title.toLowerCase(),
                                         lower: selectedValue,
-                                        upper: selectedValue
+                                        upper: selectedValue,
                                       });
+                                      setFilterValues((prev) => ({
+                                        ...prev,
+                                        [title.toLowerCase()]: selectedValue,
+                                      }));
                                     }}
+                                    value={
+                                      filterValues[title.toLowerCase()] || ""
+                                    }
                                   >
                                     <SelectTrigger className="w-[180px]">
                                       <SelectValue placeholder="Status" />
@@ -254,9 +284,14 @@ const LeadsPage: React.FC = () => {
                                   <Button
                                     variant={"secondary"}
                                     className="border-primary border text-primary"
-                                    onClick={() =>
-                                      clearFilter(title.toLowerCase())
-                                    }
+                                    onClick={() => {
+                                      clearFilter(title.toLowerCase());
+                                      setFilterValues((prev) => {
+                                        const newValues = { ...prev };
+                                        delete newValues[title.toLowerCase()];
+                                        return newValues;
+                                      });
+                                    }}
                                   >
                                     Clear
                                   </Button>
@@ -281,6 +316,7 @@ const LeadsPage: React.FC = () => {
                         phone={lead.phone}
                         status={lead.status}
                         country={lead.address}
+                        id={lead.id}
                       />
                     ))}
                 </tbody>

@@ -60,8 +60,7 @@ export class Leads extends AbstractEntity<Leads>{
     @Column('simple-array',{nullable:true})
     documents: string[];
 
-    @ManyToOne(() => Agent, agent => agent.leads)
-    @JoinColumn({ name: 'agentId' }) // This column will be added to the Lead table
-    agent: Agent;
+    @Column({nullable:true})
+    agentId: number; 
 
 }

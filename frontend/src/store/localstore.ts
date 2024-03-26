@@ -55,5 +55,15 @@ export class LocalStore {
   static setVerticalNavBarState(state: string) {
     this.set('state', state)
   }
+  
+  static getFilters() {
+    return this.getJson('filters') || {};
+  }
+
+  static setFilters(filters: { [property: string]: string }) {
+    this.set('filters', JSON.stringify(filters));
+  }
+
+
 
 }

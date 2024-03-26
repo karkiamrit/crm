@@ -25,7 +25,7 @@ export class Agent extends AbstractEntity<Agent>{
     @Column()
     userId: number
 
-    @OneToMany(() => Leads, lead => lead.agent, { eager: true })
+    @OneToMany(() => Leads, lead => lead.agentId)
     leads: Leads[];
   
   

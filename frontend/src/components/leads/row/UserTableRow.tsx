@@ -1,6 +1,9 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import React from "react";
 import { LeadsStatus } from "../Leads";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import LeadSheet from "../sheet/LeadSheet";
 
 interface TableRowProps {
   name: string;
@@ -8,6 +11,7 @@ interface TableRowProps {
   phone: string;
   status: LeadsStatus;
   country: string;
+  id: number;
 }
 
 const TableRow: React.FC<TableRowProps> = ({
@@ -16,24 +20,37 @@ const TableRow: React.FC<TableRowProps> = ({
   phone,
   status,
   country,
+  id,
 }) => {
-  const colors = ['bg-red-200', 'bg-blue-200', 'bg-green-200', 'bg-yellow-200', 'bg-purple-200']; // Add more colors as needed
+  const colors = [
+    "bg-red-200",
+    "bg-blue-200",
+    "bg-green-200",
+    "bg-yellow-200",
+    "bg-purple-200",
+  ]; // Add more colors as needed
 
-    // Function to generate a random index
-    const generateRandomIndex = () => {
-        return Math.floor(Math.random() * colors.length);
-    };
+  // Function to generate a random index
+  const generateRandomIndex = () => {
+    return Math.floor(Math.random() * colors.length);
+  };
 
-    // Get a random color from the colors array
-    const randomColorIndex = generateRandomIndex();
-    const randomBackgroundColor = colors[randomColorIndex];
+  // Get a random color from the colors array
+  const randomColorIndex = generateRandomIndex();
+  const randomBackgroundColor = colors[randomColorIndex];
   return (
     <tr className="bg-white">
       <td className="px-4 py-3 text-sm font-bold text-gray-900 align-top lg:align-middle whitespace-nowrap">
         <div className="flex items-center gap-2">
-         <Avatar>
-          <AvatarFallback className={randomBackgroundColor} >CN</AvatarFallback>
-         </Avatar>
+          <Avatar>
+            <AvatarFallback className={randomBackgroundColor}>
+              {`${name.split(" ")[0][0].toUpperCase()}${
+                name.split(" ")[1]
+                  ? name.split(" ")[1][0].toUpperCase()
+                  : name.split(" ")[0][0].toUpperCase()
+              }`}
+            </AvatarFallback>
+          </Avatar>
           {name}
         </div>
         <div className="mt-1 space-y-2 font-medium pl-11 lg:hidden">
@@ -189,16 +206,18 @@ const TableRow: React.FC<TableRowProps> = ({
 
       <td className="hidden px-4 py-4 lg:table-cell whitespace-nowrap">
         <div className="flex items-center space-x-4">
-          <button
-            type="button"
-            className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-200 bg-gray-100 border border-gray-300 rounded-md shadow-sm hover:bg-indigo-600 focus:outline-none hover:text-white hover:border-indigo-600 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Edit Details
-          </button>
+          <Sheet>
+            <SheetTrigger className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-200 bg-gray-100 border border-gray-300 rounded-md shadow-sm">
+              Edit Details
+            </SheetTrigger>
+            <SheetContent>
+              <LeadSheet id={id} />
+            </SheetContent>
+          </Sheet>
 
-          <button
-            type="button"
-            className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-200 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          <Button
+            variant="ghost"
+            className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-200 bg-white border border-gray-300 rounded-md shadow-sm"
           >
             <svg
               className="w-5 h-5 mr-2 -ml-1"
@@ -215,7 +234,7 @@ const TableRow: React.FC<TableRowProps> = ({
               />
             </svg>
             Remove
-          </button>
+          </Button>
         </div>
       </td>
     </tr>

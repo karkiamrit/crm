@@ -112,7 +112,7 @@ export class LeadsController {
   ): Promise<Leads[]> {
     const agent = await this.agentService.getAgentByUserId(user.id);
     if (agent) {
-      query.agent = agent.id;
+      query.agentId = agent.id;
     }
     return this.leadsService.findAllLeadsOfAgent(query);
   }

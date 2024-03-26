@@ -119,125 +119,125 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
     }
     let isFirstCondition = true;
 
-    Object.entries(where).forEach(([key, value], index) => {
-      const metadata = this.getMetadata();
-      const relationNames = metadata.relations.map(
-        (relation) => relation.propertyName,
-      );
-      const propertyType = this.entityRepository.metadata.columns.find(
-        (column) => column.propertyName === key,
-      )?.type;
-    
-      if (relationNames.includes(key)) {
-        // If the property is a relation
-        qb.leftJoinAndSelect(`entity.${key}`, key).andWhere(
-          `${key}.id = :value`,
-          { value },
-        );
-      } else if (propertyType === 'enum') {
-        // If the property is an enum
-        const condition = `entity.${key} = :value`;
-        const parameters = { value: value.toString() };
-        index === 0
-          ? qb.where(condition, parameters)
-          : qb.andWhere(condition, parameters);
-      } else if (
-        value instanceof Object &&
-        '_value' in value &&
-        Array.isArray(value._value) &&
-        value._value.length === 2
-      ) {
-        // If the property is a range
-        const lower = value._value[0];
-        const upper = value._value[1];
-        if (isNaN(Number(lower)) || isNaN(Number(upper))) {
-          // If lower or upper is not a number, treat them as strings
-          const condition = `entity.${key} BETWEEN :lower AND :upper`;
-          const parameters = { lower: `'${lower}'`, upper: `'${upper}'` };
-          index === 0
-            ? qb.where(condition, parameters)
-            : qb.andWhere(condition, parameters);
-        } else {
-          // If lower and upper are both numbers, treat them as numbers
-          const condition = `entity.${key} BETWEEN :lower AND :upper`;
-          const parameters = { lower: Number(lower), upper: Number(upper) };
-          index === 0
-            ? qb.where(condition, parameters)
-            : qb.andWhere(condition, parameters);
-        }
-      } else {
-        // If the property is a simple value
-        const condition = `entity.${key} = :${key}`;
-        const parameters = { [key]: value };
-        index === 0
-          ? qb.where(condition, parameters)
-          : qb.andWhere(condition, parameters);
-      }
-    });
     // Object.entries(where).forEach(([key, value], index) => {
     //   const metadata = this.getMetadata();
     //   const relationNames = metadata.relations.map(
     //     (relation) => relation.propertyName,
     //   );
-    //   if (!relationNames.includes(key)) {
-    //     if (
-    //       value instanceof Object &&
-    //       '_value' in value &&
-    //       Array.isArray(value._value) &&
-    //       value._value.length === 2
-    //     ) {
-    //       const lower = value._value[0];
-    //       const upper = value._value[1];
-    //       if (isNaN(Number(lower)) || isNaN(Number(upper))) {
-    //         // If lower or upper is not a number, treat them as strings
-    //         const condition = `entity.${key} BETWEEN :lower AND :upper`;
-    //         const parameters = { lower: `'${lower}'`, upper: `'${upper}'` };
-    //         index === 0
-    //           ? qb.where(condition, parameters)
-    //           : qb.andWhere(condition, parameters);
-    //       } else {
-    //         // If lower and upper are both numbers, treat them as numbers
-    //         const condition = `entity.${key} BETWEEN :lower AND :upper`;
-    //         const parameters = { lower: Number(lower), upper: Number(upper) };
-    //         index === 0
-    //           ? qb.where(condition, parameters)
-    //           : qb.andWhere(condition, parameters);
-    //       }
-    //     } else {
-    //       // Treat enum properties as strings
-    //       const propertyType = this.entityRepository.metadata.columns.find(
-    //         (column) => column.propertyName === key,
-    //       )?.type;
-    //       if (propertyType === 'enum') {
-    //          const condition = `entity.${key} = :value`;
-    //          const parameters = { value: value.toString() };
-    //         index === 0
-    //           ? qb.where(condition, parameters)
-    //           : qb.andWhere(condition, parameters);
-    //       } else {
-    //         const condition = `entity.${key} = :${key}`;
-    //         const parameters = { [key]: value };
-    //         index === 0
-    //           ? qb.where(condition, parameters)
-    //           : qb.andWhere(condition, parameters);
-    //       }
-    //     }
-    //   } else {
-    //     // If the property is not a valid property, it might be a relation
+    //   const propertyType = this.entityRepository.metadata.columns.find(
+    //     (column) => column.propertyName === key,
+    //   )?.type;
+
+    //   if (relationNames.includes(key)) {
+    //     // If the property is a relation
     //     qb.leftJoinAndSelect(`entity.${key}`, key).andWhere(
     //       `${key}.id = :value`,
     //       { value },
     //     );
+    //   } else if (propertyType === 'enum') {
+    //     // If the property is an enum
+    //     const condition = `entity.${key} = :value`;
+    //     const parameters = { value: value.toString() };
+    //     index === 0
+    //       ? qb.where(condition, parameters)
+    //       : qb.andWhere(condition, parameters);
+    //   } else if (
+    //     value instanceof Object &&
+    //     '_value' in value &&
+    //     Array.isArray(value._value) &&
+    //     value._value.length === 2
+    //   ) {
+    //     // If the property is a range
+    //     const lower = value._value[0];
+    //     const upper = value._value[1];
+    //     if (isNaN(Number(lower)) || isNaN(Number(upper))) {
+    //       // If lower or upper is not a number, treat them as strings
+    //       const condition = `entity.${key} BETWEEN :lower AND :upper`;
+    //       const parameters = { lower: `'${lower}'`, upper: `'${upper}'` };
+    //       index === 0
+    //         ? qb.where(condition, parameters)
+    //         : qb.andWhere(condition, parameters);
+    //     } else {
+    //       // If lower and upper are both numbers, treat them as numbers
+    //       const condition = `entity.${key} BETWEEN :lower AND :upper`;
+    //       const parameters = { lower: Number(lower), upper: Number(upper) };
+    //       index === 0
+    //         ? qb.where(condition, parameters)
+    //         : qb.andWhere(condition, parameters);
+    //     }
+    //   } else {
+    //     // If the property is a simple value
+    //     const condition = `entity.${key} = :${key}`;
+    //     const parameters = { [key]: value };
+    //     index === 0
+    //       ? qb.where(condition, parameters)
+    //       : qb.andWhere(condition, parameters);
     //   }
-    //   // if (condition && parameters) {
-    //   //   isFirstCondition
-    //   //     ? qb.where(condition, parameters)
-    //   //     : qb.andWhere(condition, parameters);
-    //   //   isFirstCondition = false;
-    //   // }
-
-    //   isFirstCondition = false;
     // });
+    Object.entries(where).forEach(([key, value], index) => {
+      const metadata = this.getMetadata();
+      const relationNames = metadata.relations.map(
+        (relation) => relation.propertyName,
+      );
+      if (!relationNames.includes(key)) {
+        if (
+          value instanceof Object &&
+          '_value' in value &&
+          Array.isArray(value._value) &&
+          value._value.length === 2
+        ) {
+          const lower = value._value[0];
+          const upper = value._value[1];
+          if (isNaN(Number(lower)) || isNaN(Number(upper))) {
+            // If lower or upper is not a number, treat them as strings
+            const condition = `entity.${key} BETWEEN :lower AND :upper`;
+            const parameters = { lower: `'${lower}'`, upper: `'${upper}'` };
+            index === 0
+              ? qb.where(condition, parameters)
+              : qb.andWhere(condition, parameters);
+          } else {
+            // If lower and upper are both numbers, treat them as numbers
+            const condition = `entity.${key} BETWEEN :lower AND :upper`;
+            const parameters = { lower: Number(lower), upper: Number(upper) };
+            index === 0
+              ? qb.where(condition, parameters)
+              : qb.andWhere(condition, parameters);
+          }
+        } else {
+          // Treat enum properties as strings
+          const propertyType = this.entityRepository.metadata.columns.find(
+            (column) => column.propertyName === key,
+          )?.type;
+          if (propertyType === 'enum') {
+             const condition = `entity.${key} = :value`;
+             const parameters = { value: value.toString() };
+            index === 0
+              ? qb.where(condition, parameters)
+              : qb.andWhere(condition, parameters);
+          } else {
+            const condition = `entity.${key} = :${key}`;
+            const parameters = { [key]: value };
+            index === 0
+              ? qb.where(condition, parameters)
+              : qb.andWhere(condition, parameters);
+          }
+        }
+      } else {
+        // If the property is not a valid property, it might be a relation
+        qb.leftJoinAndSelect(`entity.${key}`, key).andWhere(
+          `${key}.id = :value`,
+          { value },
+        );
+      }
+      // if (condition && parameters) {
+      //   isFirstCondition
+      //     ? qb.where(condition, parameters)
+      //     : qb.andWhere(condition, parameters);
+      //   isFirstCondition = false;
+      // }
+
+      isFirstCondition = false;
+    });
 
     // if (options.range) {
     //   let range = options.range;
@@ -320,11 +320,11 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
           throw new Error('Invalid range parameter');
         }
       }
-    
+
       if (!Array.isArray(range)) {
         throw new Error('Range must be an array');
       }
-      console.log(range)
+      console.log(range);
 
       range.forEach((rangeCondition) => {
         if (validProperties.includes(rangeCondition.property)) {
