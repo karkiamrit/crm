@@ -104,7 +104,7 @@ const LeadsPage: React.FC = () => {
       const hasAgentRoleWithoutAdmin = userData?.roles.reduce(
         (acc, role) => {
           if (role.name === "Admin")
-            return { isAdmin: true, isAgent: acc.isAgent };
+            return { isAdmin: false, isAgent: acc.isAgent };
           if (role.name === "Agent")
             return { isAdmin: acc.isAdmin, isAgent: true };
           return acc;

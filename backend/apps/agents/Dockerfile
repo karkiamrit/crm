@@ -30,6 +30,8 @@ RUN npm install -g yarn
 
 RUN yarn install --prod
 
+RUN yarn global add @nestjs/cli
+
 COPY --from=development /usr/src/app/dist ./dist
 
 CMD ["node", "dist/apps/agents/main"]
