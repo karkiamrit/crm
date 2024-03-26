@@ -4,7 +4,8 @@ services:
       context: .
       dockerfile: ./apps/auth/Dockerfile
       target: development
-    command: yarn start:dev auth
+    # command: yarn start:dev auth
+    command: sh -c "yarn global add @nestjs/cli && yarn start:dev auth"
     env_file:
       - ./apps/auth/.env
     ports:
@@ -17,7 +18,8 @@ services:
       context: .
       dockerfile: ./apps/notifications/Dockerfile
       target: development
-    command: yarn start:dev notifications
+    # command: yarn start:dev notifications
+    command: sh -c "yarn global add @nestjs/cli && yarn start:dev notifications"
     env_file:
       - ./apps/notifications/.env
     ports:
@@ -30,7 +32,8 @@ services:
       context: .
       dockerfile: ./apps/organization/Dockerfile
       target: development
-    command: yarn start:dev organization
+    # command: yarn start:dev organization
+    command: sh -c "yarn global add @nestjs/cli && yarn start:dev organization"
     env_file:
       - ./apps/organization/.env
     ports:
@@ -43,7 +46,8 @@ services:
       context: .
       dockerfile: ./apps/agents/Dockerfile
       target: development
-    command: yarn start:dev agents
+    # command: yarn start:dev agents
+    command: sh -c "yarn global add @nestjs/cli && yarn start:dev agents"
     env_file:
       - ./apps/agents/.env
     ports:
