@@ -7,8 +7,6 @@ import useVerticalDashboard from '@/store/dashboardStore';
 import LeadsPage from '@/components/leads/Leads';
 import { LocalStore } from '@/store/localstore';
 
-
-
 const Home = () => {
 
   const { loggedIn, loading } = useAuth();

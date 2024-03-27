@@ -97,7 +97,8 @@ const LeadSheet = (props: Props) => {
           <div className=" border-border-2 border-gray-200 w-[95%] mx-auto mt-4">
             <div className="flex flex-col mt-2 ">
               {titlesWithIcons.map((titleWithIcon) => (
-                <div
+                <div 
+                  key={titleWithIcon.title}
                   className={cn(
                     `flex flex-col border-gray-300 w-full h-auto pl-6 pt-2 pb-3 bg-white text-xs font-thin border-t${
                       titleWithIcon.title === "email"

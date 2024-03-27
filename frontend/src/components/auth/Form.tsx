@@ -19,7 +19,6 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { LocalStore } from "@/store/localstore";
 
-
 const signupFormSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
@@ -40,7 +39,7 @@ export default function AuthForm() {
 
   const [isSignupNowClicked, setIsSignupNowClicked] = useState(false);
   const [isSignupButtonClicked, setIsSignupButtonClicked] = useState(false);
-  const [email,setEmail]=useState("");
+  const [email, setEmail] = useState("");
   const signupForm = useForm<z.infer<typeof signupFormSchema>>({
     resolver: zodResolver(signupFormSchema),
     defaultValues: {
@@ -66,9 +65,11 @@ export default function AuthForm() {
   const onSubmitSignup = async (data: z.infer<typeof signupFormSchema>) => {
     console.log(data.email);
     await axios.post("http://localhost:8000/users/signup", data);
-    const email= data.email;
-    const res = await axios.post("http://localhost:8000/auth/request-otp", { email: email});
-    if(res){
+    const email = data.email;
+    const res = await axios.post("http://localhost:8000/auth/request-otp", {
+      email: email,
+    });
+    if (res) {
       setIsSignupButtonClicked(true);
     }
     setEmail(data.email);
@@ -77,18 +78,19 @@ export default function AuthForm() {
   const onSubmitLogin = async (data: z.infer<typeof loginFormSchema>) => {
     const response = await axios.post("http://localhost:8000/auth/login", data);
     if (response.data) {
-      LocalStore.remove('jwt');
+      LocalStore.remove("jwt");
       LocalStore.setAccessToken(response.data);
       router.push("/");
       LocalStore.reload();
     }
-   
-    
   };
 
   const onSubmitOTP = async (data: z.infer<typeof otpFormSchema>) => {
-    console.log(data)
-    await axios.post("http://localhost:8000/auth/verify-otp", {otp: data.otp, email: email});
+    console.log(data);
+    await axios.post("http://localhost:8000/auth/verify-otp", {
+      otp: data.otp,
+      email: email,
+    });
   };
 
   return (
@@ -124,7 +126,8 @@ export default function AuthForm() {
                 </div>
               </div>
 
-             {!isSignupButtonClicked &&(<Form {...signupForm}>
+              {!isSignupButtonClicked && (
+                <Form {...signupForm}>
                   <form
                     onSubmit={signupForm.handleSubmit(onSubmitSignup)}
                     className="mt-4 space-y-4"
@@ -223,19 +226,21 @@ export default function AuthForm() {
                 </Form>
               )}
 
-              {!isSignupButtonClicked && (<div className="mt-6 text-center">
-                <p className="text-sm font-medium text-gray-900">
-                  Already have an account?{" "}
-                  <Link
-                    href="#"
-                    passHref
-                    className="font-bold hover:underline"
-                    onClick={() => setIsSignupNowClicked(false)}
-                  >
-                    Login now
-                  </Link>
-                </p>
-              </div>)}
+              {!isSignupButtonClicked && (
+                <div className="mt-6 text-center">
+                  <p className="text-sm font-medium text-gray-900">
+                    Already have an account?{" "}
+                    <Link
+                      href="#"
+                      passHref
+                      className="font-bold hover:underline"
+                      onClick={() => setIsSignupNowClicked(false)}
+                    >
+                      Login now
+                    </Link>
+                  </p>
+                </div>
+              )}
             </div>
           )}
 
@@ -331,7 +336,7 @@ export default function AuthForm() {
 
               <div className="mt-6 text-center">
                 <p className="text-sm font-medium text-gray-900">
-                  Don't have an account?{" "}
+                  Don&apos;t have an account?
                   <Link
                     href="#"
                     passHref
