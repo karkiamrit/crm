@@ -52,11 +52,11 @@ export class LeadsService {
   async update(id: number, updateLeadsDto: UpdateLeadDto) {
     // Find the lead
     const lead = await this.leadsRepository.findOne({ id });
-
+  
     if (!lead) {
       throw new NotFoundException(`Lead with ID ${id} not found`);
     }
-
+  
     // List of attributes to check for changes
     const attributes = [
       'product',
@@ -71,7 +71,7 @@ export class LeadsService {
       'source',
       'documents',
     ];
-
+  
     // Check each attribute for changes
     for (const attribute of attributes) {
       if (
@@ -80,25 +80,32 @@ export class LeadsService {
       ) {
         // Update the attribute
         lead[attribute] = updateLeadsDto[attribute];
-
+  
         // Create a new LeadTimeline for the updated attribute
         const timeline = new LeadTimeline({
           lead: lead,
           attribute: attribute,
           value: updateLeadsDto[attribute],
         });
+  
         // Save the LeadTimeline entity to the database
         await this.leadTimelineRepository.create(timeline);
-
+  
         // Add the LeadTimeline entity to the timelines array of the lead
         lead.timelines.push(timeline);
       }
     }
-
+  
     // Save the updated lead
     await this.leadsRepository.create(lead);
-
-    return lead;
+  
+    // Create a new object that omits the lead property from each LeadTimeline in lead.timelines
+    const leadToReturn = { ...lead, timelines: lead.timelines.map(timeline => {
+      const { lead, ...timelineWithoutLead } = timeline;
+      return timelineWithoutLead;
+    })};
+  
+    return leadToReturn;
   }
 
   async delete(id: number) {

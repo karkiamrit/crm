@@ -1,14 +1,14 @@
 import { LeadsStatus } from "../Leads";
-type Product = {
+export type Product = {
     name: string;
 }
 
-type Service = {
+export type Service = {
     name: string;
 
 }
 
-type LeadTimeline = {
+export type LeadTimeline = {
     attribute: string;
     value: string;
     createdAt: Date;
@@ -31,3 +31,4 @@ export type LeadData = {
     documents: string[];
     agentId: number;
 }
+

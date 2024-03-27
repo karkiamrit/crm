@@ -49,6 +49,10 @@ export class JwtAuthGuard implements CanActivate {
         tap((res) => {
           console.log('current role is', res);
           if (roles) {
+            if (res.roles?.map((role) => role.name).includes('admin')) {
+              context.switchToHttp().getRequest().user = res;
+              return;
+            }
             for (const role of roles) {
               if (!res.roles?.map((role) => role.name).includes(role)) {
                 // Corrected map function

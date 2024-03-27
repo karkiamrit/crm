@@ -210,7 +210,7 @@ const TableRow: React.FC<TableRowProps> = ({
             <SheetTrigger className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-200 bg-gray-100 border border-gray-300 rounded-md shadow-sm">
               Edit Details
             </SheetTrigger>
-            <SheetContent>
+            <SheetContent className="overflow-auto">
               <LeadSheet id={id} />
             </SheetContent>
           </Sheet>
