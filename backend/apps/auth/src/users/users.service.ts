@@ -30,15 +30,31 @@ export class UsersService {
       });
       user.status = Status.Live;
     
-      let savedRole = await this.rolesRepository.findOne({ name: 'User' });
-   
+      let savedRole: Role;
+      try {
+        savedRole = await this.rolesRepository.findOne({ name: 'User' });
+      } catch (error) {
+        console.error('Error occurred while fetching role:', error);
+      }
+      
       if(!savedRole){
         const role = new Role({name:'User'});
-        savedRole = await this.rolesRepository.create(role);
+        try {
+          savedRole = await this.rolesRepository.create(role);
+        } catch (error) {
+          console.error('Error occurred while creating role:', error);
+        }
       }
       user.roles = [savedRole];
     
-      return this.usersRepository.create(user);
+      let createdUser:User;
+      try {
+        createdUser = await this.usersRepository.create(user);
+      } catch (error) {
+        console.error('Error occurred while creating user:', error);
+      }
+    
+      return createdUser;
     }
 
     async adminCreate(createUserAdminDto: CreateUserAdminDto) {
@@ -53,16 +69,32 @@ export class UsersService {
     
       const roles = [];
       for (const roleDto of createUserAdminDto.roles || []) {
-        let savedRole = await this.rolesRepository.findOne({ name: roleDto.name });
+        let savedRole: Role;
+        try {
+          savedRole = await this.rolesRepository.findOne({ name: roleDto.name });
+        } catch (error) {
+          console.error('Error occurred while fetching role:', error);
+        }
         if (!savedRole) {
           const role = new Role({ name: roleDto.name });
-          savedRole = await this.rolesRepository.create(role);
+          try {
+            savedRole = await this.rolesRepository.create(role);
+          } catch (error) {
+            console.error('Error occurred while creating role:', error);
+          }
         }
         roles.push(savedRole);
       }
       user.roles = roles;
     
-      return this.usersRepository.create(user);
+      let createdUser: User;
+      try {
+        createdUser = await this.usersRepository.create(user);
+      } catch (error) {
+        console.error('Error occurred while creating user:', error);
+      }
+    
+      return createdUser;
     }
   
   private async validateCreateUser(createUserDto: CreateUserDto) {
