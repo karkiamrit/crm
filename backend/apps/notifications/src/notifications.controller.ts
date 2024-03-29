@@ -23,7 +23,7 @@ import { Notification } from './entities/notification.entity';
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
   @Post()
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   // @Roles('Admin')
   @ApiOperation({ summary: 'Create a new notification' })
   @ApiBearerAuth()
@@ -34,7 +34,7 @@ export class NotificationsController {
   }
 
   @Put(':id')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Update a notification' })
   @ApiBearerAuth()
   @ApiParam({ name: 'id', required: true, description: 'The id of the notification to update' })
@@ -58,7 +58,7 @@ export class NotificationsController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get all notifications' })
   @ApiBearerAuth()
   @ApiResponse({ status: 200, description: 'Return all notifications.', type: [NotificationResponseDto]})

@@ -34,7 +34,7 @@ services:
     env_file:
       - ./apps/organization/.env
     ports:
-      - '8004:8004'
+      - '8005:8005'
     volumes:
       - .:/usr/src/app
 
