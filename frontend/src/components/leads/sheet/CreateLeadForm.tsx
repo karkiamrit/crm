@@ -139,7 +139,7 @@ const CreateLeadForm = () => {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Create a New Lead Here</DialogTitle>
-          <DialogDescription>Click save when you're done.</DialogDescription>
+          <DialogDescription>Click save when youre done.</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <Form {...leadCreationForm}>

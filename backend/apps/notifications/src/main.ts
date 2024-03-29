@@ -33,7 +33,7 @@ async function bootstrap() {
   app.useLogger(app.get(Logger));
   app.use(cookieParser());
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: configService.get('CORS_ORIGIN').split(','),
     credentials: true,
   });
   await app.startAllMicroservices();
