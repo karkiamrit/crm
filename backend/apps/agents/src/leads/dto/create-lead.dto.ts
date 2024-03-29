@@ -9,11 +9,11 @@ export class CreateLeadDto {
     @IsString()
     address: string;
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
     details: string;
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsEnum(LeadsStatus)
     status: LeadsStatus;
 
@@ -29,20 +29,20 @@ export class CreateLeadDto {
     @IsString()
     name: string;
 
-    @IsNotEmpty()
-    @IsNumber()
-    priority: number;
+    @IsOptional()
+    // @IsNumber()
+    priority?: number;
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
     source: string;
 
-    @IsNotEmpty()
+    @IsOptional()
     @ValidateNested({ each: true })
     @Type(() => CreateProductInputDTO)
     product: CreateProductInputDTO;
 
-    @IsNotEmpty()
+    @IsOptional()
     @ValidateNested({ each: true })
     @Type(() => CreateServiceInputDTO)
     service: CreateServiceInputDTO;

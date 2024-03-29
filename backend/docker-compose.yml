@@ -21,7 +21,7 @@ services:
     env_file:
       - ./apps/notifications/.env
     ports:
-      - '8002:8002'
+      - '8003:8003'
     volumes:
       - .:/usr/src/app
 

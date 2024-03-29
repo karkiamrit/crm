@@ -64,9 +64,9 @@ export default function AuthForm() {
 
   const onSubmitSignup = async (data: z.infer<typeof signupFormSchema>) => {
     console.log(data.email);
-    await axios.post("http://localhost:8000/users/signup", data);
+    await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}:8000/users/signup`, data);
     const email = data.email;
-    const res = await axios.post("http://localhost:8000/auth/request-otp", {
+    const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}:8000/auth/request-otp`, {
       email: email,
     });
     if (res) {
@@ -76,7 +76,8 @@ export default function AuthForm() {
   };
 
   const onSubmitLogin = async (data: z.infer<typeof loginFormSchema>) => {
-    const response = await axios.post("http://localhost:8000/auth/login", data);
+    console.log(process.env.NEXT_PUBLIC_BACKEND_API_URL)
+    const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}:8000/auth/login`, data);
     if (response.data) {
       LocalStore.remove("jwt");
       LocalStore.setAccessToken(response.data);
@@ -87,7 +88,7 @@ export default function AuthForm() {
 
   const onSubmitOTP = async (data: z.infer<typeof otpFormSchema>) => {
     console.log(data);
-    await axios.post("http://localhost:8000/auth/verify-otp", {
+    await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/auth/verify-otp`, {
       otp: data.otp,
       email: email,
     });

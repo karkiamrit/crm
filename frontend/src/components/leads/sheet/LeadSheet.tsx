@@ -14,57 +14,33 @@ import LeadNote from "./LeadNote";
 import Icon from "@/components/icons";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { z } from "zod";
-import { LeadsStatus } from "../Leads";
-const ProductSchema = z.object({
-  name: z.string(),
-});
+import { useStore } from "@/store/useStore";
+import useOutsideClick from '@/app/hooks/useOutsideClick';
 
-const ServiceSchema = z.object({
-  name: z.string(),
-});
-
-const LeadTimelineSchema = z.object({
-  attribute: z.string(),
-  value: z.string(),
-  createdAt: z.date(),
-});
-
-const LeadDataSchema = z.object({
-  id: z.number(),
-  address: z.string(),
-  details: z.string(),
-  status: z.nativeEnum(LeadsStatus),
-  phone: z.string(),
-  email: z.string().email(),
-  name: z.string(),
-  priority: z.number(),
-  createdAt: z.date(),
-  source: z.string(),
-  timelines: z.array(LeadTimelineSchema),
-  product: ProductSchema,
-  service: ServiceSchema,
-  documents: z.array(z.string()),
-  agentId: z.number(),
-});
 
 type Props = {
   id: number;
 };
 
 const LeadSheet = (props: Props) => {
+  const ref = useOutsideClick(() => {
+    if (isNameEditing) {
+      setIsNameEditing(false);
+    }
+  });
   const [leadData, setLeadData] = useState<LeadData | null>(null);
   const [currentTitles, setCurrentTitles] = useState<string[]>([]);
   const [updatedData, setUpdatedData] = useState<Partial<LeadData>>({});
-  const [selectedButton, setSelectedButton] = React.useState<string | null>(
-    null
-  );
+  const [isNameEditing, setIsNameEditing] = useState(false);
+  const [updatedName, setUpdatedName] = useState(leadData ? leadData.name : '');
+  const [isIconHovered, setIsIconHovered] = useState(false);
 
+  const { leadStatus } = useStore();
   useEffect(() => {
     const fetchLeadData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8006/leads/${props.id}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_API_URL}:8006/leads/${props.id}`,
           {
             headers: {
               Authorization: `Bearer ${LocalStore.getAccessToken()}`,
@@ -78,13 +54,19 @@ const LeadSheet = (props: Props) => {
     };
 
     fetchLeadData();
-  }, [props.id]);
-
+  }, [props.id, updatedData]);
+  useEffect(() => {
+    if (leadData) {
+      setUpdatedName(leadData.name);
+    }
+  }, [leadData]);
   return (
     <SheetHeader className="flex flex-col bg-gray-200">
       <div className="bg-white h-12"></div>
+      
       {leadData && (
         <div className="flex flex-col ">
+         
           <div className="flex flex-row justify-start items-center text-xl gap-5 pl-6 w-full lg:mt-5">
             <div className="w-24 h-24 ml-4 ">
               <LeadAvatar
@@ -92,12 +74,59 @@ const LeadSheet = (props: Props) => {
                 imageUrl="https://github.com/shadcn.png"
               />
             </div>
-            <div className="text-2xl font-extrabold">{leadData.name}</div>
+            <div className="text-2xl font-extrabold">
+              <div
+                className="text-2xl font-extrabold flex items-center"
+                ref={ref}
+                onMouseEnter={() => setIsIconHovered(true)}
+                onMouseLeave={() => setIsIconHovered(false)}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {isNameEditing ? (
+                  <Input
+                    type="text"
+                    value={updatedName}
+                    onChange={(e) => setUpdatedName(e.target.value)}
+                    className="bg-gray-100"
+                    onKeyDown={async (e) => {
+                      if (e.key === "Enter") {
+                        setIsNameEditing(false);
+                        try {
+                          const response = await axios.put(
+                            `http://localhost:8006/leads/${props.id}`,
+                            { ...leadData, name: updatedName },
+                            {
+                              headers: {
+                                Authorization: `Bearer ${LocalStore.getAccessToken()}`,
+                              },
+                            }
+                          );
+                          if (response.data) {
+                            setLeadData(response.data);
+                          }
+                        } catch (error) {
+                          console.error("Failed to update lead data:", error);
+                        }
+                      }
+                    }}
+                  />
+                ) : (
+                  <div onDoubleClick={() => setIsNameEditing(true)} >
+                    {leadData.name}
+                    {isIconHovered && (
+                      <button onClick={() => setIsNameEditing(true)} className="ml-2">
+                          <Icon type="pencil" width={16} />
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
           <div className=" border-border-2 border-gray-200 w-[95%] mx-auto mt-4">
             <div className="flex flex-col mt-2 ">
               {titlesWithIcons.map((titleWithIcon) => (
-                <div 
+                <div
                   key={titleWithIcon.title}
                   className={cn(
                     `flex flex-col border-gray-300 w-full h-auto pl-6 pt-2 pb-3 bg-white text-xs font-thin border-t${
@@ -124,36 +153,49 @@ const LeadSheet = (props: Props) => {
                           className="h-auto w-full mt-2"
                           type="text"
                           value={
-                            titleWithIcon
-                              ? typeof updatedData[titleWithIcon.title as keyof typeof updatedData] === "object"
-                                ? updatedData[titleWithIcon.title as keyof typeof updatedData] instanceof Date
-                                  ? (updatedData[titleWithIcon.title as keyof typeof updatedData] as Date).toISOString()
-                                  : ""
-                                : updatedData[titleWithIcon.title as keyof typeof updatedData]?.toString() ?? ""
+                            titleWithIcon?.title === "email"
+                              ? updatedData.email ?? leadData?.email ?? ""
+                              : titleWithIcon?.title === "product"
+                              ? updatedData.product?.name ??
+                                leadData?.product?.name ??
+                                ""
+                              : titleWithIcon?.title === "service"
+                              ? updatedData.service?.name ??
+                                leadData?.service?.name ??
+                                ""
+                              : titleWithIcon?.title === "address"
+                              ? updatedData.address ?? leadData?.address ?? ""
+                              : titleWithIcon?.title === "details"
+                              ? updatedData.details ?? leadData?.details ?? ""
+                              : titleWithIcon?.title === "phone"
+                              ? updatedData.phone ?? leadData?.phone ?? ""
                               : ""
                           }
                           onChange={(e) => {
                             const value = e.target.value;
-                            const schema =
-                              LeadDataSchema.shape[
-                                titleWithIcon.title as keyof typeof LeadDataSchema.shape
-                              ];
-
-                            if (schema) {
-                              try {
-                                schema.parse(value);
-                                setUpdatedData({
-                                  ...updatedData,
-                                  [titleWithIcon.title]: value,
-                                });
-                              } catch (error) {
-                                console.error("Invalid input:", error);
-                              }
+                            if (
+                              titleWithIcon.title === "product" ||
+                              titleWithIcon.title === "service"
+                            ) {
+                              // Update product or service name
+                              setUpdatedData({
+                                ...updatedData,
+                                [titleWithIcon.title]: {
+                                  ...(updatedData[titleWithIcon.title] ?? {}),
+                                  name: value,
+                                },
+                              });
+                            } else {
+                              // Update other fields
+                              setUpdatedData({
+                                ...updatedData,
+                                [titleWithIcon.title]: value,
+                              });
                             }
                           }}
                         />
                       ) : (
-                        <div className="text-gray-700 ">
+                        <div className="text-gray-700">
                           {(() => {
                             const value =
                               leadData[titleWithIcon.title as keyof LeadData];
@@ -189,7 +231,6 @@ const LeadSheet = (props: Props) => {
                                 (title) => title !== titleWithIcon.title
                               )
                             );
-                            setSelectedButton(null);
                           }}
                           variant={"secondary"}
                         >
@@ -200,7 +241,7 @@ const LeadSheet = (props: Props) => {
                           variant={"default"}
                           onClick={async () => {
                             setCurrentTitles([]);
-                            setSelectedButton(null);
+
                             try {
                               const response = await axios.put(
                                 `http://localhost:8006/leads/${props.id}`,
@@ -211,6 +252,9 @@ const LeadSheet = (props: Props) => {
                                   },
                                 }
                               );
+                              if (response.data) {
+                                setLeadData(response.data);
+                              }
                             } catch (error) {
                               console.error(
                                 "Failed to update lead data:",
@@ -223,19 +267,22 @@ const LeadSheet = (props: Props) => {
                         </Button>
                       </div>
                     ) : (
-                      <div className="ml-auto pr-6 border rounded-md w-6 border-gray-300 mr-4 bg-gray-200 flex h-6 items-center text-center">
-                        <button
-                          className="text-center pl-1 hover:text-primary hover:border-primary"
-                          onClick={() => {
-                            setCurrentTitles([
-                              ...currentTitles,
-                              titleWithIcon.title,
-                            ]);
-                            setSelectedButton(titleWithIcon.title);
-                          }}
-                        >
-                          <Icon type="pencil" width={16} />
-                        </button>
+                      <div>
+                        {!["createdAt"].includes(titleWithIcon.title) && (
+                          <div className="ml-auto pr-6 border rounded-md w-6 border-gray-300 mr-4 bg-gray-200 flex h-6 items-center text-center">
+                            <button
+                              className="text-center pl-1 hover:text-primary hover:border-primary"
+                              onClick={() => {
+                                setCurrentTitles([
+                                  ...currentTitles,
+                                  titleWithIcon.title,
+                                ]);
+                              }}
+                            >
+                              <Icon type="pencil" width={16} />
+                            </button>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -244,8 +291,8 @@ const LeadSheet = (props: Props) => {
               <div className="pl-5 pr-5 flex flex-col mt-8">
                 <div className="text-gray-900 font-bold text-sm flex flex-row gap-2">
                   <div>Lead Status :</div>
-                  <LeadStatusIcon status={leadData.status} />
-                  <LeadStatusText status={leadData.status} />
+                  <LeadStatusIcon status={leadStatus} />
+                  <LeadStatusText status={leadStatus} />
                 </div>
                 <div className="mt-5">
                   <ContactStatus

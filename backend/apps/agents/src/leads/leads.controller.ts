@@ -119,7 +119,7 @@ export class LeadsController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  @Roles('Admin')
+  // @Roles('Admin')
   @ApiOperation({ summary: 'Get all leads' })
   @ApiBearerAuth()
   async findAll(@Query() query: any): Promise<Leads[]> {

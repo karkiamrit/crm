@@ -1,27 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { LeadsStatus } from "../Leads";
 import axios from "axios";
 import { LocalStore } from "@/store/localstore";
+import {useStore} from "@/store/useStore"
 
 type Props = {
   initialStatus: LeadsStatus;
   id: number;
 };
-const ContactStatus: React.FC<Props> = ({initialStatus, id}) => {
-
-    
+const ContactStatus: React.FC<Props> = ({ initialStatus, id }) => {
   const [status, setStatus] = useState<LeadsStatus>(initialStatus);
+  const {setLeadStatus} = useStore();
 
-  const updateStatus = (status: LeadsStatus) => {
-    setStatus(status);
-    // Make API call to update status
-    axios.put(`http://localhost:8006/leads/${id}`, { status }, {
-      headers: {
-        Authorization: `Bearer ${LocalStore.getAccessToken()}`,
-      },
-    }).catch(error => {
+  useEffect(() => {
+    // Set initial status when component mounts
+    setStatus(initialStatus);
+  }, [initialStatus]);
+
+  const updateStatus = async (newStatus: LeadsStatus) => {
+    try {
+      // Update status in state
+      setStatus(newStatus);
+      setLeadStatus(newStatus);
+      
+      // Make API call to update status
+      await axios.put(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}:8006/leads/${id}`,
+        { status: newStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${LocalStore.getAccessToken()}`,
+          },
+        }
+      );
+    } catch (error) {
       console.error("Failed to update status:", error);
-    });
+    }
   };
 
   const statusList: LeadsStatus[] = [
@@ -50,23 +64,24 @@ const ContactStatus: React.FC<Props> = ({initialStatus, id}) => {
 
   const statusColors: Record<LeadsStatus, string> = {
     [LeadsStatus.INITIAL]: "bg-violet-500 text-white",
-    [LeadsStatus.PENDING]: "bg-blue-600 text-white",
-    [LeadsStatus.CONFIRMED]: "bg-blue-600 text-white",
-    [LeadsStatus.REJECTED]: "bg-red-600 text-white",
-    [LeadsStatus.COMPLETED]: "bg-green-600 text-white",
+    [LeadsStatus.PENDING]: "bg-blue-500 text-white",
+    [LeadsStatus.CONFIRMED]: "bg-blue-500 text-white",
+    [LeadsStatus.REJECTED]: "bg-red-500 text-white",
+    [LeadsStatus.COMPLETED]: "bg-green-500 text-white",
   };
 
   return (
     <div>
-      <ul className="flex rounded-2xl overflow-hidden border border-gray-200 text-center">
+      <ul className="flex rounded-2xl overflow-hidden border border-gray-200 text-center bg-white">
         {statusList.map((buttonStatus) => (
           <li
             key={buttonStatus}
-            className={`flex-1 px-4 py-2 bg-white ${getStatusColor(
-              status,
-              buttonStatus
-            )}`}
+            className={`flex-1 px-4 py-2 ${
+              getStatusColor(status, buttonStatus)
+            }`}
+            
           >
+        
             <button
               onClick={() => updateStatus(buttonStatus)}
               className="text-xs font-thin"

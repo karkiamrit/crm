@@ -1,13 +1,21 @@
 // store.ts
-import { LeadsStatus } from '@/components/leads/Leads';
+
 import {create} from 'zustand';
 
+
+enum LeadsStatus {
+  INITIAL = "INITIAL",
+  PENDING = "PENDING",
+  CONFIRMED = "CONFIRMED",
+  REJECTED = "REJECTED",
+  COMPLETED = "COMPLETED",
+}
 type State = {
-  status: LeadsStatus;
-  setStatus: (status: LeadsStatus) => void;
+  leadStatus: LeadsStatus;
+  setLeadStatus: (leadStatus: LeadsStatus) => void;
 };
 
 export const useStore = create<State>((set) => ({
-  status: LeadsStatus.INITIAL,
-  setStatus: (status) => set({ status }),
+  leadStatus: LeadsStatus.INITIAL,
+  setLeadStatus: (leadStatus) => set({ leadStatus }),
 }));

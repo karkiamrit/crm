@@ -37,13 +37,13 @@ export class Leads extends AbstractEntity<Leads>{
     @Column()
     name: string;
 
-    @Column()
-    priority: number;
+    @Column({default:0, nullable: true})
+    priority: Number;
 
     @CreateDateColumn()
     createdAt: Date;
 
-    @Column()  
+    @Column({nullable:true})  
     source: string; //eg: facebook, email etc
 
     @OneToMany(() => LeadTimeline, timeline => timeline.lead, {eager:true, onDelete: 'CASCADE'})

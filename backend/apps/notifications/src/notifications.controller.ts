@@ -24,7 +24,7 @@ export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
   @Post()
   @UseGuards(JwtAuthGuard)
-  @Roles('Admin')
+  // @Roles('Admin')
   @ApiOperation({ summary: 'Create a new notification' })
   @ApiBearerAuth()
   @ApiBody({ type: CreateNotificationsDto })
@@ -63,6 +63,7 @@ export class NotificationsController {
   @ApiBearerAuth()
   @ApiResponse({ status: 200, description: 'Return all notifications.', type: [NotificationResponseDto]})
   async findAll(@Query() query: any): Promise<Notification[]> {
+    console.log("reached here")
     return this.notificationsService.findAll(query);
   }
 

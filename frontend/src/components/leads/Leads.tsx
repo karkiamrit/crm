@@ -29,9 +29,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-
-
 import useAuth from "@/app/hooks/useAuth";
+import CreateLead from "./sheet/CreateLead";
 
 export enum LeadsStatus {
   INITIAL = "INITIAL",
@@ -66,7 +65,7 @@ const LeadsPage: React.FC = () => {
   const [tempFilter, setTempFilter] = useState<Range | null>(null);
   const [hasMoreLeads, setHasMoreLeads] = useState(true);
   const [page, setPage] = useState(1);
-  const pageSize = 10;
+  const pageSize = 7;
 
   const fetchLeadsFromApi = async (url: string, appliedFilter: Range[]) => {
     const rangeFields = ["name", "email", "address"]; // Add other range fields here
@@ -80,8 +79,7 @@ const LeadsPage: React.FC = () => {
     const where = appliedFilter
       .filter((f) => !rangeFields.includes(f.property))
       .reduce((acc, f) => ({ ...acc, [f.property]: f.lower }), {});
-    console.log("Applied Filter:", range); // Log the applied filter
-    console.log("where", where);
+
     const response = await axios.get(url, {
       headers: {
         Authorization: `Bearer ${LocalStore.getAccessToken()}`,
@@ -121,11 +119,14 @@ const LeadsPage: React.FC = () => {
         !hasAgentRoleWithoutAdmin?.isAdmin
       ) {
         return fetchLeadsFromApi(
-          "http://localhost:8006/leads/myleads",
+          `${process.env.NEXT_PUBLIC_BACKEND_API_URL}:8006/leads/myleads`,
           appliedFilter
         );
       } else {
-        return fetchLeadsFromApi("http://localhost:8006/leads", appliedFilter);
+        return fetchLeadsFromApi(
+          `${process.env.NEXT_PUBLIC_BACKEND_API_URL}:8006/leads`,
+          appliedFilter
+        );
       }
     } catch (error) {
       console.error("Error fetching leads:", error);
@@ -173,6 +174,9 @@ const LeadsPage: React.FC = () => {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
       <div className="py-8">
+        <div className="text-black lg:mb-5 flex flex-row items-center">
+            <CreateLead/>
+          </div>
         <div className="overflow-x-auto">
           <div className="inline-block min-w-full overflow-hidden align-middle border border-gray-200 shadow sm:rounded-lg">
             <table className="min-w-full">
@@ -211,7 +215,10 @@ const LeadsPage: React.FC = () => {
                                       // This will prevent the input from selecting all text on focus
                                       setTimeout(() => {
                                         const len = event.target.value.length;
-                                        event.target.setSelectionRange(len, len);
+                                        event.target.setSelectionRange(
+                                          len,
+                                          len
+                                        );
                                       }, 0);
                                     }}
                                     onChange={(e) => {
