@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import { NavBarVertical } from "@/components/static/frames/NavBarVertical";
 import { NavBarHorizontal } from "@/components/static/frames/NavBarHorizontal";
+import { Toaster } from "@/components/ui/toaster";
 
 const font = Poppins({ weight: "400", subsets: ["latin"] });
 export const metadata: Metadata = {
@@ -24,6 +25,7 @@ export default function RootLayout({
             <NavBarVertical />
               <main className="flex flex-grow justify-center mt-12">
                 {children}
+                 <Toaster />
               </main>
           </div>
         </div>

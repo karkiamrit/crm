@@ -47,9 +47,8 @@ export class JwtAuthGuard implements CanActivate {
       })
       .pipe(
         tap((res) => {
-          console.log('current role is', res);
           if (roles) {
-            if (res.roles?.map((role) => role.name).includes('admin')) {
+            if (res.roles?.map((role) => role.name).includes('Admin')) {
               context.switchToHttp().getRequest().user = res;
               return;
             }
@@ -61,6 +60,14 @@ export class JwtAuthGuard implements CanActivate {
               }
             }
           }
+          // if (roles) {
+          //   const userRoles = res.roles?.map((role) => role.name);
+          //   const hasRole = roles.some((role) => userRoles.includes(role));
+          //   if (!hasRole) {
+          //     this.logger.error("The user doesn't have valid roles");
+          //     throw new UnauthorizedException();
+          //   }
+          // } // if or wanted in role
           context.switchToHttp().getRequest().user = res;
         }),
         //tap helps to execute side effects on the incoming response

@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -29,6 +30,7 @@ import { diskStorage } from 'multer';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { extname } from 'path';
 import { AgentsService } from '../agents.service';
+import { Agent } from '../entities/agent.entity';
 
 @Controller('leads')
 export class LeadsController {
@@ -59,7 +61,26 @@ export class LeadsController {
     @UploadedFiles() files: Express.Multer.File[],
     @Body() createLeadsDto: CreateLeadDto,
     @CurrentUser() user: User,
+    @Body() referenceNo?: any,
   ) {
+    let agent: Agent;
+    if (!referenceNo) {
+      agent = await this.agentService.getOne(user.id);
+
+      if (!agent) {
+        throw new NotFoundException(`Agent with user ID ${user.id} not found`);
+      }
+    } else {
+      agent = await this.agentService.getOneByReferenceNo(
+        referenceNo.referenceNo,
+      );
+      if (!agent) {
+        throw new NotFoundException(
+          `Agent with user ID ${referenceNo} not found`,
+        );
+      }
+    }
+
     let documents: any;
     if (files) {
       documents = files.map((file) => file.path);
@@ -69,7 +90,7 @@ export class LeadsController {
       ...createLeadsDto,
       documents,
     };
-    return await this.leadsService.create(createLeadsDtoWithDocuments, user);
+    return await this.leadsService.create(createLeadsDtoWithDocuments, agent);
   }
 
   @Put(':id')

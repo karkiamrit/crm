@@ -35,6 +35,9 @@ import useAuth from "@/app/hooks/useAuth";
 import axios from "axios";
 import Icon from "@/components/icons";
 import { LocalStore } from "@/store/localstore";
+import { useToast } from "@/components/ui/use-toast";
+
+
 
 const leadSchema = z.object({
   address: z.string(),
@@ -43,7 +46,7 @@ const leadSchema = z.object({
   phone: z.string(),
   email: z.string().email(),
   name: z.string(),
-  priority: z.number().int().min(1).max(5).optional(), 
+  priority: z.number().int().min(1).max(5).optional(),
   source: z.string().optional(),
   product: z
     .object({
@@ -54,18 +57,24 @@ const leadSchema = z.object({
     name: z.string().optional(),
   }),
   documents: z.array(z.instanceof(File)).optional(),
-  agentId: z.number().optional(),
+  referenceNo: z.string().optional(),
 });
 type LeadData = z.infer<typeof leadSchema> & { [key: string]: any };
 
-const onCreateLead = async (data: LeadData) => {
+
+const CreateLeadForm = () => {
+  const { userData } = useAuth();
+  const { toast } = useToast();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const onCreateLead = async (data: LeadData) => {
     const formData = new FormData();
     for (const key in data) {
       if (key !== "documents") {
         if (key === "priority") {
-            if (data[key] !== undefined) {
-                formData.append(key, Number(data[key]).toString());
-              }
+          if (data[key] !== undefined) {
+            formData.append(key, Number(data[key]).toString());
+          }
         } else if (key === "product" || key === "service") {
           // If product or service is an object, handle nested properties
           if (typeof data[key] === "object" && data[key] !== null) {
@@ -78,42 +87,59 @@ const onCreateLead = async (data: LeadData) => {
           formData.append(key, data[key]);
         }
       }
-      
-  };
-  // Append files
-  if (data.documents) {
-    data.documents.forEach((file, index) => {
-      formData.append("documents", file, file.name);
-    });
-  }
-
-  try {
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_BACKEND_API_URL}:8006/leads`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${LocalStore.getAccessToken()}`,
-        },
-      }
-    );
-    if (response.status === 200) {
-      console.log("Lead created successfully");
-    } else {
-      console.log("Failed to create lead");
     }
-  } catch (error) {
-    console.error("An error occurred while creating the lead:", error);
-  }
-};
-const CreateLeadForm = () => {
-  const { userData } = useAuth();
-  const [isAdmin, setIsAdmin] = useState(false);
+    // Append files
+    if (data.documents) {
+      data.documents.forEach((file, index) => {
+        formData.append("documents", file, file.name);
+      });
+    }
   
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}:8006/leads`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${LocalStore.getAccessToken()}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        console.log("Lead created successfully");
+        if (response.status === 200) {
+          console.log("Lead created successfully");
+        } else {
+          throw new Error("An error occurred while creating the lead.");
+        }
+      }
+    } catch (error) {
+      const err = error as any;
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description:
+          `${
+            err.response?.data?.message ||
+            "An error occurred while creating the lead."
+          } ` +
+          `${
+            err.response?.data?.error ? `Error: ${err.response?.data?.error?.message}` : ""
+          } ` +
+          `${
+            err.response?.data?.statusCode
+              ? `Status Code: ${err.response?.data?.statusCode}`
+              : ""
+          }`,
+      });
+      console.error("An error occurred while creating the lead:", err);
+    }
+  };
 
   useEffect(() => {
     const hasAdminRole = userData?.roles?.some((role) => role.name === "Admin");
+    console.log(isAdmin);
     setIsAdmin(hasAdminRole ?? false);
   }, [userData]);
 
@@ -311,17 +337,14 @@ const CreateLeadForm = () => {
               {isAdmin && (
                 <FormField
                   control={leadCreationForm.control}
-                  name="agentId"
+                  name="referenceNo"
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
                         <Input
-                          placeholder="Agent Id"
+                          placeholder="Agent Reference No"
                           className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
-                          value={field.value?.toString()}
-                          onChange={(e) =>
-                            field.onChange(Number(e.target.value))
-                          }
+                         {...field}
                         />
                       </FormControl>
                       <FormMessage />

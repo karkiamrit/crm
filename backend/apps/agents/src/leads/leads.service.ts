@@ -12,7 +12,7 @@ import { Service } from './services/services.entity';
 import { LeadTimelineRepository } from './timelines/timelines.repository';
 import { AgentsService } from '../agents.service';
 import { join } from 'path';
-
+import { Agent } from '../entities/agent.entity';
 
 @Injectable()
 export class LeadsService {
@@ -22,7 +22,7 @@ export class LeadsService {
     private readonly agentService: AgentsService,
   ) {}
 
-  async create(createLeadDto: CreateLeadDto, user: User) {
+  async create(createLeadDto: CreateLeadDto, agent: Agent) {
     // Convert CreateTimelineInputDTO[] to LeadTimeline[]
     let product: Product, service: Service, timelines: LeadTimeline[];
     // Convert CreateProductInputDTO to Product
@@ -38,12 +38,11 @@ export class LeadsService {
       service,
       product,
     });
+    console.log(agent);
+ 
+    lead.agentId = agent.id;
 
-    const agent = await this.agentService.getAgentByUserId(user.id);
-    if (agent) {
-      lead.agentId = agent.id;
-    }
-
+ 
     await this.leadsRepository.create(lead);
 
     return lead;
@@ -52,11 +51,11 @@ export class LeadsService {
   async update(id: number, updateLeadsDto: UpdateLeadDto) {
     // Find the lead
     const lead = await this.leadsRepository.findOne({ id });
-  
+
     if (!lead) {
       throw new NotFoundException(`Lead with ID ${id} not found`);
     }
-  
+
     // List of attributes to check for changes
     const attributes = [
       'product',
@@ -71,7 +70,7 @@ export class LeadsService {
       'source',
       'documents',
     ];
-  
+
     // Check each attribute for changes
     for (const attribute of attributes) {
       if (
@@ -80,31 +79,34 @@ export class LeadsService {
       ) {
         // Update the attribute
         lead[attribute] = updateLeadsDto[attribute];
-  
+
         // Create a new LeadTimeline for the updated attribute
         const timeline = new LeadTimeline({
           lead: lead,
           attribute: attribute,
           value: updateLeadsDto[attribute],
         });
-  
+
         // Save the LeadTimeline entity to the database
         await this.leadTimelineRepository.create(timeline);
-  
+
         // Add the LeadTimeline entity to the timelines array of the lead
         lead.timelines.push(timeline);
       }
     }
-  
+
     // Save the updated lead
     await this.leadsRepository.create(lead);
-  
+
     // Create a new object that omits the lead property from each LeadTimeline in lead.timelines
-    const leadToReturn = { ...lead, timelines: lead.timelines.map(timeline => {
-      const { lead, ...timelineWithoutLead } = timeline;
-      return timelineWithoutLead;
-    })};
-  
+    const leadToReturn = {
+      ...lead,
+      timelines: lead.timelines.map((timeline) => {
+        const { lead, ...timelineWithoutLead } = timeline;
+        return timelineWithoutLead;
+      }),
+    };
+
     return leadToReturn;
   }
 

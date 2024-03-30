@@ -80,6 +80,11 @@ export class AgentsService {
     return this.agentsRepository.findOne({ id });
   }
 
+  async getOneByReferenceNo(referenceNo: string) {
+    const agent = this.agentsRepository.findOne({ reference_no: referenceNo });
+    return agent;
+  }
+
   // async getUserByAgentId(
   //   agentId: number,
   //   options: ExtendedFindOptions<User>,
