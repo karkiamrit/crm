@@ -7,6 +7,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogClose,
+  Dialog,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -36,8 +38,7 @@ import axios from "axios";
 import Icon from "@/components/icons";
 import { LocalStore } from "@/store/localstore";
 import { useToast } from "@/components/ui/use-toast";
-
-
+import useleadFormSubmitted from "@/store/leadFormSubmitted";
 
 const leadSchema = z.object({
   address: z.string(),
@@ -61,10 +62,11 @@ const leadSchema = z.object({
 });
 type LeadData = z.infer<typeof leadSchema> & { [key: string]: any };
 
-
 const CreateLeadForm = () => {
   const { userData } = useAuth();
   const { toast } = useToast();
+  const { setLeadFormSubmitted } = useleadFormSubmitted();
+  const [isOpen, setIsOpen] = React.useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
   const onCreateLead = async (data: LeadData) => {
@@ -94,7 +96,7 @@ const CreateLeadForm = () => {
         formData.append("documents", file, file.name);
       });
     }
-  
+
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_API_URL}:8006/leads`,
@@ -106,16 +108,15 @@ const CreateLeadForm = () => {
           },
         }
       );
-      if (response.status === 200) {
+      if (response.status === 200 || response.status === 201) {
         console.log("Lead created successfully");
-        if (response.status === 200) {
-          console.log("Lead created successfully");
-        } else {
-          throw new Error("An error occurred while creating the lead.");
-        }
+        setLeadFormSubmitted(true);
+        setIsOpen(false); 
+        leadCreationForm.reset();
+      } else {
+        throw new Error("An error occurred while creating the lead.");
       }
-    } catch (error) {
-      const err = error as any;
+    } catch (err:any) {
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
@@ -125,7 +126,9 @@ const CreateLeadForm = () => {
             "An error occurred while creating the lead."
           } ` +
           `${
-            err.response?.data?.error ? `Error: ${err.response?.data?.error?.message}` : ""
+            err.response?.data?.error
+              ? `Error: ${err.response?.data?.error?.message}`
+              : ""
           } ` +
           `${
             err.response?.data?.statusCode
@@ -151,13 +154,18 @@ const CreateLeadForm = () => {
       address: "",
       phone: "",
       source: "",
+      name: "",
+      referenceNo: "",
       documents: [],
     },
   });
   return (
-    <div>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="flex flex-row gap-2">
+        <Button
+          className="flex flex-row gap-2"
+          onClick={()=>setIsOpen(true)}
+        >
           <Icon type="pencil" width={15} />
           Create new lead
         </Button>
@@ -344,7 +352,7 @@ const CreateLeadForm = () => {
                         <Input
                           placeholder="Agent Reference No"
                           className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
-                         {...field}
+                          {...field}
                         />
                       </FormControl>
                       <FormMessage />
@@ -375,19 +383,19 @@ const CreateLeadForm = () => {
                 )}
               />
               <DialogFooter>
-                <Button
-                  type="submit"
-                  variant="default"
-                  className="inline-flex items-center justify-center w-full px-6 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 bg-primary border border-transparent rounded-md"
-                >
-                  Create Lead
-                </Button>
+                  <Button
+                    type="submit"
+                    variant="default"
+                    className="inline-flex items-center justify-center w-full px-6 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 bg-primary border border-transparent rounded-md"
+                  >
+                    Create Lead
+                  </Button>
               </DialogFooter>
             </form>
           </Form>
         </div>
       </DialogContent>
-    </div>
+    </Dialog>
   );
 };
 

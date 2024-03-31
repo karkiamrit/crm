@@ -1,8 +1,5 @@
 import React from "react";
-import {
-  Dialog,
 
-} from "@/components/ui/dialog";
 
 import CreateLeadForm from "./CreateLeadForm";
 
@@ -12,10 +9,7 @@ const CreateLead = (props: Props) => {
 
   return (
     <div className="flex flex-row">
-      <Dialog>
-        
-      <CreateLeadForm/>
-      </Dialog>
+        <CreateLeadForm/>
     </div>
   );
 };

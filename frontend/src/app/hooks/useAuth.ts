@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { LocalStore } from "@/store/localstore";
+import { useRouter } from "next/navigation";
 
 interface Role{
   id:number,
@@ -34,11 +35,12 @@ const useAuth = () => {
   const [isClient, setIsClient] = useState(false); // State to track client-side rendering
   const [loading, setLoading] = useState(true); // New state to track loading status
   const [wasLoggedIn, setWasLoggedIn] = useState(false); // New state variable
+  const router = useRouter();
 
   useEffect(() => {
     setIsClient(true); // Set to true once the component mounts
     const token = LocalStore.getAccessToken();
-
+    
     if (token) {
       getUserDataFromToken(token)
         .then((user) => {
@@ -60,13 +62,17 @@ const useAuth = () => {
 
   useEffect(() => {
     // Only reload the page if the user was previously logged in
+    if(!LocalStore.getAccessToken()){
+      console.log(LocalStore.getAccessToken())
+      router.refresh();
+    }
     if (!loggedIn && wasLoggedIn) {
-      LocalStore.reload();
+      router.refresh();
     }
   }, [loggedIn, wasLoggedIn]);
 
   useEffect(() => {
-    if (!isClient) return;
+    if (!isClient) return;  
 
     const handleAuthChange = async () => {
       setLoading(true); // Start loading when auth status changes

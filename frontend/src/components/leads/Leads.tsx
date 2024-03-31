@@ -31,6 +31,9 @@ import {
 
 import useAuth from "@/app/hooks/useAuth";
 import CreateLead from "./sheet/CreateLead";
+import useleadFormSubmitted from "@/store/leadFormSubmitted";
+import useleadDeleted from "@/store/leadDeleted";
+import { useStore } from "@/store/useStore";
 
 export enum LeadsStatus {
   INITIAL = "INITIAL",
@@ -62,10 +65,18 @@ const LeadsPage: React.FC = () => {
   const [filterValues, setFilterValues] = useState<{
     [property: string]: string;
   }>({});
+  const initialFilterValues: { [key: string]: string } = {};
+  titles.forEach((title) => {
+    initialFilterValues[title.toLowerCase()] = "";
+  });
   const [tempFilter, setTempFilter] = useState<Range | null>(null);
   const [hasMoreLeads, setHasMoreLeads] = useState(true);
+  const {isLeadDataDeleted, setLeadDataDeleted} = useleadDeleted();
+  const {isLeadFormSubmitted, setLeadFormSubmitted}= useleadFormSubmitted()
   const [page, setPage] = useState(1);
-  const pageSize = 7;
+  const {leadStatus} = useStore();
+
+  const pageSize = 10;
 
   const fetchLeadsFromApi = async (url: string, appliedFilter: Range[]) => {
     const rangeFields = ["name", "email", "address"]; // Add other range fields here
@@ -104,6 +115,7 @@ const LeadsPage: React.FC = () => {
 
   const fetchLeads = async (appliedFilter: Range[]) => {
     try {
+     
       const hasAgentRoleWithoutAdmin = userData?.roles.reduce(
         (acc, role) => {
           if (role.name === "Admin")
@@ -133,7 +145,6 @@ const LeadsPage: React.FC = () => {
       return [];
     }
   };
-
   const handleFilterChange = (range: Range) => {
     setTempFilter(range);
   };
@@ -168,11 +179,24 @@ const LeadsPage: React.FC = () => {
   }, [filter, page, loading]); // Only re-run the effect if filter changes
 
   useEffect(() => {
-    // This will run every time `leads` changes, causing the component to re-render
-  }, [leads]);
+  }, [leads ]);
+
+useEffect(() => {
+  if (isLeadDataDeleted || isLeadFormSubmitted || leadStatus) {
+    const newAppliedFilter = Object.values(filter).map((filter) => ({
+      ...filter,
+    }));
+    fetchLeads(newAppliedFilter).then((newLeads) => {
+      setLeads(newLeads);
+    });
+    setLeadDataDeleted(false);
+    setLeadFormSubmitted(false);
+  }
+}, [isLeadDataDeleted, isLeadFormSubmitted, leadStatus]);
+
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 lg:w-[1600px] flex-wrap">  
       <div className="py-8">
         <div className="text-black lg:mb-5 flex flex-row items-center">
             <CreateLead/>
@@ -186,7 +210,7 @@ const LeadsPage: React.FC = () => {
                     <th
                       key={index}
                       className={cn({
-                        "px-4 py-7 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider gap-3":
+                        "px-4 py-7 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider gap-3 ":
                           true,
                         "text-center justify-center items-center":
                           title === "Actions",

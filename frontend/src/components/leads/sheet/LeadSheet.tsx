@@ -16,6 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/store/useStore";
 import useOutsideClick from '@/app/hooks/useOutsideClick';
+import useleadDeleted from "@/store/leadDeleted";
+import { useToast } from "@/components/ui/use-toast";
 
 
 type Props = {
@@ -28,13 +30,14 @@ const LeadSheet = (props: Props) => {
       setIsNameEditing(false);
     }
   });
+  const {setLeadDataDeleted} = useleadDeleted()
   const [leadData, setLeadData] = useState<LeadData | null>(null);
   const [currentTitles, setCurrentTitles] = useState<string[]>([]);
   const [updatedData, setUpdatedData] = useState<Partial<LeadData>>({});
   const [isNameEditing, setIsNameEditing] = useState(false);
   const [updatedName, setUpdatedName] = useState(leadData ? leadData.name : '');
   const [isIconHovered, setIsIconHovered] = useState(false);
-
+  const {toast} = useToast();
   const { leadStatus } = useStore();
   useEffect(() => {
     const fetchLeadData = async () => {
@@ -315,7 +318,46 @@ const LeadSheet = (props: Props) => {
 
               <div className="flex flex-row justify-between mt-8 pl-6 pr-6 mb-16 text-sm font-extralight text-gray-700">
                 <div>Lead ID: {leadData.id}</div>
-                <div className="flex flex-row gap-2 text-primary">
+                <div className="flex flex-row gap-2 text-primary" onClick={async () => {
+              try {
+                const response = await axios.delete(
+                  `${process.env.NEXT_PUBLIC_BACKEND_API_URL}:8006/leads/${props.id}`,
+                  {
+                    headers: {
+                      Authorization: `Bearer ${LocalStore.getAccessToken()}`,
+                    },
+                  }
+                );
+                
+                if (response.status === 200 || response.status === 201) {
+                  console.log("Lead deleted successfully");
+                  setLeadDataDeleted(true);
+                } else {
+                  throw new Error("An error occurred while deleting the lead.");
+                }
+                 
+              } catch (err: any) {
+                toast({
+                  variant: "destructive",
+                  title: "Uh oh! Something went wrong.",
+                  description:
+                    `${
+                      err.response?.data?.message ||
+                      "An error occurred while deleting the lead."
+                    } ` +
+                    `${
+                      err.response?.data?.error
+                        ? `Error: ${err.response?.data?.error?.message}`
+                        : ""
+                    } ` +
+                    `${
+                      err.response?.data?.statusCode
+                        ? `Status Code: ${err.response?.data?.statusCode}`
+                        : ""
+                    }`,
+                });
+              }
+            }}>
                   <Icon type="trash" width={10} />
                   Delete Lead
                 </div>

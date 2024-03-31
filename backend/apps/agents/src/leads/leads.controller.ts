@@ -76,7 +76,7 @@ export class LeadsController {
       );
       if (!agent) {
         throw new NotFoundException(
-          `Agent with user ID ${referenceNo} not found`,
+          `Agent with reference no ${referenceNo} not found`,
         );
       }
     }

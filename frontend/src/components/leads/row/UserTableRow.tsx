@@ -4,6 +4,12 @@ import { LeadsStatus } from "../Leads";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import LeadSheet from "../sheet/LeadSheet";
+import axios from "axios";
+import { LocalStore } from "@/store/localstore";
+import { useToast } from "@/components/ui/use-toast";
+import useleadDeleted from "@/store/leadDeleted";
+
+
 
 interface TableRowProps {
   name: string;
@@ -38,6 +44,9 @@ const TableRow: React.FC<TableRowProps> = ({
   // Get a random color from the colors array
   const randomColorIndex = generateRandomIndex();
   const randomBackgroundColor = colors[randomColorIndex];
+  const {toast} = useToast();
+  const {setLeadDataDeleted} = useleadDeleted()
+
   return (
     <tr className="bg-white">
       <td className="px-4 py-3 text-sm font-bold text-gray-900 align-top lg:align-middle whitespace-nowrap">
@@ -218,6 +227,46 @@ const TableRow: React.FC<TableRowProps> = ({
           <Button
             variant="ghost"
             className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-200 bg-white border border-gray-300 rounded-md shadow-sm"
+            onClick={async () => {
+              try {
+                const response = await axios.delete(
+                  `${process.env.NEXT_PUBLIC_BACKEND_API_URL}:8006/leads/${id}`,
+                  {
+                    headers: {
+                      Authorization: `Bearer ${LocalStore.getAccessToken()}`,
+                    },
+                  }
+                );
+                
+                if (response.status === 200 || response.status === 201) {
+                  console.log("Lead deleted successfully");
+                  setLeadDataDeleted(true);
+                } else {
+                  throw new Error("An error occurred while deleting the lead.");
+                }
+                 
+              } catch (err: any) {
+                toast({
+                  variant: "destructive",
+                  title: "Uh oh! Something went wrong.",
+                  description:
+                    `${
+                      err.response?.data?.message ||
+                      "An error occurred while deleting the lead."
+                    } ` +
+                    `${
+                      err.response?.data?.error
+                        ? `Error: ${err.response?.data?.error?.message}`
+                        : ""
+                    } ` +
+                    `${
+                      err.response?.data?.statusCode
+                        ? `Status Code: ${err.response?.data?.statusCode}`
+                        : ""
+                    }`,
+                });
+              }
+            }}
           >
             <svg
               className="w-5 h-5 mr-2 -ml-1"

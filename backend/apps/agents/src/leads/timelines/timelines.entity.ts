@@ -4,7 +4,7 @@ import { AbstractEntity } from "@app/common";
 
 @Entity()
 export class LeadTimeline extends AbstractEntity<LeadTimeline>{
-    @ManyToOne(() => Leads, lead => lead.timelines)
+    @ManyToOne(() => Leads, lead => lead.timelines, {onDelete: 'CASCADE'})
     @JoinColumn({ name: 'leadId' })
     lead: Leads;
 

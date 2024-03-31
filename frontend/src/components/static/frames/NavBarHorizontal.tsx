@@ -1,8 +1,16 @@
 "use client";
 import useAuth from "@/app/hooks/useAuth";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { LocalStore } from "@/store/localstore";
 export function NavBarHorizontal() {
   let { loggedIn, userData } = useAuth();
+
   return (
     <div>
       <header className="">
@@ -79,50 +87,60 @@ export function NavBarHorizontal() {
                 </div>
               </div>
 
-              <div className="flex items-center ml-4 lg:ml-0">
-                <button
-                  type="button"
-                  className="rounded-full focus:outline-none "
-                  id="options-menu-button"
-                  aria-expanded="false"
-                  aria-haspopup="true"
-                >
-                  <span className="flex items-center justify-between w-full ">
-                    <span className="flex items-center justify-between min-w-0 space-x-3">
-                      {loggedIn && userData && (
-                        <div className="w-full flex items-center justify-between gap-2">
-                          <Avatar>
-                            {/* <AvatarImage src=""/> */}
-                            <AvatarFallback>{userData.email.substring(0,2).toUpperCase()}</AvatarFallback>
-                          </Avatar>
-                        
-
-                          <span className="flex-1 hidden min-w-0 md:flex">
-                            <span className="text-sm font-medium text-gray-900 truncate">
-                              {" "}
-                              {userData.email.split('@')[0]}{" "}
-                            </span>
-                          </span>
-                        </div>
-                      )}
-                    </span>
-                    <svg
-                      className="flex-shrink-0 w-4 h-4 ml-2 text-gray-400 group-hover:text-gray-500"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth="2"
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  {" "}
+                  <div className="flex items-center ml-4 lg:ml-0 ">
+                    <div
+                      className="rounded-full focus:outline-none  "
+                      id="options-menu-button"
+                      aria-expanded="false"
+                      aria-haspopup="true"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </span>
-                </button>
-              </div>
+                      <span className="flex items-center justify-between w-full ">
+                        <span className="flex items-center justify-between min-w-0 space-x-3">
+                          {loggedIn && userData && (
+                            <div className="w-full flex items-center justify-between gap-2">
+                              <Avatar>
+                                {/* <AvatarImage src=""/> */}
+                                <AvatarFallback>
+                                  {userData.email.substring(0, 2).toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+
+                              <span className="flex-1 hidden min-w-0 md:flex">
+                                <span className="text-sm font-medium text-gray-900 truncate">
+                                  {" "}
+                                  {userData.email.split("@")[0]}{" "}
+                                </span>
+                              </span>
+                            </div>
+                          )}
+                        </span>
+                        <svg
+                          className="flex-shrink-0 w-4 h-4 ml-2 text-gray-400 group-hover:text-gray-500"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="lg:ml-16">
+                  <DropdownMenuItem onClick={()=>{
+                    LocalStore.remove("jwt");
+                  }}>Logout</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>
