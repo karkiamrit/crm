@@ -25,7 +25,7 @@ const ContactStatus: React.FC<Props> = ({ initialStatus, id }) => {
       
       // Make API call to update status
       await axios.put(
-        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}:8006/leads/${id}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/leads/${id}`,
         { status: newStatus },
         {
           headers: {

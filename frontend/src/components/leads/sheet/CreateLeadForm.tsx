@@ -99,7 +99,7 @@ const CreateLeadForm = () => {
 
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}:8006/leads`,
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/leads`,
         formData,
         {
           headers: {

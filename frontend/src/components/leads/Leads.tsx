@@ -131,12 +131,12 @@ const LeadsPage: React.FC = () => {
         !hasAgentRoleWithoutAdmin?.isAdmin
       ) {
         return fetchLeadsFromApi(
-          `${process.env.NEXT_PUBLIC_BACKEND_API_URL}:8006/leads/myleads`,
+          `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/leads/myleads`,
           appliedFilter
         );
       } else {
         return fetchLeadsFromApi(
-          `${process.env.NEXT_PUBLIC_BACKEND_API_URL}:8006/leads`,
+          `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/leads`,
           appliedFilter
         );
       }
