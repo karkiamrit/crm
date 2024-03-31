@@ -32,7 +32,7 @@ import { extname } from 'path';
 import { AgentsService } from '../agents.service';
 import { Agent } from '../entities/agent.entity';
 
-@Controller('agents/leads')
+@Controller('leads')
 export class LeadsController {
   constructor(
     private readonly leadsService: LeadsService,

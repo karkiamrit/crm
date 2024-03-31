@@ -10,7 +10,7 @@ export class LocalStore {
 
   static reload(){
     if (typeof window !== 'undefined') {
-      window.location.reload();
+      window.location.href="/";
     }
   }
 

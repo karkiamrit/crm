@@ -8,8 +8,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LocalStore } from "@/store/localstore";
+import { useRouter } from "next/navigation";
+
 export function NavBarHorizontal() {
   let { loggedIn, userData } = useAuth();
+  const router = useRouter();
 
   return (
     <div>
@@ -138,6 +141,8 @@ export function NavBarHorizontal() {
                 <DropdownMenuContent className="lg:ml-16">
                   <DropdownMenuItem onClick={()=>{
                     LocalStore.remove("jwt");
+                    LocalStore.reload();  
+                   
                   }}>Logout</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

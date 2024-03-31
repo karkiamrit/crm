@@ -1,27 +1,30 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { LocalStore } from "@/store/localstore";
-import { useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
 
-interface Role{
-  id:number,
-  name:string;
+interface Role {
+  id: number;
+  name: string;
 }
 interface User {
   email: string;
   id: number;
   organizationId: number;
-  roles: Role[]
+  roles: Role[];
 }
 const getUserDataFromToken = async (token: any) => {
   if (!token) return null;
   try {
-    console.log(process.env.REACT_APP_BACKEND_API_URL)
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/users/me`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    console.log(process.env.REACT_APP_BACKEND_API_URL);
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/users/me`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("Error fetching user data:", error);
@@ -34,20 +37,17 @@ const useAuth = () => {
   const [userData, setUserData] = useState<User | null>(null);
   const [isClient, setIsClient] = useState(false); // State to track client-side rendering
   const [loading, setLoading] = useState(true); // New state to track loading status
-  const [wasLoggedIn, setWasLoggedIn] = useState(false); // New state variable
-  const router = useRouter();
 
   useEffect(() => {
     setIsClient(true); // Set to true once the component mounts
     const token = LocalStore.getAccessToken();
-    
+
     if (token) {
       getUserDataFromToken(token)
         .then((user) => {
           if (user) {
             setUserData(user);
             setLoggedIn(true);
-            setWasLoggedIn(true); // Set wasLoggedIn to true when user logs in
           }
           setLoading(false); // Set loading to false after user data is fetched
         })
@@ -61,18 +61,32 @@ const useAuth = () => {
   }, []);
 
   useEffect(() => {
-    // Only reload the page if the user was previously logged in
-    if(!LocalStore.getAccessToken()){
-      console.log(LocalStore.getAccessToken())
-      router.refresh();
+    setIsClient(true); // Set to true once the component mounts
+    const token = LocalStore.getAccessToken();
+  
+    if (token) {
+      const decodedToken: any = jwtDecode(token);
+      const currentTime = Date.now() / 1000;
+  
+      if (decodedToken.exp < currentTime) {
+        console.log("Token expired");
+        LocalStore.remove('jwt'); // Remove the expired token
+        LocalStore.reload(); // Reload the page
+        LocalStore.remove("state");
+      } else {
+        const timeout = decodedToken.exp * 1000 - Date.now();
+        // Add a small delay before setting the timeout
+        setTimeout(() => {
+          LocalStore.remove('jwt'); // Remove the token
+          LocalStore.remove("state");
+          LocalStore.reload(); // Reload the page
+        }, timeout + 1000); // Add 1 second delay
+      }
     }
-    if (!loggedIn && wasLoggedIn) {
-      router.refresh();
-    }
-  }, [loggedIn, wasLoggedIn]);
+  }, []); 
 
   useEffect(() => {
-    if (!isClient) return;  
+    if (!isClient) return;
 
     const handleAuthChange = async () => {
       setLoading(true); // Start loading when auth status changes

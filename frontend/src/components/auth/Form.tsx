@@ -81,7 +81,6 @@ export default function AuthForm() {
     if (response.data) {
       LocalStore.remove("jwt");
       LocalStore.setAccessToken(response.data);
-      router.push("/");
       LocalStore.reload();
     }
   };
@@ -92,6 +91,7 @@ export default function AuthForm() {
       otp: data.otp,
       email: email,
     });
+    LocalStore.reload();
   };
 
   return (
