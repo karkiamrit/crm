@@ -11,6 +11,7 @@ services:
       - '8000:8000'
     volumes:
       - .:/usr/src/app
+    mem_limit: 256m  
 
   notifications:
     build:
@@ -24,6 +25,7 @@ services:
       - '8003:8003'
     volumes:
       - .:/usr/src/app
+    mem_limit: 20m
 
   organization:
     build:
@@ -37,6 +39,7 @@ services:
       - '8005:8005'
     volumes:
       - .:/usr/src/app
+    mem_limit: 256m  
 
   agents:
     build:
@@ -50,6 +53,7 @@ services:
       - '8006:8006'
     volumes:
       - .:/usr/src/app
+    mem_limit: 256m
 
   postgres:
     image: postgres
