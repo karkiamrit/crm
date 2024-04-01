@@ -16,9 +16,8 @@ interface User {
 const getUserDataFromToken = async (token: any) => {
   if (!token) return null;
   try {
-    console.log(process.env.REACT_APP_BACKEND_API_URL);
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/users/me`,
+      `${process.env.NEXT_PUBLIC_BACKEND_API_URL_USERS}/users/me`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

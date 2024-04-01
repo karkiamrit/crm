@@ -70,13 +70,14 @@ const LeadsPage: React.FC = () => {
     initialFilterValues[title.toLowerCase()] = "";
   });
   const [tempFilter, setTempFilter] = useState<Range | null>(null);
-  const [hasMoreLeads, setHasMoreLeads] = useState(true);
-  const {isLeadDataDeleted, setLeadDataDeleted} = useleadDeleted();
-  const {isLeadFormSubmitted, setLeadFormSubmitted}= useleadFormSubmitted()
-  const [page, setPage] = useState(1);
-  const {leadStatus} = useStore();
+  const { isLeadDataDeleted, setLeadDataDeleted } = useleadDeleted();
+  const { isLeadFormSubmitted, setLeadFormSubmitted } = useleadFormSubmitted();
+  const [totalLeads, setTotalLeads] = useState(0);
 
-  const pageSize = 10;
+  const [page, setPage] = useState(1);
+  const { leadStatus } = useStore();
+
+  const pageSize = 8;
 
   const fetchLeadsFromApi = async (url: string, appliedFilter: Range[]) => {
     const rangeFields = ["name", "email", "address"]; // Add other range fields here
@@ -90,7 +91,6 @@ const LeadsPage: React.FC = () => {
     const where = appliedFilter
       .filter((f) => !rangeFields.includes(f.property))
       .reduce((acc, f) => ({ ...acc, [f.property]: f.lower }), {});
-
     const response = await axios.get(url, {
       headers: {
         Authorization: `Bearer ${LocalStore.getAccessToken()}`,
@@ -102,20 +102,13 @@ const LeadsPage: React.FC = () => {
         take: pageSize,
       },
     });
-
-    const data = response.data;
-    if (data.length > pageSize) {
-      setHasMoreLeads(true);
-      data.pop(); // Remove the extra lead
-    } else {
-      setHasMoreLeads(false);
-    }
+    const data = response.data.data;
+    setTotalLeads(response.data.total);
     return Array.isArray(data) ? data : [];
   };
 
   const fetchLeads = async (appliedFilter: Range[]) => {
     try {
-     
       const hasAgentRoleWithoutAdmin = userData?.roles.reduce(
         (acc, role) => {
           if (role.name === "Admin")
@@ -131,12 +124,12 @@ const LeadsPage: React.FC = () => {
         !hasAgentRoleWithoutAdmin?.isAdmin
       ) {
         return fetchLeadsFromApi(
-          `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/leads/myleads`,
+          `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/leads/myleads`,
           appliedFilter
         );
       } else {
         return fetchLeadsFromApi(
-          `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/leads`,
+          `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/leads`,
           appliedFilter
         );
       }
@@ -171,39 +164,49 @@ const LeadsPage: React.FC = () => {
     const newAppliedFilter = Object.values(filter).map((filter) => ({
       ...filter,
     }));
+    console.log(
+      "Fetching leads with filter:",
+      newAppliedFilter,
+      "and page:",
+      page
+    );
+
     if (loading === false) {
       fetchLeads(newAppliedFilter).then((newLeads) => {
         setLeads(newLeads);
       });
     }
-  }, [filter, page, loading]); // Only re-run the effect if filter changes
+  }, [filter, page, loading]);
+
+  useEffect(() => {}, [leads]);
 
   useEffect(() => {
-  }, [leads ]);
+    if (isLeadDataDeleted || isLeadFormSubmitted || leadStatus) {
+      const newAppliedFilter = Object.values(filter).map((filter) => ({
+        ...filter,
+      }));
+      fetchLeads(newAppliedFilter).then((newLeads) => {
+        setLeads(newLeads);
+      });
+      setLeadDataDeleted(false);
+      setLeadFormSubmitted(false);
+    }
+  }, [isLeadDataDeleted, isLeadFormSubmitted, leadStatus]);
 
-useEffect(() => {
-  if (isLeadDataDeleted || isLeadFormSubmitted || leadStatus) {
-    const newAppliedFilter = Object.values(filter).map((filter) => ({
-      ...filter,
-    }));
-    fetchLeads(newAppliedFilter).then((newLeads) => {
-      setLeads(newLeads);
-    });
-    setLeadDataDeleted(false);
-    setLeadFormSubmitted(false);
-  }
-}, [isLeadDataDeleted, isLeadFormSubmitted, leadStatus]);
+  // Calculate total pages
+  const totalPages = Math.ceil(totalLeads / pageSize);
 
-
+  // Generate an array of page numbers
+  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 lg:w-[1600px] flex-wrap">  
-      <div className="py-8">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 lg:w-[1600px] flex-wrap ">
+      <div className="py-8 lg:h-[47rem]">
         <div className="text-black lg:mb-5 flex flex-row items-center">
-            <CreateLead/>
-          </div>
+          <CreateLead />
+        </div>
         <div className="overflow-x-auto">
           <div className="inline-block min-w-full overflow-hidden align-middle border border-gray-200 shadow sm:rounded-lg">
-            <table className="min-w-full">
+            <table className="min-w-full ">
               <thead>
                 <tr>
                   {titles.map((title, index) => (
@@ -354,32 +357,48 @@ useEffect(() => {
               )}
             </table>
           </div>
-          <Pagination className="mt-10">
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
+        </div>
+      </div>
+      <div>
+        <Pagination className="mt-2">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (page > 1) {
+                    setPage(page - 1);
+                  }
+                }}
+              />
+            </PaginationItem>
+            {pageNumbers.slice(0, 8).map((pageNumber) => (
+              <PaginationItem key={pageNumber}>
+                <PaginationLink
                   href="#"
-                  onClick={() => setPage(page > 1 ? page - 1 : 1)}
-                />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#" onClick={() => setPage(1)}>
-                  1
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setPage(pageNumber);
+                  }}
+                >
+                  {pageNumber}
                 </PaginationLink>
               </PaginationItem>
-              <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  onClick={() => {
-                    if (hasMoreLeads) {
-                      setPage(page + 1);
-                    }
-                  }}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (page < totalPages) {
+                    setPage(page + 1);
+                  }
+                }}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
     </div>
   );

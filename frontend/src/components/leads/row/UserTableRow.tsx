@@ -230,7 +230,7 @@ const TableRow: React.FC<TableRowProps> = ({
             onClick={async () => {
               try {
                 const response = await axios.delete(
-                  `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/leads/${id}`,
+                  `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/leads/${id}`,
                   {
                     headers: {
                       Authorization: `Bearer ${LocalStore.getAccessToken()}`,

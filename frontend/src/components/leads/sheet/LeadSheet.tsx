@@ -43,7 +43,7 @@ const LeadSheet = (props: Props) => {
     const fetchLeadData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/leads/${props.id}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/leads/${props.id}`,
           {
             headers: {
               Authorization: `Bearer ${LocalStore.getAccessToken()}`,
@@ -96,7 +96,7 @@ const LeadSheet = (props: Props) => {
                         setIsNameEditing(false);
                         try {
                           const response = await axios.put(
-                            `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/leads/${props.id}`,
+                            `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/leads/${props.id}`,
                             { ...leadData, name: updatedName },
                             {
                               headers: {
@@ -247,7 +247,7 @@ const LeadSheet = (props: Props) => {
 
                             try {
                               const response = await axios.put(
-                                `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/leads/${props.id}`,
+                                `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/leads/${props.id}`,
                                 updatedData,
                                 {
                                   headers: {
@@ -321,7 +321,7 @@ const LeadSheet = (props: Props) => {
                 <div className="flex flex-row gap-2 text-primary" onClick={async () => {
               try {
                 const response = await axios.delete(
-                  `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/leads/${props.id}`,
+                  `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/leads/${props.id}`,
                   {
                     headers: {
                       Authorization: `Bearer ${LocalStore.getAccessToken()}`,

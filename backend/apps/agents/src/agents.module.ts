@@ -8,6 +8,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { LoggerModule } from '@app/common';
 import { Agent } from './entities/agent.entity';
 import { LeadsModule } from './leads/leads.module';
+import { NotesModule } from './notes/notes.module';
 
 @Module({
   imports: [
@@ -31,7 +32,8 @@ import { LeadsModule } from './leads/leads.module';
       },
     ]),
     LoggerModule,
-    LeadsModule
+    LeadsModule,
+    NotesModule
   ],
   controllers: [AgentsController],
   providers: [AgentsService, AgentsRepository],

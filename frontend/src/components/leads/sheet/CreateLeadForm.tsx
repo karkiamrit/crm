@@ -82,7 +82,7 @@ const CreateLeadForm = () => {
           if (typeof data[key] === "object" && data[key] !== null) {
             const nestedData = data[key] as { name?: string | undefined };
             if (nestedData.name !== undefined) {
-              formData.append(`${key}.name`, nestedData.name);
+              formData.append(`${key}[name]`, nestedData.name); // append the name property nested within product or service
             }
           }
         } else {
@@ -98,8 +98,9 @@ const CreateLeadForm = () => {
     }
 
     try {
+      console.log(formData);
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/leads`,
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/leads`,
         formData,
         {
           headers: {
@@ -111,12 +112,12 @@ const CreateLeadForm = () => {
       if (response.status === 200 || response.status === 201) {
         console.log("Lead created successfully");
         setLeadFormSubmitted(true);
-        setIsOpen(false); 
+        setIsOpen(false);
         leadCreationForm.reset();
       } else {
         throw new Error("An error occurred while creating the lead.");
       }
-    } catch (err:any) {
+    } catch (err: any) {
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
@@ -162,10 +163,7 @@ const CreateLeadForm = () => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button
-          className="flex flex-row gap-2"
-          onClick={()=>setIsOpen(true)}
-        >
+        <Button className="flex flex-row gap-2" onClick={() => setIsOpen(true)}>
           <Icon type="pencil" width={15} />
           Create new lead
         </Button>
@@ -383,13 +381,13 @@ const CreateLeadForm = () => {
                 )}
               />
               <DialogFooter>
-                  <Button
-                    type="submit"
-                    variant="default"
-                    className="inline-flex items-center justify-center w-full px-6 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 bg-primary border border-transparent rounded-md"
-                  >
-                    Create Lead
-                  </Button>
+                <Button
+                  type="submit"
+                  variant="default"
+                  className="inline-flex items-center justify-center w-full px-6 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 bg-primary border border-transparent rounded-md"
+                >
+                  Create Lead
+                </Button>
               </DialogFooter>
             </form>
           </Form>
