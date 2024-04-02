@@ -8,7 +8,7 @@ import { AUTH_SERVICE, ExtendedFindOptions, Role, User } from '@app/common';
 import { promisify } from 'util';
 import { unlink } from 'fs';
 import { randomUUID } from 'crypto';
-import { basename, join } from 'path';
+import { join } from 'path';
 
 @Injectable()
 export class AgentsService {

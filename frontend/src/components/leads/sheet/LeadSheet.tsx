@@ -313,7 +313,7 @@ const LeadSheet = (props: Props) => {
               )}
 
               <div className="mt-10">
-                <LeadNote />
+                <LeadNote id={leadData.id}/>
               </div>
 
               <div className="flex flex-row justify-between mt-8 pl-6 pr-6 mb-16 text-sm font-extralight text-gray-700">

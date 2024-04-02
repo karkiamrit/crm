@@ -1,13 +1,23 @@
 import { AbstractEntity } from '@app/common';
-import { Entity, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Leads } from '../../leads/entities/lead.entity';
 
 @Entity('notes')
-export class Note extends AbstractEntity<Note>{
+export class Note extends AbstractEntity<Note> {
   @Column()
   userId: number;
 
-  @ManyToOne(() => Leads)
+  @Column()
+  author: string;
+
+  @ManyToOne(() => Leads, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'leadId' })
   lead: Leads;
 

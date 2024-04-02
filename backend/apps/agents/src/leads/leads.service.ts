@@ -131,7 +131,7 @@ export class LeadsService {
   async addDocuments(id: number, documents: string[]): Promise<Leads> {
     const lead = await this.leadsRepository.findOne({ id });
     lead.documents = [...lead.documents, ...documents];
-    return this.leadsRepository.findOneAndUpdate({ id }, lead);
+    return this.leadsRepository.findOneAndUpdate({ where: { id } }, lead);
   }
 
   async updateDocument(
@@ -146,7 +146,7 @@ export class LeadsService {
       await unlinkAsync(lead.documents[index]); // delete the old file
       lead.documents[index] = newFilePath; // replace with the new file
     }
-    return this.leadsRepository.findOneAndUpdate({ id }, lead);
+    return this.leadsRepository.findOneAndUpdate({ where: { id } }, lead);
   }
 
   async deleteDocument(id: number, filename: string): Promise<Leads> {

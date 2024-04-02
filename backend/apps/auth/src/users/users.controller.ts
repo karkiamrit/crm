@@ -167,6 +167,11 @@ export class UsersController {
     options.where = { ...options.where, ...where };
     return this.usersService.findAll(options);
   }
+
+  @EventPattern('get_user_by_id')
+  async getUserById(data: { id: number }) {
+    return this.usersService.getOne({ id: data.id });
+  }
   
   @EventPattern('update_user')
   async modifyUser(data: { id: number; update: Partial<User> }): Promise<User> {

@@ -1,8 +1,9 @@
 import { Logger, NotFoundException } from '@nestjs/common';
 import { AbstractEntity } from './abstract.entity';
 import {
+  DeepPartial,
   EntityManager,
-  FindOptionsOrder,
+  FindOneOptions,
   FindOptionsWhere,
   Repository,
   SelectQueryBuilder,
@@ -62,20 +63,42 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
     return entity;
   }
 
+
+  // async findOneAndUpdate(
+  //   where: FindOptionsWhere<T>,
+  //   partialEntity: QueryDeepPartialEntity<T>, //subset of properties that exist on our entity that we want to update
+  // ) {
+  //   const updateResult = await this.entityRepository.update(
+  //     where,
+  //     partialEntity,
+  //   );
+  //   if (!updateResult.affected) {
+  //     this.logger.warn('Entity not found with where', where);
+  //     throw new NotFoundException('Entity not found ');
+  //   }
+  //   return this.findOne(where);
+  // }
+
   async findOneAndUpdate(
-    where: FindOptionsWhere<T>,
-    partialEntity: QueryDeepPartialEntity<T>, //subset of properties that exist on our entity that we want to update
+    where: FindOneOptions<T>,
+    partialEntity: QueryDeepPartialEntity<T>,
   ) {
-    const updateResult = await this.entityRepository.update(
-      where,
-      partialEntity,
-    );
-    if (!updateResult.affected) {
+    const entity = await this.entityRepository.findOne(where);
+    if (!entity) {
       this.logger.warn('Entity not found with where', where);
       throw new NotFoundException('Entity not found ');
     }
-    return this.findOne(where);
+  
+    // Merge the existing entity with the partial update
+    const updatedEntity = this.entityRepository.merge(entity, partialEntity as DeepPartial<T>);
+  
+    // Save the updated entity
+    await this.entityRepository.save(updatedEntity);
+  
+    return updatedEntity;
   }
+
+
 
   async findOneAndDelete(where: FindOptionsWhere<T>) {
     await this.entityRepository.delete(where);
@@ -209,7 +232,7 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
       if (!Array.isArray(range)) {
         throw new Error('Range must be an array');
       }
-      console.log(options)
+      console.log(options);
       range.forEach((rangeCondition, index) => {
         if (validProperties.includes(rangeCondition.property)) {
           const lower = rangeCondition.lower;
@@ -232,7 +255,7 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
             const upperCondition = isNaN(Number(upper))
               ? `entity.${rangeCondition.property} <= :upper${index}`
               : `entity.${rangeCondition.property} <= :upper${index}::integer`;
-        
+
             if (isFirstCondition) {
               qb.where(lowerCondition, { [`lower${index}`]: lower });
               qb.andWhere(upperCondition, { [`upper${index}`]: upper });
@@ -245,9 +268,6 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
           isFirstCondition = false;
         }
       });
-      
-      
-
     }
 
     // Apply ordering
