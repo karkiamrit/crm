@@ -114,13 +114,13 @@ export class LeadsService {
     return this.leadsRepository.findOneAndDelete({ id });
   }
 
-  async findAll(options: ExtendedFindOptions<Leads>): Promise<Leads[]> {
+  async findAll(options: ExtendedFindOptions<Leads>) {
     return this.leadsRepository.findAll(options);
   }
 
   async findAllLeadsOfAgent(
     options: ExtendedFindOptions<Leads>,
-  ): Promise<Leads[]> {
+  ){
     return this.leadsRepository.findAll(options);
   }
 

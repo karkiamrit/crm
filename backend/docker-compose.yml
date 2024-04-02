@@ -25,7 +25,7 @@ services:
       - '8003:8003'
     volumes:
       - .:/usr/src/app
-    mem_limit: 20m
+    mem_limit: 256m
 
   organization:
     build:

@@ -87,7 +87,7 @@ export default function AuthForm() {
 
   const onSubmitOTP = async (data: z.infer<typeof otpFormSchema>) => {
     console.log(data);
-    await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_API_URL_USERS}:/auth/verify-otp`, {
+    await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_API_URL_USERS}/auth/verify-otp`, {
       otp: data.otp,
       email: email,
     });

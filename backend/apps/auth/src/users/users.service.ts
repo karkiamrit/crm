@@ -29,14 +29,12 @@ export class UsersService {
         password: await bcrypt.hash(createUserDto.password, 10),
       });
       user.status = Status.Live;
-    
       let savedRole: Role;
       try {
         savedRole = await this.rolesRepository.findOne({ name: 'User' });
       } catch (error) {
         console.error('Error occurred while fetching role:', error);
       }
-      
       if(!savedRole){
         const role = new Role({name:'User'});
         try {
@@ -53,7 +51,6 @@ export class UsersService {
       } catch (error) {
         console.error('Error occurred while creating user:', error);
       }
-    
       return createdUser;
     }
 
@@ -85,6 +82,7 @@ export class UsersService {
         }
         roles.push(savedRole);
       }
+      console.log(roles)
       user.roles = roles;
     
       let createdUser: User;
@@ -164,7 +162,7 @@ export class UsersService {
     return this.usersRepository.findOneAndDelete({ id });
   }
 
-  async findAll(options: ExtendedFindOptions<User>): Promise<User[]> {
+  async findAll(options: ExtendedFindOptions<User>) {
     return this.usersRepository.findAll(options);
   }
 

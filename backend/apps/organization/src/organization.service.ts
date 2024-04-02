@@ -33,7 +33,7 @@ export class OrganizationsService {
 
   async findAll(
     options: ExtendedFindOptions<Organization>,
-  ): Promise<Organization[]> {
+  ) {
     return this.organizationsRepository.findAll(options);
   }
 

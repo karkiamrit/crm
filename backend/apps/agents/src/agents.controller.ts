@@ -139,7 +139,7 @@ export class AgentsController {
   @ApiOperation({ summary: 'Get all agents' })
   @ApiBearerAuth()
   @ApiResponse({ status: 200, description: 'Return all agents.', type: [AgentResponseDto]})
-  async findAll(@Query() query: any): Promise<Agent[]>{
+  async findAll(@Query() query: any){
     return this.agentsService.findAll(query);
   }
 

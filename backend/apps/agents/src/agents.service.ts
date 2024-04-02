@@ -72,7 +72,7 @@ export class AgentsService {
     return this.agentsRepository.findOneAndDelete({ id });
   }
 
-  async findAll(options: ExtendedFindOptions<Agent>): Promise<Agent[]> {
+  async findAll(options: ExtendedFindOptions<Agent>) {
     return this.agentsRepository.findAll(options);
   }
 

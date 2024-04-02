@@ -132,7 +132,7 @@ export class UsersController {
     description: 'Return all users.',
     type: [UserResponse],
   })
-  async getAllUsers(@Query() query: any): Promise<User[]> {
+  async getAllUsers(@Query() query: any) {
     return this.usersService.findAll(query);
   }
 
@@ -162,7 +162,7 @@ export class UsersController {
   async getOrganizationUsers(data: {
     where: { organizationId: number };
     options: ExtendedFindOptions<User>;
-  }): Promise<User[]> {
+  }){
     const { where, options } = data;
     options.where = { ...options.where, ...where };
     return this.usersService.findAll(options);

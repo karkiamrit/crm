@@ -2,6 +2,7 @@ import { Logger, NotFoundException } from '@nestjs/common';
 import { AbstractEntity } from './abstract.entity';
 import {
   EntityManager,
+  FindOptionsOrder,
   FindOptionsWhere,
   Repository,
   SelectQueryBuilder,
@@ -9,10 +10,24 @@ import {
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { FindManyOptions, Between } from 'typeorm';
 
-interface RangeCondition {
+// interface RangeCondition {
+//   property: string;
+//   lower: string;
+//   upper: string;
+// }
+
+// export interface ExtendedFindOptions<T>
+//   extends Omit<FindManyOptions<T>, 'where'> {
+//   where?: FindManyOptions<T>['where'] | ((qb: SelectQueryBuilder<T>) => void);
+//   range?: RangeCondition[];
+//   query?: any;
+//   relations?: string[];
+// }
+
+export interface RangeCondition {
   property: string;
-  lower: string;
-  upper: string;
+  lower: string | number;
+  upper: string | number;
 }
 
 export interface ExtendedFindOptions<T>
@@ -194,39 +209,45 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
       if (!Array.isArray(range)) {
         throw new Error('Range must be an array');
       }
-      console.log(range);
-
-      range.forEach((rangeCondition) => {
+      console.log(options)
+      range.forEach((rangeCondition, index) => {
         if (validProperties.includes(rangeCondition.property)) {
           const lower = rangeCondition.lower;
           const upper = rangeCondition.upper;
           if (rangeCondition.property === 'source') {
             const regex = new RegExp(`[${lower}-${upper}]`);
-            isFirstCondition
-              ? qb.where(`entity.${rangeCondition.property} ~ :regex`, {
-                  regex: regex.source,
-                })
-              : qb.andWhere(`entity.${rangeCondition.property} ~ :regex`, {
-                  regex: regex.source,
-                });
+            if (isFirstCondition) {
+              qb.where(`entity.${rangeCondition.property} ~ :regex`, {
+                regex: regex.source,
+              });
+            } else {
+              qb.andWhere(`entity.${rangeCondition.property} ~ :regex`, {
+                regex: regex.source,
+              });
+            }
           } else {
             const lowerCondition = isNaN(Number(lower))
-              ? `entity.${rangeCondition.property} >= :lower`
-              : `entity.${rangeCondition.property} >= :lower::integer`;
+              ? `entity.${rangeCondition.property} >= :lower${index}`
+              : `entity.${rangeCondition.property} >= :lower${index}::integer`;
             const upperCondition = isNaN(Number(upper))
-              ? `entity.${rangeCondition.property} <= :upper`
-              : `entity.${rangeCondition.property} <= :upper::integer`;
+              ? `entity.${rangeCondition.property} <= :upper${index}`
+              : `entity.${rangeCondition.property} <= :upper${index}::integer`;
+        
             if (isFirstCondition) {
-              qb.where(lowerCondition, { lower: lower });
-              qb.andWhere(upperCondition, { upper: upper });
+              qb.where(lowerCondition, { [`lower${index}`]: lower });
+              qb.andWhere(upperCondition, { [`upper${index}`]: upper });
             } else {
-              qb.andWhere(lowerCondition, { lower: lower });
-              qb.andWhere(upperCondition, { upper: upper });
+              qb.andWhere(lowerCondition, { [`lower${index}`]: lower });
+              qb.andWhere(upperCondition, { [`upper${index}`]: upper });
             }
           }
-          isFirstCondition = true;
+          // Reset isFirstConditionWhere for the next iteration
+          isFirstCondition = false;
         }
       });
+      
+      
+
     }
 
     // Apply ordering

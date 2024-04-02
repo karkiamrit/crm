@@ -100,7 +100,7 @@ export class OrganizationsController {
   @ApiOperation({ summary: 'Get all organizations' })
   @ApiBearerAuth()
   @ApiResponse({ status: 200, description: 'Return all organizations.', type: [OrganizationReponseDto]})
-  async findAll(@Query() query: any): Promise<Organization[]>{
+  async findAll(@Query() query: any){
     return this.organizationsService.findAll(query);
   }
 

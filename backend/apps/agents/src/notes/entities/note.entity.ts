@@ -1,16 +1,21 @@
 import { AbstractEntity } from '@app/common';
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Leads } from '../../leads/entities/lead.entity';
 
 @Entity('notes')
 export class Note extends AbstractEntity<Note>{
   @Column()
-  agentId: number;
+  userId: number;
 
-  @Column()
-  leadId: number;
+  @ManyToOne(() => Leads)
+  @JoinColumn({ name: 'leadId' })
+  lead: Leads;
 
-  @Column({ type: 'date' })
-  date: Date;
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @Column({ type: 'text' })
   content: string;

@@ -11,13 +11,12 @@ import {
 } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationsDto } from './dto/create-notification.dto';
-import { JwtAuthGuard, Roles, User } from '@app/common';
+import { JwtAuthGuard} from '@app/common';
 import { EventPattern, Payload } from '@nestjs/microservices';
 import { otpEmailDto, resetPasswordEmailDto } from './dto/email.dto';
 import { ApiOperation, ApiBearerAuth, ApiParam, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { UpdateNotificationsDto } from './dto/update-notification.dto';
 import { NotificationResponseDto } from './responses/notification.response';
-import { Notification } from './entities/notification.entity';
 
 @Controller('notifications')
 export class NotificationsController {
@@ -62,7 +61,7 @@ export class NotificationsController {
   @ApiOperation({ summary: 'Get all notifications' })
   @ApiBearerAuth()
   @ApiResponse({ status: 200, description: 'Return all notifications.', type: [NotificationResponseDto]})
-  async findAll(@Query() query: any): Promise<Notification[]> {
+  async findAll(@Query() query: any){
     console.log("reached here")
     return this.notificationsService.findAll(query);
   }
@@ -79,7 +78,6 @@ export class NotificationsController {
 
   @EventPattern('send_otp')
   async handleSendOtpVerifyEmail(@Payload() data: otpEmailDto) {
-    console.log('here is reached')
     this.notificationsService.sendOtpVerifyEmail(data, 1);
   }
 

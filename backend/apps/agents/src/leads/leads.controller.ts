@@ -130,7 +130,7 @@ export class LeadsController {
   async findLeadsOfCurrentAgent(
     @Query() query: any,
     @CurrentUser() user: User,
-  ): Promise<Leads[]> {
+  ){
     const agent = await this.agentService.getAgentByUserId(user.id);
     if (agent) {
       query.agentId = agent.id;
@@ -143,7 +143,7 @@ export class LeadsController {
   // @Roles('Admin')
   @ApiOperation({ summary: 'Get all leads' })
   @ApiBearerAuth()
-  async findAll(@Query() query: any): Promise<Leads[]> {
+  async findAll(@Query() query: any) {
     return this.leadsService.findAll(query);
   }
 

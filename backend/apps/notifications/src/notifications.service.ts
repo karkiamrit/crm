@@ -55,7 +55,7 @@ export class NotificationsService {
 
   async findAll(
     options: ExtendedFindOptions<Notification>,
-  ): Promise<Notification[]> {
+  ){
     return this.notificationsRepository.findAll(options);
   }
 
