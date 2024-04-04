@@ -15,30 +15,35 @@ import Icon from "@/components/icons";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/store/useStore";
-import useOutsideClick from '@/app/hooks/useOutsideClick';
+import useOutsideClick from "@/app/hooks/useOutsideClick";
 import useleadDeleted from "@/store/leadDeleted";
 import { useToast } from "@/components/ui/use-toast";
-
+import { useRouter } from "next/navigation";
+import useVerticalDashboard from "@/store/dashboardStore";
 
 type Props = {
   id: number;
 };
 
 const LeadSheet = (props: Props) => {
+  const router = useRouter();
   const ref = useOutsideClick(() => {
     if (isNameEditing) {
       setIsNameEditing(false);
     }
   });
-  const {setLeadDataDeleted} = useleadDeleted()
+  const { setLeadDataDeleted } = useleadDeleted();
   const [leadData, setLeadData] = useState<LeadData | null>(null);
   const [currentTitles, setCurrentTitles] = useState<string[]>([]);
   const [updatedData, setUpdatedData] = useState<Partial<LeadData>>({});
   const [isNameEditing, setIsNameEditing] = useState(false);
-  const [updatedName, setUpdatedName] = useState(leadData ? leadData.name : '');
+  const [updatedName, setUpdatedName] = useState(leadData ? leadData.name : "");
   const [isIconHovered, setIsIconHovered] = useState(false);
-  const {toast} = useToast();
+  const { toast } = useToast();
   const { leadStatus } = useStore();
+  const setSelectedLink = useVerticalDashboard(
+    (state) => state.setSelectedSection
+  ); // Access setSelectedSection action from Zustand store
   useEffect(() => {
     const fetchLeadData = async () => {
       try {
@@ -66,66 +71,101 @@ const LeadSheet = (props: Props) => {
   return (
     <SheetHeader className="flex flex-col bg-gray-200">
       <div className="bg-white h-12"></div>
-      
+
       {leadData && (
         <div className="flex flex-col ">
-         
-          <div className="flex flex-row justify-start items-center text-xl gap-5 pl-6 w-full lg:mt-5">
-            <div className="w-24 h-24 ml-4 ">
-              <LeadAvatar
-                name={leadData.name}
-                imageUrl="https://github.com/shadcn.png"
-              />
-            </div>
-            <div className="text-2xl font-extrabold">
-              <div
-                className="text-2xl font-extrabold flex items-center"
-                ref={ref}
-                onMouseEnter={() => setIsIconHovered(true)}
-                onMouseLeave={() => setIsIconHovered(false)}
-                onClick={(e) => e.stopPropagation()}
-              >
-                {isNameEditing ? (
-                  <Input
-                    type="text"
-                    value={updatedName}
-                    onChange={(e) => setUpdatedName(e.target.value)}
-                    className="bg-gray-100"
-                    onKeyDown={async (e) => {
-                      if (e.key === "Enter") {
-                        setIsNameEditing(false);
-                        try {
-                          const response = await axios.put(
-                            `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/leads/${props.id}`,
-                            { ...leadData, name: updatedName },
-                            {
-                              headers: {
-                                Authorization: `Bearer ${LocalStore.getAccessToken()}`,
-                              },
+          <div className="flex flex-row justify-between items-center text-xl gap-5 pl-6 pr-6 w-full lg:mt-5">
+            <div className="flex flex-row justify-start items-center gap-5">
+              <div className="w-24 h-24 ml-4 ">
+                <LeadAvatar
+                  name={leadData.name}
+                  imageUrl="https://github.com/shadcn.png"
+                />
+              </div>
+              <div className="text-2xl font-extrabold ">
+                <div
+                  className="text-2xl font-extrabold flex items-center flex-row"
+                  ref={ref}
+                  onMouseEnter={() => setIsIconHovered(true)}
+                  onMouseLeave={() => setIsIconHovered(false)}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {isNameEditing ? (
+                    <Input
+                      type="text"
+                      value={updatedName}
+                      onChange={(e) => setUpdatedName(e.target.value)}
+                      className="bg-gray-100"
+                      onKeyDown={async (e) => {
+                        if (e.key === "Enter") {
+                          setIsNameEditing(false);
+                          try {
+                            const response = await axios.put(
+                              `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/leads/${props.id}`,
+                              { ...leadData, name: updatedName },
+                              {
+                                headers: {
+                                  Authorization: `Bearer ${LocalStore.getAccessToken()}`,
+                                },
+                              }
+                            );
+                            if (response.data) {
+                              setLeadData(response.data);
                             }
-                          );
-                          if (response.data) {
-                            setLeadData(response.data);
+                          } catch (error) {
+                            console.error("Failed to update lead data:", error);
                           }
-                        } catch (error) {
-                          console.error("Failed to update lead data:", error);
                         }
-                      }
-                    }}
-                  />
-                ) : (
-                  <div onDoubleClick={() => setIsNameEditing(true)} >
-                    {leadData.name}
-                    {isIconHovered && (
-                      <button onClick={() => setIsNameEditing(true)} className="ml-2">
+                      }}
+                    />
+                  ) : (
+                    <div onDoubleClick={() => setIsNameEditing(true)}>
+                      {leadData.name}
+                      {isIconHovered && (
+                        <button
+                          onClick={() => setIsNameEditing(true)}
+                          className="ml-2"
+                        >
                           <Icon type="pencil" width={16} />
-                      </button>
-                    )}
-                  </div>
-                )}
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
+            <div>
+              <Button
+                className="w-full border rounded-3xl flex flex-row gap-2"
+                variant={"secondary"}
+                onClick={() => {
+                  router.push(
+                    `/uploads?document=${encodeURIComponent(
+                      leadData.documents.join(",")
+                    )}`
+                  );
+                }}
+              >
+                View Documents...
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="lucide lucide-book-marked"
+                >
+                  <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+                  <polyline points="10 2 10 10 13 7 16 10 16 2" />
+                </svg>
+              </Button>{" "}
+            </div>
           </div>
+
           <div className=" border-border-2 border-gray-200 w-[95%] mx-auto mt-4">
             <div className="flex flex-col mt-2 ">
               {titlesWithIcons.map((titleWithIcon) => (
@@ -304,60 +344,60 @@ const LeadSheet = (props: Props) => {
                   />
                 </div>
               </div>
-              {leadData.documents && (
-                <div className="mt-8 flex flex-col gap-2">
-                  {leadData.documents.map((document) => (
-                    <div key={document}>{document}</div>
-                  ))}
-                </div>
-              )}
 
+              {/* <div>
+                    <LeadDocuments documents={leadData.documents}/>
+              </div> */}
               <div className="mt-10">
-                <LeadNote id={leadData.id}/>
+                <LeadNote id={leadData.id} />
               </div>
 
               <div className="flex flex-row justify-between mt-8 pl-6 pr-6 mb-16 text-sm font-extralight text-gray-700">
                 <div>Lead ID: {leadData.id}</div>
-                <div className="flex flex-row gap-2 text-primary" onClick={async () => {
-              try {
-                const response = await axios.delete(
-                  `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/leads/${props.id}`,
-                  {
-                    headers: {
-                      Authorization: `Bearer ${LocalStore.getAccessToken()}`,
-                    },
-                  }
-                );
-                
-                if (response.status === 200 || response.status === 201) {
-                  console.log("Lead deleted successfully");
-                  setLeadDataDeleted(true);
-                } else {
-                  throw new Error("An error occurred while deleting the lead.");
-                }
-                 
-              } catch (err: any) {
-                toast({
-                  variant: "destructive",
-                  title: "Uh oh! Something went wrong.",
-                  description:
-                    `${
-                      err.response?.data?.message ||
-                      "An error occurred while deleting the lead."
-                    } ` +
-                    `${
-                      err.response?.data?.error
-                        ? `Error: ${err.response?.data?.error?.message}`
-                        : ""
-                    } ` +
-                    `${
-                      err.response?.data?.statusCode
-                        ? `Status Code: ${err.response?.data?.statusCode}`
-                        : ""
-                    }`,
-                });
-              }
-            }}>
+                <div
+                  className="flex flex-row gap-2 text-primary"
+                  onClick={async () => {
+                    try {
+                      const response = await axios.delete(
+                        `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/leads/${props.id}`,
+                        {
+                          headers: {
+                            Authorization: `Bearer ${LocalStore.getAccessToken()}`,
+                          },
+                        }
+                      );
+
+                      if (response.status === 200 || response.status === 201) {
+                        console.log("Lead deleted successfully");
+                        setLeadDataDeleted(true);
+                      } else {
+                        throw new Error(
+                          "An error occurred while deleting the lead."
+                        );
+                      }
+                    } catch (err: any) {
+                      toast({
+                        variant: "destructive",
+                        title: "Uh oh! Something went wrong.",
+                        description:
+                          `${
+                            err.response?.data?.message ||
+                            "An error occurred while deleting the lead."
+                          } ` +
+                          `${
+                            err.response?.data?.error
+                              ? `Error: ${err.response?.data?.error?.message}`
+                              : ""
+                          } ` +
+                          `${
+                            err.response?.data?.statusCode
+                              ? `Status Code: ${err.response?.data?.statusCode}`
+                              : ""
+                          }`,
+                      });
+                    }
+                  }}
+                >
                   <Icon type="trash" width={10} />
                   Delete Lead
                 </div>

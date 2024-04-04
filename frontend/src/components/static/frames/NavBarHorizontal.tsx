@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LocalStore } from "@/store/localstore";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export function NavBarHorizontal() {
@@ -43,7 +44,7 @@ export function NavBarHorizontal() {
               </div>
 
               <div className="flex-shrink-0 ml-4 lg:ml-0">
-                <a href="#" title="" className="flex items-center">
+                <Link href="/" title="" className="flex items-center">
                   <img
                     className="hidden w-auto h-8 lg:block"
                     src="https://landingfoliocom.imgix.net/store/collection/clarity-dashboard/images/logo.svg"
@@ -54,7 +55,7 @@ export function NavBarHorizontal() {
                     src="https://landingfoliocom.imgix.net/store/collection/clarity-dashboard/images/logo-symbol.svg"
                     alt=""
                   />
-                </a>
+                </Link>
               </div>
 
               <div className="flex-1 max-w-xs ml-8 lg:ml-32 mr-auto">

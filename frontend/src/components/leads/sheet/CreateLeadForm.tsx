@@ -7,7 +7,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogClose,
   Dialog,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -96,9 +95,7 @@ const CreateLeadForm = () => {
         formData.append("documents", file, file.name);
       });
     }
-
     try {
-      console.log(formData);
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/leads`,
         formData,
@@ -110,7 +107,6 @@ const CreateLeadForm = () => {
         }
       );
       if (response.status === 200 || response.status === 201) {
-        console.log("Lead created successfully");
         setLeadFormSubmitted(true);
         setIsOpen(false);
         leadCreationForm.reset();
@@ -161,239 +157,263 @@ const CreateLeadForm = () => {
     },
   });
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button className="flex flex-row gap-2" onClick={() => setIsOpen(true)}>
-          <Icon type="pencil" width={15} />
-          Create new lead
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Create a New Lead Here</DialogTitle>
-          <DialogDescription>Click save when youre done.</DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <Form {...leadCreationForm}>
-            <form
-              onSubmit={leadCreationForm.handleSubmit(onCreateLead)}
-              className="mt-4 space-y-4"
-            >
-              <FormField
-                control={leadCreationForm.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Email address *"
-                        className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={leadCreationForm.control}
-                name="address"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Address *"
-                        className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={leadCreationForm.control}
-                name="details"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Details"
-                        className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={leadCreationForm.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Phone *"
-                        className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={leadCreationForm.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Name *"
-                        className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="flex flex-row gap-2">
-                <FormField
-                  control={leadCreationForm.control}
-                  name="priority"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Select
-                          value={field.value?.toString()}
-                          onValueChange={(value: any) =>
-                            field.onChange(Number(value))
-                          }
-                        >
-                          <SelectTrigger className="w-[180px] h-12">
-                            <SelectValue placeholder="Select a priority" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectLabel>Priority</SelectLabel>
-                              <SelectItem value="1">1</SelectItem>
-                              <SelectItem value="2">2</SelectItem>
-                              <SelectItem value="3">3</SelectItem>
-                              <SelectItem value="4">4</SelectItem>
-                              <SelectItem value="5">5</SelectItem>
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+    <div>
+      {" "}
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+          <Button
+            className="flex flex-row gap-2"
+            onClick={() => setIsOpen(true)}
+          >
+            <Icon type="pencil" width={15} />
+            Create new lead
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Create a New Lead Here</DialogTitle>
+            <DialogDescription>Click save when youre done.</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Form {...leadCreationForm}>
+              <form
+                onSubmit={leadCreationForm.handleSubmit(onCreateLead)}
+                className="mt-4 space-y-4"
+              >
+                <div className="flex flex-row gap-2">
+                  {" "}
+                  <FormField
+                    control={leadCreationForm.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder="Email address *"
+                            className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={leadCreationForm.control}
+                    name="address"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder="Address *"
+                            className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="flex flex-row gap-2">
+                  {" "}
+                  <FormField
+                    control={leadCreationForm.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder="Name *"
+                            className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={leadCreationForm.control}
+                    name="details"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder="Details"
+                            className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="flex flex-row gap-2">
+                  <FormField
+                    control={leadCreationForm.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder="Phone *"
+                            className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={leadCreationForm.control}
+                    name="source"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder="Source"
+                            className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="flex flex-row gap-2">
+                  {" "}
+                  <FormField
+                    control={leadCreationForm.control}
+                    name="product.name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder="Product"
+                            className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={leadCreationForm.control}
+                    name="service.name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder="Service"
+                            className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="flex flex-row gap-2">
+                  {" "}
+                  {isAdmin && (
+                    <FormField
+                      control={leadCreationForm.control}
+                      name="referenceNo"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              placeholder="Agent Reference No"
+                              className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   )}
-                />
+                  <FormField
+                    control={leadCreationForm.control}
+                    name="priority"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Select
+                            value={field.value?.toString()}
+                            onValueChange={(value: any) =>
+                              field.onChange(Number(value))
+                            }
+                          >
+                            <SelectTrigger className="lg:w-[270px] h-12">
+                              <SelectValue placeholder="Select a priority" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                <SelectLabel>Priority</SelectLabel>
+                                <SelectItem value="1">1</SelectItem>
+                                <SelectItem value="2">2</SelectItem>
+                                <SelectItem value="3">3</SelectItem>
+                                <SelectItem value="4">4</SelectItem>
+                                <SelectItem value="5">5</SelectItem>
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
                 <FormField
                   control={leadCreationForm.control}
-                  name="source"
+                  name="documents"
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
                         <Input
-                          placeholder="Source"
-                          className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
-                          {...field}
+                          type="file"
+                          multiple
+                          onChange={(e) => {
+                            if (e.target.files) {
+                              const files = Array.from(e.target.files);
+                              field.onChange(files);
+                            }
+                          }}
+                          className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-md sm:text-sm"
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              </div>
-              <FormField
-                control={leadCreationForm.control}
-                name="product.name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Product"
-                        className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={leadCreationForm.control}
-                name="service.name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Service"
-                        className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {isAdmin && (
-                <FormField
-                  control={leadCreationForm.control}
-                  name="referenceNo"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          placeholder="Agent Reference No"
-                          className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-              <FormField
-                control={leadCreationForm.control}
-                name="documents"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        type="file"
-                        multiple
-                        onChange={(e) => {
-                          if (e.target.files) {
-                            const files = Array.from(e.target.files);
-                            field.onChange(files);
-                          }
-                        }}
-                        className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-md sm:text-sm"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <DialogFooter>
-                <Button
-                  type="submit"
-                  variant="default"
-                  className="inline-flex items-center justify-center w-full px-6 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 bg-primary border border-transparent rounded-md"
-                >
-                  Create Lead
-                </Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </div>
-      </DialogContent>
-    </Dialog>
+
+                <DialogFooter>
+                  <Button
+                    type="submit"
+                    variant="default"
+                    className="inline-flex items-center justify-center w-full px-6 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 bg-primary border border-transparent rounded-md"
+                  >
+                    Create Lead
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 };
 

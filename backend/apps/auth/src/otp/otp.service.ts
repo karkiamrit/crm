@@ -24,6 +24,6 @@ export class OtpService {
   }
 
   async update(otp: Otp, id: number): Promise<Otp> {
-    return await this.otpRepository.findOneAndUpdate({ id }, otp);
+    return await this.otpRepository.findOneAndUpdate({where:{id:id} }, otp);
   }
 }

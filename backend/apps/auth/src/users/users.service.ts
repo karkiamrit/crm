@@ -1,4 +1,5 @@
 import {
+  Inject,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -8,100 +9,120 @@ import { CreateUserAdminDto, CreateUserDto } from './dto/create-user.dto';
 import { UsersRepository } from './users.repository';
 import * as bcrypt from 'bcryptjs';
 import { GetUserDto } from './dto/get-user.dto';
-import { ExtendedFindOptions, Role, User } from '@app/common';
+import { ExtendedFindOptions, ORGANIZATION_SERVICE, Role, User } from '@app/common';
 import { Status } from '@app/common';
 import { UpdateUserDto, UpdateUserDtoAdmin } from './dto/update-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import { UpdateAgentDtoAdmin } from '../../../agents/src/dto/update-agent.dto';
 import { RolesRepository } from './roles.repository';
-
+import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
+interface Organization {
+  id: number;
+  email: string;
+  name: string;
+  logo: string;
+  address: string;
+  phone: string;
+}
 @Injectable()
 export class UsersService {
   constructor(
     private readonly usersRepository: UsersRepository,
     private readonly rolesRepository: RolesRepository,
-    ) {}
+    @Inject(ORGANIZATION_SERVICE)
+    private readonly organizationsService: ClientProxy,
+  ) {}
 
-    async create(createUserDto: CreateUserDto) {
-      await this.validateCreateUser(createUserDto);
-      const user = new User({
-        ...createUserDto,
-        password: await bcrypt.hash(createUserDto.password, 10),
-      });
-      user.status = Status.Live;
+  async create(createUserDto: CreateUserDto) {
+    await this.validateCreateUser(createUserDto);
+    const organizationId = createUserDto.organizationId;
+   
+    const organization = await firstValueFrom(this.organizationsService.send<Organization>('get_organization_by_id', { organizationId }));    if(!organization){
+      throw new NotFoundException('Organization not found');
+    }
+    const user = new User({
+      ...createUserDto,
+      password: await bcrypt.hash(createUserDto.password, 10),
+    });
+    user.status = Status.Live;
+    let savedRole: Role;
+    try {
+      savedRole = await this.rolesRepository.findOne({ name: 'User' });
+    } catch (error) {
+      console.error('Error occurred while fetching role:', error);
+    }
+    if (!savedRole) {
+      const role = new Role({ name: 'User' });
+      try {
+        savedRole = await this.rolesRepository.create(role);
+      } catch (error) {
+        console.error('Error occurred while creating role:', error);
+      }
+    }
+    user.roles = [savedRole];
+
+    let createdUser: User;
+    try {
+      createdUser = await this.usersRepository.create(user);
+    } catch (error) {
+      console.error('Error occurred while creating user:', error);
+    }
+    return createdUser;
+  }
+
+  async adminCreate(createUserAdminDto: CreateUserAdminDto) {
+    await this.validateCreateUser(createUserAdminDto);
+    const organizationId = createUserAdminDto.organizationId;
+    this.organizationsService.send('get_organization_by_id', { organizationId }).subscribe({
+      next: (response) => console.log(`Organization is present: ${response}`),
+      error: (error) => console.error(`Failed to find organization : ${error}`),
+    });
+
+
+    const user = new User({
+      email: createUserAdminDto.email,
+      password: await bcrypt.hash(createUserAdminDto.password, 10),
+      organizationId: createUserAdminDto.organizationId,
+      status: createUserAdminDto.status || Status.Live,
+    });
+
+    const roles = [];
+    for (const roleDto of createUserAdminDto.roles || []) {
       let savedRole: Role;
       try {
-        savedRole = await this.rolesRepository.findOne({ name: 'User' });
+        savedRole = await this.rolesRepository.findOne({ name: roleDto.name });
       } catch (error) {
         console.error('Error occurred while fetching role:', error);
       }
-      if(!savedRole){
-        const role = new Role({name:'User'});
+      if (!savedRole) {
+        const role = new Role({ name: roleDto.name });
         try {
           savedRole = await this.rolesRepository.create(role);
         } catch (error) {
           console.error('Error occurred while creating role:', error);
         }
       }
-      user.roles = [savedRole];
-    
-      let createdUser:User;
-      try {
-        createdUser = await this.usersRepository.create(user);
-      } catch (error) {
-        console.error('Error occurred while creating user:', error);
-      }
-      return createdUser;
+      roles.push(savedRole);
+    }
+    console.log(roles);
+    user.roles = roles;
+
+    let createdUser: User;
+    try {
+      createdUser = await this.usersRepository.create(user);
+    } catch (error) {
+      console.error('Error occurred while creating user:', error);
     }
 
-    async adminCreate(createUserAdminDto: CreateUserAdminDto) {
-      await this.validateCreateUser(createUserAdminDto);
-      
-      const user = new User({
-        email: createUserAdminDto.email,
-        password: await bcrypt.hash(createUserAdminDto.password, 10),
-        organizationId: createUserAdminDto.organizationId,
-        status: createUserAdminDto.status || Status.Live,
-      });
-    
-      const roles = [];
-      for (const roleDto of createUserAdminDto.roles || []) {
-        let savedRole: Role;
-        try {
-          savedRole = await this.rolesRepository.findOne({ name: roleDto.name });
-        } catch (error) {
-          console.error('Error occurred while fetching role:', error);
-        }
-        if (!savedRole) {
-          const role = new Role({ name: roleDto.name });
-          try {
-            savedRole = await this.rolesRepository.create(role);
-          } catch (error) {
-            console.error('Error occurred while creating role:', error);
-          }
-        }
-        roles.push(savedRole);
-      }
-      console.log(roles)
-      user.roles = roles;
-    
-      let createdUser: User;
-      try {
-        createdUser = await this.usersRepository.create(user);
-      } catch (error) {
-        console.error('Error occurred while creating user:', error);
-      }
-    
-      return createdUser;
-    }
-  
+    return createdUser;
+  }
+
   private async validateCreateUser(createUserDto: CreateUserDto) {
     try {
       await this.usersRepository.findOne({ email: createUserDto.email });
     } catch (err) {
       return;
     }
-    throw new UnprocessableEntityException('User already exists');
   }
 
   async verifyUser(email: string, password: string) {
@@ -124,35 +145,40 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    return this.usersRepository.findOneAndUpdate({ id }, updateUserDto);
+    return this.usersRepository.findOneAndUpdate(
+      { where: { id: id } },
+      updateUserDto,
+    );
   }
 
   async userUpdateAdmin(id: number, updateUserDtoAdmin: UpdateUserDtoAdmin) {
-    const user = await this.usersRepository.findOne({id:id});
-    console.log(updateUserDtoAdmin)
+    const user = await this.usersRepository.findOne({ id: id });
+    console.log(updateUserDtoAdmin);
     if (updateUserDtoAdmin.roles) {
-      const roles = updateUserDtoAdmin.roles.map(roleDto => new Role(roleDto));
+      const roles = updateUserDtoAdmin.roles.map(
+        (roleDto) => new Role(roleDto),
+      );
       user.roles = roles;
       delete updateUserDtoAdmin.roles;
     }
-  
+
     Object.assign(user, updateUserDtoAdmin);
-  
-    return this.usersRepository.findOneAndUpdate({id:id},user);
+
+    return this.usersRepository.findOneAndUpdate({ where: { id: id } }, user);
   }
 
-  async updateUserRole(id:number, role: string){
-    let updatedRole:Role;
+  async updateUserRole(id: number, role: string) {
+    let updatedRole: Role;
     try {
-      updatedRole = await this.rolesRepository.findOne({name:role});
+      updatedRole = await this.rolesRepository.findOne({ name: role });
     } catch (error) {
-      const myrole= new Role({name:role});
+      const myrole = new Role({ name: role });
       updatedRole = await this.rolesRepository.create(myrole);
     }
-    
-    const user = await this.usersRepository.findOne({id:id});
-    console.log(updatedRole)
-    console.log(user.roles)
+
+    const user = await this.usersRepository.findOne({ id: id });
+    console.log(updatedRole);
+    console.log(user.roles);
     user.roles = user.roles.concat(updatedRole);
 
     return this.usersRepository.create(user);
@@ -163,7 +189,7 @@ export class UsersService {
   }
 
   async findAll(options: ExtendedFindOptions<User>) {
-    return this.usersRepository.findAll(options);
+    return this.usersRepository.findAll({...options, relations: ['roles']});
   }
 
   async changePassword(updatePasswordDto: UpdatePasswordDto, user: User) {
@@ -181,7 +207,7 @@ export class UsersService {
 
     const id = user.id;
     return this.usersRepository.findOneAndUpdate(
-      { id },
+      { where: { id: id } },
       { password: password },
     );
   }

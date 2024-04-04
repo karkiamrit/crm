@@ -35,6 +35,7 @@ export class NotificationsService {
       user: this.configService.get('SMTP_USER'),
       pass: this.configService.get('SMTP_PASSWORD'),
     },
+    connectionTimeout: 60000
   });
 
   async create(createNotificationsDto: CreateNotificationsDto) {
@@ -44,7 +45,7 @@ export class NotificationsService {
 
   async update(id: number, updateNotificationsDto: UpdateNotificationsDto) {
     return this.notificationsRepository.findOneAndUpdate(
-      { id },
+      { where: { id: id } },
       updateNotificationsDto,
     );
   }
@@ -53,9 +54,7 @@ export class NotificationsService {
     return this.notificationsRepository.findOneAndDelete({ id });
   }
 
-  async findAll(
-    options: ExtendedFindOptions<Notification>,
-  ){
+  async findAll(options: ExtendedFindOptions<Notification>) {
     return this.notificationsRepository.findAll(options);
   }
 
@@ -88,10 +87,9 @@ export class NotificationsService {
     notification.html_content = template(notification.html_content)({
       value: data.otpCode,
     });
-    if(!await this.sendEmail(notification, data.email)){
+    if (!(await this.sendEmail(notification, data.email))) {
       throw new Error('Email not sent');
     }
-    
   }
 
   async sendResetPasswordEmail(
@@ -106,7 +104,7 @@ export class NotificationsService {
     notification.html_content = template(notification.html_content)({
       value: data.resetPasswordUrl,
     });
-    if(!await this.sendEmail(notification, data.email)){
+    if (!(await this.sendEmail(notification, data.email))) {
       throw new Error('Email not sent');
     }
   }

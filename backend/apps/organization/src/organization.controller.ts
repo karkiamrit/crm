@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   Post,
   Put,
@@ -21,6 +22,7 @@ import { Organization } from './entities/organization.entity';
 import { diskStorage } from 'multer';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { extname } from 'path';
+import { EventPattern, Payload } from '@nestjs/microservices';
 
 @Controller('organizations')
 export class OrganizationsController {
@@ -55,7 +57,17 @@ export class OrganizationsController {
           callback(null, name);
         },
       }),
+      fileFilter: (req, file, callback) => {
+        // Only accept images
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif|webp)$/)) {
+          // Reject file
+          return callback(new Error('Only image files are allowed!'), false);
+        }
+        // Accept file
+        callback(null, true);
+      },
     }),
+    
   )
   async create(
     @UploadedFile() file: Express.Multer.File,
@@ -96,7 +108,7 @@ export class OrganizationsController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  @Roles('Admin')
+  // @Roles('Admin')
   @ApiOperation({ summary: 'Get all organizations' })
   @ApiBearerAuth()
   @ApiResponse({ status: 200, description: 'Return all organizations.', type: [OrganizationReponseDto]})
@@ -147,4 +159,16 @@ export class OrganizationsController {
     console.log(id)
     return this.organizationsService.updateLogo(id, file.path);
   }
+
+  @EventPattern('get_organization_by_id')
+  async getOrganizationById(@Payload() data: { id: number}) {
+    const { id } = data;
+    const organization = this.organizationsService.getOne(id);
+    if(!organization){
+      throw new NotFoundException('Organization not found');
+    }
+    return organization;
+  }
+
+
 }

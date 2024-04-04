@@ -65,7 +65,10 @@ export class AgentsService {
   }
 
   async update(id: number, updateAgentsDto: UpdateAgentsDto) {
-    return this.agentsRepository.findOneAndUpdate({ id }, updateAgentsDto);
+    return this.agentsRepository.findOneAndUpdate(
+      { where: { id: id } },
+      updateAgentsDto,
+    );
   }
 
   async delete(id: number) {
@@ -102,7 +105,7 @@ export class AgentsService {
   async addDocuments(id: number, documents: string[]): Promise<Agent> {
     const agent = await this.agentsRepository.findOne({ id });
     agent.documents = [...agent.documents, ...documents];
-    return this.agentsRepository.findOneAndUpdate({ id }, agent);
+    return this.agentsRepository.findOneAndUpdate({ where: { id: id } }, agent);
   }
 
   async updateDocument(
@@ -114,10 +117,10 @@ export class AgentsService {
     const index = agent.documents.findIndex((doc) => doc.includes(filename));
     if (index !== -1) {
       const unlinkAsync = promisify(unlink);
-      await unlinkAsync(agent.documents[index]); // delete the old file
-      agent.documents[index] = newFilePath; // replace with the new file
+      await unlinkAsync(agent.documents[index]);
+      agent.documents[index] = newFilePath; 
     }
-    return this.agentsRepository.findOneAndUpdate({ id }, agent);
+    return this.agentsRepository.findOneAndUpdate({ where: { id: id } }, agent);
   }
 
   async deleteDocument(id: number, filename: string): Promise<Agent> {

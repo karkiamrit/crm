@@ -7,6 +7,7 @@ import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import { json } from 'express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(OrganizationModule);
@@ -20,6 +21,11 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document); 
+  app.use('/uploads', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+  }, express.static('/usr/src/app/uploads'));
   
   const configService = app.get(ConfigService);
   app.connectMicroservice({

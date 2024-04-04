@@ -22,7 +22,7 @@ export class OrganizationsService {
 
   async update(id: number, updateOrganizationsDto: UpdateOrganizationsDto) {
     return this.organizationsRepository.findOneAndUpdate(
-      { id },
+      { where: { id: id } },
       updateOrganizationsDto,
     );
   }
@@ -31,9 +31,7 @@ export class OrganizationsService {
     return this.organizationsRepository.findOneAndDelete({ id });
   }
 
-  async findAll(
-    options: ExtendedFindOptions<Organization>,
-  ) {
+  async findAll(options: ExtendedFindOptions<Organization>) {
     return this.organizationsRepository.findAll(options);
   }
 
@@ -47,7 +45,9 @@ export class OrganizationsService {
   ): Promise<User[]> {
     return new Promise((resolve, reject) => {
       this.usersService
-        .send<User[]>('get_all_users_by_organization_id', { where: { organizationId }, options })
+        .send<
+          User[]
+        >('get_all_users_by_organization_id', { where: { organizationId }, options })
         .subscribe({
           next: (users) => resolve(users),
           error: (error) => reject(error),
@@ -62,7 +62,7 @@ export class OrganizationsService {
     // const organization = await this.organizationsRepository.findOne({id: organizationId});
     console.log('filePath', filePath);
     const organization = await this.organizationsRepository.findOneAndUpdate(
-      { id: organizationId },
+      { where: { id: organizationId } },
       { logo: filePath },
     );
     console.log(organization);

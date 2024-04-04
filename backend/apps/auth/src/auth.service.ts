@@ -47,7 +47,7 @@ export class AuthService {
       throw new BadRequestException('User not found');
     }
     const otp = await this.otpService.create(user);
-    console.log(otp)
+    console.log(otp);
     this.notificationsService
       .send('send_otp', { email, otpCode: otp.code })
       .subscribe();
@@ -73,10 +73,12 @@ export class AuthService {
     await this.otpService.update(otp, otp.id);
 
     user.isVerified = true;
-    if(!await this.usersRepository.findOneAndUpdate(
-      { id: user.id },
-      { isVerified: true },
-    )){
+    if (
+      !(await this.usersRepository.findOneAndUpdate(
+        { where: { id: user.id } },
+        { isVerified: true },
+      ))
+    ) {
       throw new BadRequestException('User not found');
     }
     return true;
@@ -109,7 +111,7 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(password, 10);
     const id = user.id;
     await this.usersRepository.findOneAndUpdate(
-      { id },
+      { where: { id: id } },
       { password: hashedPassword },
     );
     return true;

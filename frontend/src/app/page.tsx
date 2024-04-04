@@ -6,6 +6,7 @@ import {Dashboard} from '@/components/Dashboard';
 import useVerticalDashboard from '@/store/dashboardStore';
 import LeadsPage from '@/components/leads/Leads';
 import { LocalStore } from '@/store/localstore';
+import OrganizationsPage from '@/components/organizations/Organization';
 
 const Home = () => {
 
@@ -26,6 +27,7 @@ const Home = () => {
 
       {loggedIn && selectedLink === '/dashboard' && (<div><Dashboard/></div>)}
       {loggedIn && selectedLink === '/leads' && (<div><LeadsPage/></div>)}
+      {loggedIn && selectedLink === '/organizations' && (<div><OrganizationsPage/></div>)}
     </div>
   )
 }

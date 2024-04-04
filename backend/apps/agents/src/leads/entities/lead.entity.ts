@@ -3,8 +3,6 @@ import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, One
 import { LeadTimeline } from "../timelines/timelines.entity";
 import { Product } from "../products/products.entity";
 import { Service } from "../services/services.entity";
-import { Agent } from "../../entities/agent.entity";
-import { Note } from "../../notes/entities/note.entity";
 
 export enum LeadsStatus{
     INITIAL= 'INITIAL',

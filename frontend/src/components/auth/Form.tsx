@@ -22,7 +22,7 @@ import { LocalStore } from "@/store/localstore";
 const signupFormSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
-  organizationId: z.number(),
+  organizationId: z.string().transform(Number)
 });
 
 const loginFormSchema = z.object({
@@ -45,14 +45,14 @@ export default function AuthForm() {
     defaultValues: {
       email: "",
       password: "",
-      organizationId: 1,
+      organizationId: NaN
     },
   });
   const loginForm = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
       email: "",
-      password: "",
+      password: ""
     },
   });
   const otpForm = useForm<z.infer<typeof otpFormSchema>>({
@@ -173,6 +173,7 @@ export default function AuthForm() {
                         <FormItem>
                           <FormControl>
                             <Input
+                             type="number"
                               placeholder="Your Organization ID"
                               className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
                               {...field}

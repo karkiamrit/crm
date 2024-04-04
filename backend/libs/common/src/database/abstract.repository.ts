@@ -107,32 +107,35 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
   async findAll(
     options: ExtendedFindOptions<T>,
   ): Promise<{ data: T[]; total: number }> {
+
+    let queryBuilder = this.entityRepository.createQueryBuilder('entity'); // Define qb outside the conditional block
+
     // If where is a function, use a query builder
     if (typeof options.where === 'function') {
-      const qb = this.entityRepository.createQueryBuilder('entity');
+       
 
-      // Call the where function with the query builder
-      options.where(qb);
+        // Call the where function with the query builder
+        options.where(queryBuilder);
 
-      // Apply ordering
-      if (options.order) {
-        for (const [key, value] of Object.entries(options.order)) {
-          qb.addOrderBy(`entity.${key}`, value);
+        // Apply ordering
+        if (options.order) {
+            for (const [key, value] of Object.entries(options.order)) {
+              queryBuilder.addOrderBy(`entity.${key}`, value);
+            }
         }
-      }
 
-      // Apply pagination
-      if (options.skip) {
-        qb.skip(options.skip);
-      }
-      if (options.take) {
-        qb.take(options.take);
-      }
+        // Apply pagination
+        if (options.skip) {
+          queryBuilder.skip(options.skip);
+        }
+        if (options.take) {
+          queryBuilder.take(options.take);
+        }
 
-      // Execute the query
-      const [data, total] = await qb.getManyAndCount(); // Modify the return statement to get the query results and count
+        // Execute the query
+        const [data, total] = await queryBuilder.getManyAndCount(); // Modify the return statement to get the query results and count
 
-      return { data, total }; // Return an object with the properties 'data' and 'total'
+        return { data, total }; // Return an object with the properties 'data' and 'total'
     }
 
     // If where is not a function, use the existing implementation
@@ -147,8 +150,14 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
       return conditions;
     }, {} as FindOptionsWhere<T>);
 
-    const qb = this.entityRepository.createQueryBuilder('entity');
-
+    let qb = this.entityRepository.createQueryBuilder('entity');
+    if (options.relations && options.relations.length > 0) {
+      options.relations.forEach(relation => {
+        qb = qb.leftJoinAndSelect(`entity.${relation}`, relation);
+      });
+      
+    
+  }
     const { skip, take } = options;
 
     let orderOption = {};

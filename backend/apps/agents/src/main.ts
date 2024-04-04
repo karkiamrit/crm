@@ -8,6 +8,7 @@ import * as cookieParser from 'cookie-parser';
 import { json } from 'express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { HttpExceptionFilter } from '@app/common/exception/exception.filter';
+import * as express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AgentsModule);
@@ -16,13 +17,21 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Agent')
-    .setDescription('The Agent API is a microservice for agent crud. It is used to manage agent.')
+    .setDescription(
+      'The Agent API is a microservice for agent crud. It is used to manage agent.',
+    )
     .setVersion('1.0')
     .addTag('agent')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document); 
-  
+  SwaggerModule.setup('api', app, document);
+  app.use('/uploads', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+  }, express.static('/usr/src/app/uploads'));
+
+
   const configService = app.get(ConfigService);
   app.connectMicroservice({
     transport: Transport.TCP,
