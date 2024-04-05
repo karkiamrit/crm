@@ -9,7 +9,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserAdminDto, CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 import { CurrentUser, ExtendedFindOptions, Role, Roles } from '@app/common';
 import { User } from '@app/common';
@@ -41,6 +41,18 @@ export class UsersController {
   })
   async signUp(@Body() createUserDto: CreateUserDto) {
     return await this.usersService.create(createUserDto);
+  }
+
+  @Post('create')
+  @ApiOperation({ summary: 'Sign up a new user' })
+  @ApiBody({ type: CreateUserAdminDto })
+  @ApiResponse({
+    status: 201,
+    description: 'The user has been successfully created.',
+    type: UserResponse,
+  })
+  async create(@Body() createUserDto: CreateUserAdminDto) {
+    return await this.usersService.adminCreate(createUserDto);
   }
 
   @Get('me')

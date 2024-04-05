@@ -34,7 +34,10 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    await this.validateCreateUser(createUserDto);
+    const existingUser = await this.validateCreateUser(createUserDto);
+    if(existingUser){
+      throw new UnprocessableEntityException('User with this email already exists');
+    }
     const organizationId = createUserDto.organizationId;
    
     const organization = await firstValueFrom(this.organizationsService.send<Organization>('get_organization_by_id', { organizationId }));    if(!organization){
@@ -71,19 +74,21 @@ export class UsersService {
   }
 
   async adminCreate(createUserAdminDto: CreateUserAdminDto) {
-    await this.validateCreateUser(createUserAdminDto);
+    const existingUser = await this.validateCreateUser(createUserAdminDto);
+    if(existingUser){
+      throw new UnprocessableEntityException('User with this email already exists');
+    }
     const organizationId = createUserAdminDto.organizationId;
-    this.organizationsService.send('get_organization_by_id', { organizationId }).subscribe({
-      next: (response) => console.log(`Organization is present: ${response}`),
-      error: (error) => console.error(`Failed to find organization : ${error}`),
-    });
-
+    const organization = await firstValueFrom(this.organizationsService.send<Organization>('get_organization_by_id', { organizationId }));    if(!organization){
+      throw new NotFoundException('Organization not found');
+    }
 
     const user = new User({
       email: createUserAdminDto.email,
       password: await bcrypt.hash(createUserAdminDto.password, 10),
       organizationId: createUserAdminDto.organizationId,
       status: createUserAdminDto.status || Status.Live,
+      isVerified: true
     });
 
     const roles = [];
@@ -117,11 +122,12 @@ export class UsersService {
     return createdUser;
   }
 
-  private async validateCreateUser(createUserDto: CreateUserDto) {
+  private async validateCreateUser(createUserDto: CreateUserDto | CreateUserAdminDto): Promise<User | null> {
     try {
-      await this.usersRepository.findOne({ email: createUserDto.email });
+      return await this.usersRepository.findOne({ email: createUserDto.email });
     } catch (err) {
-      return;
+      console.error('Error occurred while validating user:', err);
+      return null;
     }
   }
 

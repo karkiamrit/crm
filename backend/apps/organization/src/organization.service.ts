@@ -65,7 +65,6 @@ export class OrganizationsService {
       { where: { id: organizationId } },
       { logo: filePath },
     );
-    console.log(organization);
     return organization;
   }
 }

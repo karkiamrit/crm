@@ -3,17 +3,21 @@ import axios from "axios";
 import Icon from "@/components/icons";
 import { LocalStore } from "@/store/localstore";
 import { Organization } from "../../Organization";
+import useAuth from "@/app/hooks/useAuth";
 
 interface EditableOrganizationNameProps {
   organization: Organization;
+  hasAdminRole: boolean | undefined;
 }
 
 const EditableOrganizationName: React.FC<EditableOrganizationNameProps> = ({
   organization,
+  hasAdminRole
 }) => {
   const [isNameEditing, setIsNameEditing] = useState(false);
   const [updatedName, setUpdatedName] = useState(organization.name);
   const [isIconHovered, setIsIconHovered] = useState(false);
+  
 
   const handleNameUpdate = async () => {
     try {
@@ -59,7 +63,7 @@ const EditableOrganizationName: React.FC<EditableOrganizationNameProps> = ({
           onMouseLeave={() => setIsIconHovered(false)}
         >
           {updatedName}
-          {isIconHovered && (
+          {isIconHovered && hasAdminRole && (
             <button onClick={() => setIsNameEditing(true)} className="ml-2">
               <Icon type="pencil" width={20} />
             </button>

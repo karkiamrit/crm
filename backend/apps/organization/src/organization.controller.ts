@@ -142,7 +142,7 @@ export class OrganizationsController {
   @ApiOperation({ summary: 'Upload organization logo' })
   @ApiResponse({ status: 200, description: 'The logo has been successfully uploaded.'})
   @UseInterceptors(
-    FileInterceptor('logo', {
+    FileInterceptor('file', {
       storage: diskStorage({
         destination: './uploads', // specify the path where the files should be saved
         filename: (req, file, callback) => {

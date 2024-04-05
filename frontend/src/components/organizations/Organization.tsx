@@ -28,6 +28,10 @@ import { Avatar, AvatarImage } from "../ui/avatar";
 import { Separator } from "../ui/separator";
 import OrganizationFrame from "./row/Items/OrganizationFrame";
 import EditableOrganizationName from "./row/Items/Editable OrganizationName";
+import ProfileAvatar from "./row/Items/OrganizationProfileAvatar";
+import CreateUserForm from "./row/Items/UserCreate";
+import useUserCreated from "@/store/useUserCreated";
+import useFetchOrganization from "@/app/hooks/useFetchOrganization";
 
 export interface Organization {
   id: number;
@@ -64,36 +68,18 @@ const OrganizationsPage: React.FC = () => {
     initialFilterValues[title.toLowerCase()] = "";
   });
   const [tempFilter, setTempFilter] = useState<Range | null>(null);
-  const { isOrganizationFormSubmitted, setOrganizationFormSubmitted } =
-    useOrganizationFormSubmitted();
   const [totalUsers, setTotalUsers] = useState(0);
   const { userData, loading } = useAuth();
   const [page, setPage] = useState(1);
-
+  const hasAdminRole = userData?.roles.some((role) => role.name === "Admin");
+  const {isUserCreated, setUserCreated} = useUserCreated();
+  // const {isOrganizationFormSubmitted, setOrganizationFormSubmitted} = useOrganizationFormSubmitted();
   const pageSize = 8;
 
   const [organization, setOrganization] = useState<Organization | null>(null);
 
-  useEffect(() => {
-    if (userData && userData.organizationId) {
-      // Fetch organization data based on userData.organizationId
-      axios
-        .get(
-          `${process.env.NEXT_PUBLIC_BACKEND_API_URL_ORGANIZATIONS}/organizations/${userData.organizationId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${LocalStore.getAccessToken()}`,
-            },
-          }
-        )
-        .then((response) => {
-          setOrganization(response.data);
-        })
-        .catch((error) => {
-          console.error("Error fetching organization data:", error);
-        });
-    }
-  }, [userData]);
+  useFetchOrganization(setOrganization);
+
 
   const fetchUsersFromApi = async (url: string, appliedFilter: Range[]) => {
     const rangeFields = ["email", "role"]; // Add other range fields here
@@ -195,17 +181,18 @@ const OrganizationsPage: React.FC = () => {
 
   useEffect(() => {}, [users]);
 
+
   useEffect(() => {
-    if (isOrganizationFormSubmitted) {
+    if (isUserCreated) {
       const newAppliedFilter = Object.values(filter).map((filter) => ({
         ...filter,
       }));
       fetchUsers(newAppliedFilter).then((newUsers) => {
         setUsers(newUsers);
       });
-      setOrganizationFormSubmitted(false);
+      setUserCreated(false);
     }
-  }, [isOrganizationFormSubmitted]);
+  }, [isUserCreated]);
 
   // Calculate total pages
   const totalPages = Math.ceil(totalUsers / pageSize);
@@ -219,27 +206,24 @@ const OrganizationsPage: React.FC = () => {
         <div className="flex flex-row items-center justify-between gap-6 lg:pb-6">
           <div className="flex flex-row items-center gap-6 pl-6">
             {organization?.logo && (
-              <Avatar className="w-24 h-24">
-                <AvatarImage
-                  src={
-                    process.env.NEXT_PUBLIC_BACKEND_API_URL_ORGANIZATIONS +
-                    "/" +
-                    organization?.logo
-                  }
-                  width={200}
-                  height={200}
-                  alt="logo image"
-                />
-              </Avatar>
+              <ProfileAvatar
+                src={
+                  process.env.NEXT_PUBLIC_BACKEND_API_URL_ORGANIZATIONS +
+                  "/" +
+                  organization?.logo
+                }
+                organizationId={organization.id}
+              />
             )}
-            {/* <div className="text-4xl font-bold">
-              {organization?.name
-                .split(" ")
-                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(" ")}
-            </div> */}
-            {organization && <EditableOrganizationName organization={organization} />}
+            
+            {organization && (
+              <EditableOrganizationName
+                organization={organization}
+                hasAdminRole={hasAdminRole}
+              />
+            )}
           </div>
+          <div><CreateUserForm/></div>
 
           {/* <div className="text-black flex flex-row items-center justify-end pr-6">
             <CreateOrganizationForm />
@@ -399,7 +383,21 @@ const OrganizationsPage: React.FC = () => {
                 )}
               </table>
             </div>
-            <Pagination className="mt-10 flex justify-end pr-7">
+            
+          </div>
+          
+          {organization && (
+            <OrganizationFrame
+              id= {organization.id}
+              email={organization.email}
+              phone={organization.phone}
+              address={organization.address}
+              hasAdminRole={hasAdminRole}
+            />
+          )}
+        </div>
+      </div>
+      <Pagination className="flex justify-center pl-24">
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious
@@ -438,16 +436,6 @@ const OrganizationsPage: React.FC = () => {
                 </PaginationItem>
               </PaginationContent>
             </Pagination>
-          </div>
-          {organization && (
-            <OrganizationFrame
-              email={organization.email}
-              phone={organization.phone}
-              address={organization.address}
-            />
-          )}
-        </div>
-      </div>
     </div>
   );
 };

@@ -15,6 +15,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
+import Icon from "@/components/icons";
 
 type Note = {
   id: number;
@@ -25,7 +27,7 @@ type Note = {
 };
 
 const LeadNote: React.FC<{ id: number }> = ({ id }) => {
-  const {toast} = useToast();
+  const { toast } = useToast();
   const [notes, setNotes] = useState<Note[]>([]);
   const [notesCount, setNotesCount] = useState(0);
 
@@ -48,7 +50,6 @@ const LeadNote: React.FC<{ id: number }> = ({ id }) => {
         }
       )
       .then((response) => {
-       
         setNotes(
           notes.map((note) => (note.id === id ? { ...note, content } : note))
         );
@@ -58,7 +59,9 @@ const LeadNote: React.FC<{ id: number }> = ({ id }) => {
         toast({
           variant: "destructive",
           title: "Uh oh! Something went wrong.",
-          description: error.response?.data?.message || `Failed to update note: ${error.message}`,
+          description:
+            error.response?.data?.message ||
+            `Failed to update note: ${error.message}`,
         });
       });
   };
@@ -71,7 +74,7 @@ const LeadNote: React.FC<{ id: number }> = ({ id }) => {
         },
       })
       .then((response) => {
-        setNotesCount(notesCount-1)
+        setNotesCount(notesCount - 1);
         setNotes(notes.filter((note) => note.id !== id));
       })
       .catch((error) => {
@@ -86,17 +89,21 @@ const LeadNote: React.FC<{ id: number }> = ({ id }) => {
 
   const handleCreate = (content: string) => {
     axios
-      .post(`${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/notes`, {
-        content,
-        leadId: id
-      }, {
-        headers: {
-          Authorization: `Bearer ${LocalStore.getAccessToken()}`,
+      .post(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/notes`,
+        {
+          content,
+          leadId: id,
         },
-      })
+        {
+          headers: {
+            Authorization: `Bearer ${LocalStore.getAccessToken()}`,
+          },
+        }
+      )
       .then((response) => {
-        setNotesCount(notesCount+1)
-        setNotes(prevNotes => [...prevNotes, response.data]);
+        setNotesCount(notesCount + 1);
+        setNotes((prevNotes) => [...prevNotes, response.data]);
       })
       .catch((error) => {
         console.error(`Failed to create note: ${error.message}`);
@@ -151,13 +158,12 @@ const LeadNote: React.FC<{ id: number }> = ({ id }) => {
                   </Avatar>
                   {note.author}
                 </p>
-            
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {new Date(note.updatedAt).toLocaleString()}
-                  </p>
-               
+
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {new Date(note.updatedAt).toLocaleString()}
+                </p>
               </div>
-              <DropdownMenu>
+              {/* <DropdownMenu>
                 <DropdownMenuTrigger className="inline-flex items-center p-2 text-sm font-medium text-center text-gray-500 dark:text-gray-400 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
                   {" "}
                   <svg
@@ -183,7 +189,33 @@ const LeadNote: React.FC<{ id: number }> = ({ id }) => {
                     Delete
                   </DropdownMenuItem>
                 </DropdownMenuContent>
-              </DropdownMenu>
+              </DropdownMenu> */}
+              <div className="flex flex-row gap-4">
+                <div
+                  onClick={() => {
+                    if (editing === note.id) {
+                      setEditing(null);
+                      setEditedContent("");
+                    } else {
+                      setEditing(note.id);
+                      setEditedContent(note.content);
+                    }
+                  }}
+                  className={`cursor-pointer p-2 mb-2 rounded-md ${
+                    editing === note.id
+                      ? "border border-gray-transparent"
+                      : "border border-transparent"
+                  }`}
+                >
+                  <Icon type="pencil" width={15} height={15} />
+                </div>
+                <div
+                  onClick={() => handleDelete(note.id)}
+                  className="cursor-pointer p-2 mb-2 rounded-md border border-transparent"
+                >
+                  <Icon type="trash" width={15} height={15} />
+                </div>
+              </div>
             </footer>
             {editing === note.id ? (
               <Textarea
@@ -221,6 +253,17 @@ const LeadNote: React.FC<{ id: number }> = ({ id }) => {
               }
             }}
           />
+        </div>
+        <div className="flex flex-row justify-end items-center mt-4">
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              handleCreate(newNoteContent);
+              setNewNoteContent("");
+            }}
+          >
+            Add a Note
+          </Button>
         </div>
       </div>
     </section>

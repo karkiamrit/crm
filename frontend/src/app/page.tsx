@@ -28,6 +28,7 @@ const Home = () => {
       {loggedIn && selectedLink === '/dashboard' && (<div><Dashboard/></div>)}
       {loggedIn && selectedLink === '/leads' && (<div><LeadsPage/></div>)}
       {loggedIn && selectedLink === '/organizations' && (<div><OrganizationsPage/></div>)}
+      
     </div>
   )
 }
