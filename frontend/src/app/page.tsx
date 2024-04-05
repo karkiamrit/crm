@@ -19,7 +19,7 @@ const Home = () => {
     // Set the selected section to '/dashboard' when the component mounts
 
     setSelectedLink(LocalStore.getVerticalNavBarState()?.toString() || '/dashboard');
-  }, []);
+  }, [setSelectedLink]);
   return (
     <div>
       

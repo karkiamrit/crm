@@ -31,7 +31,7 @@ const useFetchOrganization = (setOrganization: any) => {
   useEffect(() => {
     fetchOrganizationData();
     
-  }, [userData, setOrganization]);
+  }, [userData, setOrganization, fetchOrganizationData]);
 
   useEffect(() => {
     if (isOrganizationFormSubmitted) {
@@ -39,7 +39,7 @@ const useFetchOrganization = (setOrganization: any) => {
       
       setOrganizationFormSubmitted(false);
     }
-  }, [isOrganizationFormSubmitted, setOrganizationFormSubmitted]);
+  }, [isOrganizationFormSubmitted, setOrganizationFormSubmitted, fetchOrganizationData]);
 
   // Return a function that can be called to trigger fetching the organization data
   return fetchOrganizationData;
