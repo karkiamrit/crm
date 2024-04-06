@@ -17,7 +17,7 @@ RUN yarn add @nestjs/cli
 COPY apps/organization apps/organization
 COPY libs libs
 
-RUN yarn run build
+RUN yarn run build organization
 
 FROM node:alpine as production
 

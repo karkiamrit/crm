@@ -17,7 +17,7 @@ COPY libs libs
 
 RUN cd apps/auth && yarn install
 
-RUN yarn run build
+RUN yarn run build auth
 
 FROM node:alpine as production
 

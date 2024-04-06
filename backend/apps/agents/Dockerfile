@@ -8,14 +8,14 @@ COPY yarn.lock ./
 
 COPY tsconfig.json tsconfig.json
 
-RUN which yarn || npm install -g yarn
+COPY nest-cli.json nest-cli.json
 
 RUN yarn install
 
 COPY apps/agents apps/agents
 COPY libs libs
 
-RUN yarn run build
+RUN yarn run build agents
 
 FROM node:alpine as production
 
