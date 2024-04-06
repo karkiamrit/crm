@@ -8,6 +8,8 @@ COPY yarn.lock ./
 
 COPY tsconfig.json tsconfig.json
 
+COPY nest-cli.json nest-cli.json
+
 RUN which yarn || npm install -g yarn
 
 RUN yarn install
