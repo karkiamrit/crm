@@ -48,7 +48,7 @@ export class UsersService {
       password: await bcrypt.hash(createUserDto.password, 10),
     });
     user.status = Status.Live;
-    // user.isVerified = true; // remove in production
+    user.isVerified = true; // remove in production
     let savedRole: Role;
     try {
       savedRole = await this.rolesRepository.findOne({ name: 'User' });

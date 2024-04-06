@@ -84,19 +84,18 @@ export class AuthService {
     //   throw new BadRequestException('User not found');
     // }
 
-    if (otpCode == '123456') {
-      const user = await this.usersRepository.findOne({ email });
+    // const user = await this.usersRepository.findOne({ email });
 
-      user.isVerified = true;
-      if (
-        !(await this.usersRepository.findOneAndUpdate(
-          { where: { id: user.id } },
-          { isVerified: true },
-        ))
-      ) {
-        throw new BadRequestException('User not found');
-      }
-    }
+    // user.isVerified = true;
+    // if (
+    //   !(await this.usersRepository.findOneAndUpdate(
+    //     { where: { id: user.id } },
+    //     { isVerified: true },
+    //   ))
+    // ) {
+    //   throw new BadRequestException('User not found');
+    // }
+
     return true;
   }
 
