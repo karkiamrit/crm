@@ -9,9 +9,9 @@ services:
       - ./apps/auth/.env
     ports:
       - '8000:8000'
-    # volumes:
-    #   - .:/usr/src/app
-    #   - ./uploads:/usr/src/app/uploads
+    volumes:
+      - .:/usr/src/app
+      - ./uploads:/usr/src/app/uploads
     mem_limit: 1g 
 
   notifications:
@@ -24,9 +24,9 @@ services:
       - ./apps/notifications/.env
     ports:
       - '8003:8003'
-    # volumes:
-    #   - .:/usr/src/app
-    #   - ./uploads:/usr/src/app/uploads
+    volumes:
+      - .:/usr/src/app
+      - ./uploads:/usr/src/app/uploads
     mem_limit: 1g
 
   organization:
@@ -39,9 +39,9 @@ services:
       - ./apps/organization/.env
     ports:
       - '8009:8009'
-    # volumes:
-    #   - .:/usr/src/app
-    #   - ./uploads:/usr/src/app/uploads
+    volumes:
+      - .:/usr/src/app
+      - ./uploads:/usr/src/app/uploads
     mem_limit: 1g
 
   agents:
@@ -54,9 +54,9 @@ services:
       - ./apps/agents/.env
     ports:
       - '8006:8006'
-    # volumes:
-    #   - .:/usr/src/app
-    #   - ./uploads:/usr/src/app/uploads
+    volumes:
+      - .:/usr/src/app
+      - ./uploads:/usr/src/app/uploads
     mem_limit: 1g
 
   postgres:

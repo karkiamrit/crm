@@ -6,16 +6,16 @@ COPY package.json ./
 
 COPY yarn.lock ./
 
+COPY tsconfig.json tsconfig.json
 
 RUN which yarn || npm install -g yarn
 
-RUN yarn add @nestjs/cli
-
 RUN yarn install
 
+COPY apps/auth apps/auth
+COPY libs libs
 
-
-COPY . .
+RUN cd apps/auth && yarn install
 
 RUN yarn run build
 

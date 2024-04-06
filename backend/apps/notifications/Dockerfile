@@ -6,13 +6,17 @@ COPY package.json ./
 
 COPY yarn.lock ./
 
+COPY tsconfig.json tsconfig.json
+
 RUN which yarn || npm install -g yarn
 
 RUN yarn install
 
-RUN yarn add @nestjs/cli
 
-COPY . .
+COPY apps/notifications apps/notifications
+COPY libs libs
+
+RUN cd apps/notifications && yarn install
 
 RUN yarn run build
 
