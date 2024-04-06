@@ -192,7 +192,7 @@ const OrganizationsPage: React.FC = () => {
       });
       setUserCreated(false);
     }
-  }, [isUserCreated]);
+  }, []);
 
   // Calculate total pages
   const totalPages = Math.ceil(totalUsers / pageSize);

@@ -176,7 +176,7 @@ const LeadsPage: React.FC = () => {
         setLeads(newLeads);
       });
     }
-  }, [filter, page, loading, fetchLeads]);
+  }, [filter, page, loading]);
 
   useEffect(() => {}, [leads]);
 
