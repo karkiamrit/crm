@@ -109,7 +109,7 @@ export class UsersService {
       }
       roles.push(savedRole);
     }
-    console.log(roles);
+
     user.roles = roles;
 
     let createdUser: User;
