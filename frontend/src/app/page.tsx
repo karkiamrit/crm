@@ -8,12 +8,15 @@ import LeadsPage from '@/components/leads/Leads';
 import { LocalStore } from '@/store/localstore';
 import OrganizationsPage from '@/components/organizations/Organization';
 import Agents from '@/components/agents/Agents';
+import useBlurStore from '@/store/useBlurStore';
+import { cn } from '@/lib/utils';
 
 const Home = () => {
 
   const { loggedIn, loading } = useAuth();
   const selectedLink = useVerticalDashboard((state) => state.selectedSection);
   const setSelectedLink = useVerticalDashboard((state) => state.setSelectedSection);
+  const {isMobileMenuOpen,setMobileMenuOpen} = useBlurStore();
   
   useEffect(() => {
     // Set the selected section to '/dashboard' when the component mounts
@@ -21,7 +24,9 @@ const Home = () => {
     setSelectedLink(LocalStore.getVerticalNavBarState()?.toString() || '/dashboard');
   }, [setSelectedLink]);
   return (
-    <div>
+    <div 
+    className={cn(isMobileMenuOpen && `blur-sm h-screen` )}
+    >
       
       {!loggedIn && !loading && (<AuthForm/>)}
 

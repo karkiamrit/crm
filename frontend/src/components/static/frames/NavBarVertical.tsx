@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { LocalStore } from "@/store/localstore";
 import useVerticalDashboard from "@/store/dashboardStore";
 
@@ -10,6 +10,7 @@ interface NavItem {
 }
 
 export function NavBarVertical() {
+
   const selectedLink = useVerticalDashboard((state) => state.selectedSection); // Access selected section from Zustand store
   const setSelectedLink = useVerticalDashboard(
     (state) => state.setSelectedSection
