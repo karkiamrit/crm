@@ -12,9 +12,7 @@ import { LocalStore } from "@/store/localstore";
 import useBlurStore from "@/store/useBlurStore";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-
+import { useState, useRef, useEffect } from "react";
 interface NavItem {
   href: string;
   icon: JSX.Element;
@@ -136,13 +134,40 @@ const navItems1: NavItem[] = [
 
 export function NavBarHorizontal() {
   let { loggedIn, userData } = useAuth();
-  const router = useRouter();
-
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
-
+  const { setMobileMenuOpen } = useBlurStore();
   const toggleMenu = () => {
     setIsOpen(!isOpen);
+    setMobileMenuOpen(!isOpen);
   };
+
+  const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+    if (
+      mobileMenuRef.current &&
+      !mobileMenuRef.current.contains(event.target as Node) &&
+      buttonRef.current &&
+      !buttonRef.current.contains(event.target as Node)
+    ) {
+      setIsOpen(false);
+      setMobileMenuOpen(false); // Update your global state accordingly
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      // Add when the menu is open
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      // Reset isMobileMenuOpen when menu is closed
+      setMobileMenuOpen(false);
+    }
+    return () => {
+      // Clean up
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, setMobileMenuOpen]);
 
   const selectedLink = useVerticalDashboard((state) => state.selectedSection); // Access selected section from Zustand store
   const setSelectedLink = useVerticalDashboard(
@@ -154,8 +179,6 @@ export function NavBarHorizontal() {
     LocalStore.setVerticalNavBarState(link);
   };
 
-  const { setMobileMenuOpen } = useBlurStore();
-
   return (
     <div>
       <header className="">
@@ -164,16 +187,13 @@ export function NavBarHorizontal() {
             <div className="flex items-center justify-between">
               <div
                 className="statebutton"
-                onClick={() => {
-                  setMobileMenuOpen(true);
-                }}
               >
-                <div className="block -m-2 lg:hidden">
+                <div className="block -m-2 md:hidden" ref={buttonRef} >
                   {loggedIn && (
                     <button
                       type="button"
                       className="inline-flex items-center justify-center p-2 text-gray-400 bg-white rounded-lg hover:text-gray-500 hover:bg-gray-100 focus:outline-none  "
-                      onClick={toggleMenu}
+                       onClick={toggleMenu}
                     >
                       <svg
                         className="w-6 h-6 delay-100 duration-300 ease-in-out transform transition-all"
@@ -314,10 +334,11 @@ export function NavBarHorizontal() {
           </div>
 
           <div
-            className={`pt-4 pb-6 bg-white border absolute z-50 h-[110vh] w-[50%] border-gray-200 rounded-md shadow-md lg:hidden ${
+            className={`pt-4 pb-6 bg-white border absolute z-50 h-[110vh] w-[50%] border-gray-200 rounded-md shadow-md md:hidden ${
               isOpen ? "block" : "hidden"
             }`}
             style={{ transition: "height 0.3s ease" }}
+            ref={mobileMenuRef}
           >
             <div className="flex flex-col pt-5 overflow-y-auto">
               <div className="flex flex-col justify-between flex-1 h-full ">

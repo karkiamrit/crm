@@ -25,7 +25,7 @@ const Home = () => {
   }, [setSelectedLink]);
   return (
     <div 
-    className={cn(isMobileMenuOpen && `blur-sm h-screen` )}
+    className={cn(`blur-none`,isMobileMenuOpen && `blur-sm h-screen` )}
     >
       
       {!loggedIn && !loading && (<AuthForm/>)}
