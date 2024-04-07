@@ -201,13 +201,14 @@ const LeadsPage: React.FC = () => {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 lg:w-[1600px] flex-wrap ">
       <div className="py-8 lg:h-[47rem]">
-        <div className="text-black lg:mb-5 flex flex-row items-center justify-end">
+        <div className="text-black lg:mb-5 flex flex-row items-center justify-center md:justify-end mb-4">
           <CreateLead />
         </div>
         <div className="overflow-x-auto">
           <div className="inline-block min-w-full overflow-hidden align-middle border border-gray-200 shadow sm:rounded-lg">
             <table className="min-w-full ">
-              <thead>
+              <thead className="md:table-header-group hidden">
+                {" "}
                 <tr>
                   {titles.map((title, index) => (
                     <th
