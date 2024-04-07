@@ -27,6 +27,7 @@ export class NotificationsService {
   //     refreshToken: this.configService.get('GOOGLE_OAUTH_REFRESH_TOKEN'),
   //   },
   // });
+  
   private readonly transporter = nodemailer.createTransport({
     host: this.configService.get('SMTP_HOST'),
     port: this.configService.get('SMTP_PORT'),

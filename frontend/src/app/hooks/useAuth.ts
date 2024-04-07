@@ -32,6 +32,7 @@ const getUserDataFromToken = async (token: any) => {
 };
 
 const useAuth = () => {
+
   const [loggedIn, setLoggedIn] = useState(false);
   const [userData, setUserData] = useState<User | null>(null);
   const [isClient, setIsClient] = useState(false); // State to track client-side rendering

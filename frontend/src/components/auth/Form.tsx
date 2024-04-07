@@ -18,11 +18,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { LocalStore } from "@/store/localstore";
+import { useToast } from "../ui/use-toast";
 
 const signupFormSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
-  organizationId: z.string().transform(Number)
+  organizationId: z.string().transform(Number),
 });
 
 const loginFormSchema = z.object({
@@ -36,6 +37,7 @@ const otpFormSchema = z.object({
 
 export default function AuthForm() {
   const router = useRouter();
+  const { toast } = useToast();
 
   const [isSignupNowClicked, setIsSignupNowClicked] = useState(false);
   const [isSignupButtonClicked, setIsSignupButtonClicked] = useState(false);
@@ -45,14 +47,14 @@ export default function AuthForm() {
     defaultValues: {
       email: "",
       password: "",
-      organizationId: NaN
+      organizationId: NaN,
     },
   });
   const loginForm = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
       email: "",
-      password: ""
+      password: "",
     },
   });
   const otpForm = useForm<z.infer<typeof otpFormSchema>>({
@@ -63,35 +65,108 @@ export default function AuthForm() {
   });
 
   const onSubmitSignup = async (data: z.infer<typeof signupFormSchema>) => {
-    await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_API_URL_USERS}/users/signup`, data);
-    const email = data.email;
-    const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_API_URL_USERS}/auth/request-otp`, {
-      email: email,
-    });
-    if (res) {
-      setIsSignupButtonClicked(true);
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL_USERS}/users/signup`,
+        data
+      );
+      const email = data.email;
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL_USERS}/auth/request-otp`,
+        {
+          email: email,
+        }
+      );
+      if (res) {
+        setIsSignupButtonClicked(true);
+      }
+      setEmail(data.email);
+
+      if (response.status === 200 || response.status === 201) {
+        // Handle success
+        toast({
+          variant: "default",
+          title: "Signup Successful.",
+        });
+      } else {
+        throw new Error("An error occurred while signing up.");
+      }
+    } catch (err: any) {
+      // Handle error
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description:
+          err.response?.data?.message || "An error occurred while signing up.",
+      });
+      console.error("An error occurred while signing up:", err);
     }
-    setEmail(data.email);
   };
 
   const onSubmitLogin = async (data: z.infer<typeof loginFormSchema>) => {
-    console.log(process.env.NEXT_PUBLIC_BACKEND_API_URL_USERS)
-    const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_API_URL_USERS}/auth/login`, data);
-    
-    if (response.data) {
-      LocalStore.remove("jwt");
-      LocalStore.setAccessToken(response.data);
-      LocalStore.reload();
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL_USERS}/auth/login`,
+        data
+      );
+
+      if (response.data) {
+        LocalStore.remove("jwt");
+        LocalStore.setAccessToken(response.data);
+        LocalStore.reload();
+      }
+      if (response.status === 200 || response.status === 201) {
+        // Handle success
+        toast({
+          variant: "default",
+          title: "User logged In Successfully.",
+        });
+      } else {
+        throw new Error("An error occured while logging in.");
+      }
+    } catch (err: any) {
+      // Handle error
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description:
+          err.response?.data?.message || "An error occurred while logging in.",
+      });
+      console.error("An error occurred while creating the organization:", err);
     }
   };
 
   const onSubmitOTP = async (data: z.infer<typeof otpFormSchema>) => {
-    console.log(data);
-    await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_API_URL_USERS}/auth/verify-otp`, {
-      otp: data.otp,
-      email: email,
-    });
-    LocalStore.reload();
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL_USERS}/auth/verify-otp`,
+        {
+          otp: data.otp,
+          email: email,
+        }
+      );
+
+      if (response.status === 200 || response.status === 201) {
+        // Handle success
+        toast({
+          variant: "default",
+          title: "Otp Submitted Successfully.",
+        });
+      } else {
+        throw new Error("An error occured while submitting otp.");
+      }
+      LocalStore.reload();
+    } catch (err: any) {
+      // Handle error
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description:
+          err.response?.data?.message ||
+          "An error occurred while submitting otp.",
+      });
+      console.error("An error occurred while submitting otp:", err);
+    }
   };
 
   return (
@@ -173,7 +248,7 @@ export default function AuthForm() {
                         <FormItem>
                           <FormControl>
                             <Input
-                             type="number"
+                              type="number"
                               placeholder="Your Organization ID"
                               className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
                               {...field}
