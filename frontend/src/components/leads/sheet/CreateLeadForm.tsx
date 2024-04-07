@@ -160,7 +160,7 @@ const CreateLeadForm = () => {
     <div>
       {" "}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger asChild>
+        <DialogTrigger asChild className="flex justify-center">
           <Button
             className="flex flex-row gap-2"
             onClick={() => setIsOpen(true)}
