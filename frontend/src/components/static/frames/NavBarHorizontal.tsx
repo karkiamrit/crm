@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import useVerticalDashboard from "@/store/dashboardStore";
 import { LocalStore } from "@/store/localstore";
+import useBlurStore from "@/store/useBlurStore";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -153,15 +154,20 @@ export function NavBarHorizontal() {
     LocalStore.setVerticalNavBarState(link);
   };
 
+  const { setMobileMenuOpen } = useBlurStore();
+
   return (
     <div>
       <header className="">
         <div className="py-3 bg-white">
           <div className=" px-4 mx-auto sm:px-6 lg:px-8">
             <div className="flex items-center justify-between">
-
-              
-              <div className="statebutton">
+              <div
+                className="statebutton"
+                onClick={() => {
+                  setMobileMenuOpen(true);
+                }}
+              >
                 <div className="block -m-2 lg:hidden">
                   {loggedIn && (
                     <button
@@ -308,7 +314,7 @@ export function NavBarHorizontal() {
           </div>
 
           <div
-            className={`pt-4 pb-6 bg-white border absolute z-50 w-[50%] border-gray-200 rounded-md shadow-md lg:hidden ${
+            className={`pt-4 pb-6 bg-white border absolute z-50 h-[110vh] w-[50%] border-gray-200 rounded-md shadow-md lg:hidden ${
               isOpen ? "block" : "hidden"
             }`}
             style={{ transition: "height 0.3s ease" }}
