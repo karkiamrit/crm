@@ -63,7 +63,4 @@ export class LocalStore {
   static setFilters(filters: { [property: string]: string }) {
     this.set('filters', JSON.stringify(filters));
   }
-
-
-
 }
