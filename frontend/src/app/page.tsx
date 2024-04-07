@@ -7,6 +7,7 @@ import useVerticalDashboard from '@/store/dashboardStore';
 import LeadsPage from '@/components/leads/Leads';
 import { LocalStore } from '@/store/localstore';
 import OrganizationsPage from '@/components/organizations/Organization';
+import Agents from '@/components/agents/Agents';
 
 const Home = () => {
 
@@ -14,7 +15,6 @@ const Home = () => {
   const selectedLink = useVerticalDashboard((state) => state.selectedSection);
   const setSelectedLink = useVerticalDashboard((state) => state.setSelectedSection);
   
-
   useEffect(() => {
     // Set the selected section to '/dashboard' when the component mounts
 
@@ -28,9 +28,10 @@ const Home = () => {
       {loggedIn && selectedLink === '/dashboard' && (<div><Dashboard/></div>)}
       {loggedIn && selectedLink === '/leads' && (<div><LeadsPage/></div>)}
       {loggedIn && selectedLink === '/organizations' && (<div><OrganizationsPage/></div>)}
+      {loggedIn && selectedLink === '/agents' && (<div><Agents/></div>)}
       
     </div>
   )
 }
 
-export default Home
+export default Home;
