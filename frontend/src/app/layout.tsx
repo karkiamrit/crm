@@ -23,7 +23,7 @@ export default function RootLayout({
           <NavBarHorizontal />
           <div className="flex flex-grow">
             <NavBarVertical />
-              <main className="flex flex-grow justify-center mt-12">
+              <main className="flex flex-grow justify-start mt-12">
                 {children}
                  <Toaster />
               </main>

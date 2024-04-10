@@ -34,6 +34,7 @@ import CreateLead from "./sheet/CreateLead";
 import useleadFormSubmitted from "@/store/leadFormSubmitted";
 import useleadDeleted from "@/store/leadDeleted";
 import { useStore } from "@/store/useStore";
+import Link from "next/link";
 
 export enum LeadsStatus {
   INITIAL = "INITIAL",
@@ -199,10 +200,10 @@ const LeadsPage: React.FC = () => {
   // Generate an array of page numbers
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 lg:w-[1600px] flex-wrap ">
-      <div className="py-8 lg:h-[47rem]">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 lg:w-[1200px] flex-wrap ">
+      <div className=" lg:h-[47rem]">
         <div className="text-black lg:mb-5 flex flex-row items-center justify-center md:justify-end mb-4">
-          <CreateLead />
+          <Link href="/leads/create" className="inline-block bg-primary rounded-md px-3 py-1.5 text-white">Create Lead</Link>
         </div>
         <div className="overflow-x-auto">
           <div className="inline-block min-w-full overflow-hidden align-middle border border-gray-200 shadow sm:rounded-lg">
@@ -230,7 +231,7 @@ const LeadsPage: React.FC = () => {
                             </PopoverTrigger>
 
                             <PopoverContent className="w-52">
-                              <div className="flex flex-col items-center gap-4">
+                              <div className="flex flex-col items-start justify-start">
                                 {title !== "Status" && (
                                   <Input
                                     id="width"
