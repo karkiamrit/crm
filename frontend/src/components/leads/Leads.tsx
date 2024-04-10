@@ -201,7 +201,7 @@ const LeadsPage: React.FC = () => {
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 lg:w-[1200px] flex-wrap ">
-      <div className=" lg:h-[47rem]">
+      <div className=" lg:h-[35rem]">
         <div className="text-black lg:mb-5 flex flex-row items-center mt-4 justify-center md:justify-end mb-4">
           <Link
             href="/leads/create"
