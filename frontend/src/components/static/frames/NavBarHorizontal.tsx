@@ -181,9 +181,9 @@ export function NavBarHorizontal() {
   };
 
   return (
-    <div>
-      <header className="">
-        <div className="py-3 bg-white">
+    <div >
+      <header className="sticky top-0 z-999">
+        <div className="py-3 bg-white ">
           <div className=" px-4 mx-auto sm:px-6 lg:px-8">
             <div className="flex items-center justify-between">
               <div
