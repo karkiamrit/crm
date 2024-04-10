@@ -10,7 +10,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  div,
   FormMessage,
 } from "@/components/ui/form";
 
@@ -252,20 +251,20 @@ const Page = () => {
               />
             </div>
 
-            <div className="flex flex-row justify-between w-3/4 gap-6">
+            <div className="flex flex-col lg:flex-row justify-between w-3/4 gap-6 ">
               <FormField
                 control={leadCreationForm.control}
                 name="phone"
                 render={({ field }) => (
                   <FormItem className="flex w-full">
-                    <div className="font-bold text-md mt-5 w-[120px]">
+                    <div className="font-bold text-md mt-5 lg:w-[120px] w-[90px]">
                       Phone No
                     </div>
-                    <div className="flex flex-col">
+                    <div className="flex flex-col w-2/3 lg:w-[350px]">
                       <FormControl>
                         <Input
                           placeholder="Phone *"
-                          className="border block w-[350px]  py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
+                          className="border block   py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
                           {...field}
                         />
                       </FormControl>
@@ -280,7 +279,7 @@ const Page = () => {
                 name="source"
                 render={({ field }) => (
                   <FormItem className="flex w-full">
-                    <div className="font-bold text-md mt-5 w-[74px]">
+                    <div className="font-bold text-md mt-5 w-[90px] lg:w-[74px]">
                       Source
                     </div>{" "}
                     <FormControl>
@@ -296,13 +295,13 @@ const Page = () => {
               />
             </div>
 
-            <div className="flex flex-row w-2/3 gap-6">
+            <div className="flex flex-col lg:flex-row w-2/3 gap-6">
               <FormField
                 control={leadCreationForm.control}
                 name="product.name"
                 render={({ field }) => (
                   <FormItem className="flex w-full">
-                    <div className="font-bold text-md mt-5 w-[120px]">
+                    <div className="font-bold text-md mt-5 w-[90px] lg:w-[120px]">
                       Product
                     </div>
                     <FormControl>
@@ -337,7 +336,7 @@ const Page = () => {
               />
             </div>
 
-            <div className="flex flex-row w-2/3 gap-2">
+            <div className="flex flex-col lg:flex-row w-2/3 gap-2">
               {isAdmin ? (
                 <>
                   <FormField
@@ -345,11 +344,11 @@ const Page = () => {
                     name="priority"
                     render={({ field }) => (
                       <FormItem className="flex w-full">
-                        <div className="font-bold text-md mt-5 w-[120px]">
+                        <div className="font-bold text-md mt-5 w-[110px] lg:w-[120px]">
                           Priority
                         </div>
                         <FormControl>
-                          <div className="w-[250px]">
+                          <div className="lg:w-[250px] w-full">
                             <Select
                               value={field.value?.toString()}
                               onValueChange={(value: any) =>

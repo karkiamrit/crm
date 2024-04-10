@@ -238,25 +238,28 @@ export function NavBarVertical() {
                         ? "text-white bg-primary w-full"
                         : "text-gray-900 hover:bg-gray-100"
                     }`}
+                    key={index}
                   >
                     <MenubarMenu key={index}>
                       <MenubarTrigger className="w-full flex justify-between items-center h-12">
-                      
-                          <div className="flex flex-row">
-                            {" "}
-                            {item.icon}
-                            {item.name}
-                          </div>
+                        <div className="flex flex-row">
+                          {" "}
+                          {item.icon}
+                          {item.name}
+                        </div>
 
-                          <div className="">
-                            <ChevronRightIcon height={18} width={18} />
-                          </div>
-                       
+                        <div className="">
+                          <ChevronRightIcon height={18} width={18} />
+                        </div>
                       </MenubarTrigger>
                       <MenubarContent side="right">
                         {item.menuBarItem.map((menu, index) => (
-                          <MenubarItem>
-                            <Link href={menu.href} key={index} className="focus:outline-none " >
+                          <MenubarItem key={index}>
+                            <Link
+                              href={menu.href}
+                              key={index}
+                              className="focus:outline-none "
+                            >
                               <div
                                 className="block px-4 py-2 w-full text-sm text-gray-700 hover:bg-gray-100"
                                 onClick={() => handleLinkClick(item.href)}
@@ -273,27 +276,7 @@ export function NavBarVertical() {
               </nav>
             </div>
 
-            <div className="px-5 pb-8 mt-16">
-              <div className="flex items-center space-x-6">
-                <a
-                  href="#"
-                  title=""
-                  className="text-xs font-medium text-gray-500 hover:text-gray-900"
-                >
-                  Privacy Policy
-                </a>
-                <a
-                  href="#"
-                  title=""
-                  className="text-xs font-medium text-gray-500 hover:text-gray-900"
-                >
-                  Terms of Service
-                </a>
-              </div>
-              <p className="mt-4 text-xs font-medium text-gray-500">
-                © 2022 Rareblocks
-              </p>
-            </div>
+            
           </div>
         </div>
       </div>

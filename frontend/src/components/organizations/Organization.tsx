@@ -201,7 +201,7 @@ const OrganizationsPage: React.FC = () => {
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 lg:w-[1600px] flex-wrap ">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 lg:w-[1200px] flex-wrap ">
       <div className="py-8 lg:h-[47rem]">
         <div className="flex flex-row items-center justify-between gap-6 lg:pb-6">
           <div className="flex flex-row items-center gap-6 pl-6">
