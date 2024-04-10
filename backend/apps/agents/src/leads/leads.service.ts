@@ -11,13 +11,15 @@ import { AgentsService } from '../agents.service';
 import { join } from 'path';
 import { Agent } from '../entities/agent.entity';
 import { Service } from '../shared/objects/services/services.entity';
-import { CustomerTimeline, LeadTimeline } from '../shared/objects/timelines/timelines.entity';
+import {
+  CustomerTimeline,
+  LeadTimeline,
+} from '../shared/objects/timelines/timelines.entity';
 import { Product } from '../shared/objects/products/products.entity';
 import { LeadTimelineRepository } from '../shared/objects/timelines/leads.timelines.repository';
 import { CustomerTimelineRepository } from '../shared/objects/timelines/customers.timelines.repository';
 import { Customers } from '../customers/entities/customer.entity';
 import { CustomersService } from '../customers/customers.service';
-
 
 @Injectable()
 export class LeadsService {
@@ -46,24 +48,116 @@ export class LeadsService {
       product,
     });
     console.log(agent);
- 
+
     lead.agentId = agent.id;
 
- 
     await this.leadsRepository.create(lead);
 
     return lead;
   }
 
+  // async update(id: number, updateLeadsDto: UpdateLeadDto) {
+  //   // Find the lead
+  //   const lead = await this.leadsRepository.findOne({ id });
+
+  //   if (!lead) {
+  //     throw new NotFoundException(`Lead with ID ${id} not found`);
+  //   }
+
+  //   // List of attributes to check for changes
+  //   const attributes = [
+  //     'product',
+  //     'service',
+  //     'address',
+  //     'details',
+  //     'status',
+  //     'phone',
+  //     'email',
+  //     'name',
+  //     'priority',
+  //     'source',
+  //     'documents',
+  //   ];
+
+  //   // Check each attribute for changes
+  //   for (const attribute of attributes) {
+  //     if (
+  //       updateLeadsDto[attribute] &&
+  //       updateLeadsDto[attribute] !== lead[attribute]
+  //     ) {
+  //       // Update the attribute
+  //       lead[attribute] = updateLeadsDto[attribute];
+
+  //       // Create a new LeadTimeline for the updated attribute
+  //       const timeline = new LeadTimeline({
+  //         lead: lead,
+  //         attribute: attribute,
+  //         value: updateLeadsDto[attribute],
+  //       });
+
+  //       // Save the LeadTimeline entity to the database
+  //       await this.leadTimelineRepository.create(timeline);
+
+  //       // Add the LeadTimeline entity to the timelines array of the lead
+  //       lead.timelines.push(timeline);
+
+  //       if (attribute === 'status' && updateLeadsDto.status === LeadsStatus.COMPLETED) {
+  //         // Delete the lead
+  //         await this.leadsRepository.findOneAndDelete({ id: lead.id });
+
+  //         // Create a new customer with the properties from the lead, except for status
+  //         const { status, timelines, ...leadProperties } = lead;
+  //         const customer = new Customers({
+  //           ...leadProperties,
+  //         });
+  //         const agent = await this.agentService.getOne(lead.agentId);
+
+  //         // Save the new customer
+  //         await this.customerService.create(customer, agent);
+
+  //         for (const leadTimeline of lead.timelines) {
+  //           leadTimeline.lead=null;
+  //           const customerTimeline = new CustomerTimeline({
+  //             ...leadTimeline,
+  //             customer: customer, // Set the customer property to the new customer
+  //           });
+
+  //           // Save the CustomerTimeline entity to the database
+  //           await this.customerTimelineRepository.create(customerTimeline);
+
+  //           // No need to add the CustomerTimeline entity to the timelines array of the customer
+  //         }
+
+  //         // Save the updated customer
+  //         await this.customerService.update(customer.id, customer);
+
+  //         return customer;
+  //       }
+  //     }
+  //   }
+
+  //   // Save the updated lead
+  //   await this.leadsRepository.findOneAndUpdate({where: {id: lead.id}},lead);
+
+  //   // Create a new object that omits the lead property from each LeadTimeline in lead.timelines
+  //   const leadToReturn = {
+  //     ...lead,
+  //     timelines: lead.timelines.map((timeline) => {
+  //       const { lead, ...timelineWithoutLead } = timeline;
+  //       return timelineWithoutLead;
+  //     }),
+  //   };
+
+  //   return leadToReturn;
+  // }
+
   async update(id: number, updateLeadsDto: UpdateLeadDto) {
-    // Find the lead
     const lead = await this.leadsRepository.findOne({ id });
 
     if (!lead) {
       throw new NotFoundException(`Lead with ID ${id} not found`);
     }
 
-    // List of attributes to check for changes
     const attributes = [
       'product',
       'service',
@@ -78,69 +172,55 @@ export class LeadsService {
       'documents',
     ];
 
-    // Check each attribute for changes
     for (const attribute of attributes) {
       if (
         updateLeadsDto[attribute] &&
         updateLeadsDto[attribute] !== lead[attribute]
       ) {
-        // Update the attribute
         lead[attribute] = updateLeadsDto[attribute];
 
-        // Create a new LeadTimeline for the updated attribute
         const timeline = new LeadTimeline({
           lead: lead,
           attribute: attribute,
           value: updateLeadsDto[attribute],
         });
 
-        // Save the LeadTimeline entity to the database
         await this.leadTimelineRepository.create(timeline);
-
-        // Add the LeadTimeline entity to the timelines array of the lead
         lead.timelines.push(timeline);
 
-        if (attribute === 'status' && updateLeadsDto.status === LeadsStatus.COMPLETED) {
-          // Delete the lead
+        if (
+          attribute === 'status' &&
+          updateLeadsDto.status === LeadsStatus.COMPLETED
+        ) {
           await this.leadsRepository.findOneAndDelete({ id: lead.id });
 
-          // Create a new customer with the properties from the lead, except for status
           const { status, timelines, ...leadProperties } = lead;
           const customer = new Customers({
             ...leadProperties,
           });
           const agent = await this.agentService.getOne(lead.agentId);
 
-          // Save the new customer
           await this.customerService.create(customer, agent);
-        
-          // Map each LeadTimeline to a CustomerTimeline
+
           for (const leadTimeline of lead.timelines) {
-            leadTimeline.lead=null;
+            leadTimeline.lead = null;
             const customerTimeline = new CustomerTimeline({
               ...leadTimeline,
-              customer: customer, // Set the customer property to the new customer
+              customer: customer,
             });
-        
-            // Save the CustomerTimeline entity to the database
+
             await this.customerTimelineRepository.create(customerTimeline);
-        
-            // Add the CustomerTimeline entity to the timelines array of the customer
-            customer.timelines.push(customerTimeline);
           }
-        
-          // Save the updated customer
+
           await this.customerService.update(customer.id, customer);
-        
+
           return customer;
         }
       }
     }
 
-    // Save the updated lead
-    await this.leadsRepository.findOneAndUpdate({where: {id: lead.id}},lead);
+    await this.leadsRepository.create(lead);
 
-    // Create a new object that omits the lead property from each LeadTimeline in lead.timelines
     const leadToReturn = {
       ...lead,
       timelines: lead.timelines.map((timeline) => {
@@ -160,9 +240,7 @@ export class LeadsService {
     return this.leadsRepository.findAll(options);
   }
 
-  async findAllLeadsOfAgent(
-    options: ExtendedFindOptions<Leads>,
-  ){
+  async findAllLeadsOfAgent(options: ExtendedFindOptions<Leads>) {
     return this.leadsRepository.findAll(options);
   }
 
