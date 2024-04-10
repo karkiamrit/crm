@@ -29,6 +29,9 @@ import { LocalStore } from "@/store/localstore";
 import { useToast } from "@/components/ui/use-toast";
 import useleadFormSubmitted from "@/store/leadFormSubmitted";
 import { BreadcrumbDemo } from "@/components/Breadcrumb/Breadcrumb";
+import { useRouter } from 'next/navigation'
+
+
 const leadSchema = z.object({
   address: z.string().min(1).max(255).optional(),
   details: z.string().max(255).optional(),
@@ -60,6 +63,7 @@ const Page = () => {
   const { setLeadFormSubmitted } = useleadFormSubmitted();
   const [isOpen, setIsOpen] = React.useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const router = useRouter()
 
   const onCreateLead = async (data: LeadData) => {
     const formData = new FormData();
@@ -103,6 +107,7 @@ const Page = () => {
         setLeadFormSubmitted(true);
         setIsOpen(false);
         leadCreationForm.reset();
+        router.push("/leads")
       } else {
         throw new Error("An error occurred while creating the lead.");
       }
@@ -157,23 +162,19 @@ const Page = () => {
         <Form {...leadCreationForm}>
           <form
             onSubmit={leadCreationForm.handleSubmit(onCreateLead)}
-            className="mt-4 space-y-4"
+            className="mt-4 space-y-6"
           >
-            <div className="flex flex-col gap-2">
-              {" "}
+            <div className="flex flex-row justify-center gap-10">
               <FormField
                 control={leadCreationForm.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem className="flex">
-                    <div className="font-bold text-md mt-5 w-[10%]">
-                      Email Address
-                    </div>
-                    <div className="flex flex-col w-2/3">
+                    <div className="flex flex-col w-1/3">
                       <FormControl>
                         <Input
                           placeholder="Email address *"
-                          className="border block  px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
+                          className="border block px-4 py-3 w-[320px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm"
                           {...field}
                         />
                       </FormControl>
@@ -187,131 +188,111 @@ const Page = () => {
                 name="address"
                 render={({ field }) => (
                   <FormItem className="flex">
-                    <div className="font-bold text-md mt-5 w-[10%]">
-                      Address
-                    </div>
-                    <div className="flex flex-col w-2/3">
+                    <div className="flex flex-col w-1/3">
                       <FormControl>
                         <Input
                           placeholder="Address *"
-                          className="border block px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
+                          className="border block px-4 py-3 w-[320px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm"
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="w-[320px]" />
                     </div>
                   </FormItem>
                 )}
               />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              {" "}
               <FormField
                 control={leadCreationForm.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem className="flex">
-                    <div className="font-bold text-md mt-5 w-[10%]">
-                      Full Name
-                    </div>{" "}
-                    <div className="flex flex-col w-2/3">
+                    <div className="flex flex-col w-1/3">
                       <FormControl>
                         <Input
                           placeholder="Name *"
-                          className="border block px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
+                          className="border block px-4 py-3 w-[320px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm"
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="w-[320px]" />
                     </div>
                   </FormItem>
                 )}
               />
+            </div>
+            <div className="flex flex-row justify-center gap-10">
               <FormField
                 control={leadCreationForm.control}
                 name="details"
                 render={({ field }) => (
                   <FormItem className="flex">
-                    <div className="font-bold text-md mt-5 w-[10%]">
-                      Details
-                    </div>{" "}
-                    <div className="flex flex-col w-2/3">
+                    <div className="flex flex-col w-1/3">
                       <FormControl>
                         <Input
                           placeholder="Details"
-                          className="border block  px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
+                          className="border block px-4 py-3 w-[320px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm"
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="w-[320px]" />
                     </div>
                   </FormItem>
                 )}
               />
-            </div>
-
-            <div className="flex flex-col lg:flex-row justify-between w-3/4 gap-6 ">
               <FormField
                 control={leadCreationForm.control}
                 name="phone"
                 render={({ field }) => (
-                  <FormItem className="flex w-full">
-                    <div className="font-bold text-md mt-5 lg:w-[120px] w-[90px]">
-                      Phone No
-                    </div>
-                    <div className="flex flex-col w-2/3 lg:w-[350px]">
+                  <FormItem className="flex">
+                    <div className="flex flex-col w-1/3">
                       <FormControl>
                         <Input
                           placeholder="Phone *"
-                          className="border block   py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
+                          className="border block px-4 py-3 w-[320px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm"
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="w-[320px]" />
                     </div>
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={leadCreationForm.control}
                 name="source"
                 render={({ field }) => (
-                  <FormItem className="flex w-full">
-                    <div className="font-bold text-md mt-5 w-[90px] lg:w-[74px]">
-                      Source
-                    </div>{" "}
-                    <FormControl>
-                      <Input
-                        placeholder="Source"
-                        className="border block py-3 w-[340px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm "
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
+                  <FormItem className="flex">
+                    <div className="flex flex-col w-1/3">
+                      <FormControl>
+                        <Input
+                          placeholder="Source"
+                          className="border block px-4 py-3 w-[320px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="block w-[320px]" />
+                    </div>
                   </FormItem>
                 )}
               />
             </div>
 
-            <div className="flex flex-col lg:flex-row w-2/3 gap-6">
+            <div className="flex flex-row justify-center gap-10">
               <FormField
                 control={leadCreationForm.control}
                 name="product.name"
                 render={({ field }) => (
-                  <FormItem className="flex w-full">
-                    <div className="font-bold text-md mt-5 w-[90px] lg:w-[120px]">
-                      Product
+                  <FormItem className="flex">
+                    <div className="flex flex-col w-1/3">
+                      <FormControl>
+                        <Input
+                          placeholder="Product"
+                          className="border block px-4 py-3 w-[320px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
                     </div>
-                    <FormControl>
-                      <Input
-                        placeholder="Product"
-                        className="border block w-[350px] px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -319,92 +300,29 @@ const Page = () => {
                 control={leadCreationForm.control}
                 name="service.name"
                 render={({ field }) => (
-                  <FormItem className="flex w-full">
-                    <div className="font-bold text-md mt-5 w-[74px]">
-                      Service
+                  <FormItem className="flex ">
+                    <div className="flex flex-col w-1/3">
+                      <FormControl>
+                        <Input
+                          placeholder="Service "
+                          className="border block px-4 py-3 w-[320px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
                     </div>
-                    <FormControl>
-                      <Input
-                        placeholder="Service"
-                        className="border block w-[340px] px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
 
-            <div className="flex flex-col lg:flex-row w-2/3 gap-2">
-              {isAdmin ? (
-                <>
-                  <FormField
-                    control={leadCreationForm.control}
-                    name="priority"
-                    render={({ field }) => (
-                      <FormItem className="flex w-full">
-                        <div className="font-bold text-md mt-5 w-[110px] lg:w-[120px]">
-                          Priority
-                        </div>
-                        <FormControl>
-                          <div className="lg:w-[250px] w-full">
-                            <Select
-                              value={field.value?.toString()}
-                              onValueChange={(value: any) =>
-                                field.onChange(Number(value))
-                              }
-                            >
-                              <SelectTrigger className="lg:w-full h-12">
-                                <SelectValue placeholder="Select a priority" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectGroup>
-                                  <SelectLabel>Priority</SelectLabel>
-                                  <SelectItem value="1">1</SelectItem>
-                                  <SelectItem value="2">2</SelectItem>
-                                  <SelectItem value="3">3</SelectItem>
-                                  <SelectItem value="4">4</SelectItem>
-                                  <SelectItem value="5">5</SelectItem>
-                                </SelectGroup>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={leadCreationForm.control}
-                    name="referenceNo"
-                    render={({ field }) => (
-                      <FormItem className="flex w-full">
-                        <div className="font-bold text-md mt-5 w-[175px]">
-                          Agent Reference No
-                        </div>
-                        <FormControl>
-                          <Input
-                            placeholder="Agent Reference No"
-                            className="border block w-[360px] px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </>
-              ) : (
-                <FormField
-                  control={leadCreationForm.control}
-                  name="priority"
-                  render={({ field }) => (
-                    <FormItem className="flex w-full">
-                      <div className="font-bold text-md mt-5 w-[120px]">
-                        Priority
-                      </div>
+              {/* {isAdmin ? ( */}
+              {/* <> */}
+              <FormField
+                control={leadCreationForm.control}
+                name="priority"
+                render={({ field }) => (
+                  <FormItem className="flex">
+                    <div className="flex flex-col w-1/3">
                       <FormControl>
                         <Select
                           value={field.value?.toString()}
@@ -412,7 +330,7 @@ const Page = () => {
                             field.onChange(Number(value))
                           }
                         >
-                          <SelectTrigger className="lg:w-full h-12">
+                          <SelectTrigger className=" w-[320px] h-12">
                             <SelectValue placeholder="Select a priority" />
                           </SelectTrigger>
                           <SelectContent>
@@ -428,42 +346,100 @@ const Page = () => {
                         </Select>
                       </FormControl>
                       <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
+                    </div>
+                  </FormItem>
+                )}
+              />
             </div>
 
-            <FormField
-              control={leadCreationForm.control}
-              name="documents"
-              render={({ field }) => (
-                <FormItem className="w-[77%]">
-                  <FormControl>
-                    <Input
-                      type="file"
-                      multiple
-                      onChange={(e) => {
-                        if (e.target.files) {
-                          const files = Array.from(e.target.files);
-                          field.onChange(files);
+            <div className="flex flex-row justify-center gap-10">
+              <FormField
+                control={leadCreationForm.control}
+                name="referenceNo"
+                render={({ field }) => (
+                  <FormItem className="flex ">
+                    <div className="flex flex-col w-1/3">
+                      <FormControl>
+                        <Input
+                          placeholder="Agent Reference No "
+                          className="border block px-4 py-3 w-[320px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
+              {/* </> */}
+              {/* ) : ( */}
+              {/* <FormField
+                control={leadCreationForm.control}
+                name="priority"
+                render={({ field }) => (
+                  <FormItem className="flex">
+                    <FormControl>
+                      <Select
+                        value={field.value?.toString()}
+                        onValueChange={(value: any) =>
+                          field.onChange(Number(value))
                         }
-                      }}
-                      className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-md sm:text-sm"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                      >
+                        <SelectTrigger className="w-[320px] h-12">
+                          <SelectValue placeholder="Select a priority" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Priority</SelectLabel>
+                            <SelectItem value="1">1</SelectItem>
+                            <SelectItem value="2">2</SelectItem>
+                            <SelectItem value="3">3</SelectItem>
+                            <SelectItem value="4">4</SelectItem>
+                            <SelectItem value="5">5</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              /> */}
+              {/* //  )}  */}
+               
 
-            <Button
-              type="submit"
-              variant="default"
-              className="inline-flex items-center justify-center w-[77%] px-6 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 bg-primary border border-transparent rounded-md"
-            >
-              Create Lead
-            </Button>
+              <FormField
+                control={leadCreationForm.control}
+                name="documents"
+                render={({ field }) => (
+                  <FormItem className="flex">
+                    <FormControl>
+                      <Input
+                        type="file"
+                        multiple
+                        onChange={(e) => {
+                          if (e.target.files) {
+                            const files = Array.from(e.target.files);
+                            field.onChange(files);
+                          }
+                        }}
+                        className="border block w-[320px] px-4  py-3 placeholder-gray-500 border-gray-300 rounded-md sm:text-sm"
+                      />
+                    </FormControl>
+                    <FormMessage className="w-[320px]" />
+                  </FormItem>
+                )}
+              />
+            {/* </div>
+
+            <div className="flex justify-center "> */}
+              <Button
+                type="submit"
+                variant="default"
+                className="inline-flex items-center justify-center w-[320px] px-6 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 bg-primary border border-transparent rounded-md"
+              >
+                Create Lead
+              </Button>
+            </div>
           </form>
         </Form>
       </div>
