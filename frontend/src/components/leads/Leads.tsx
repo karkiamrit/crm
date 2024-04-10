@@ -203,7 +203,12 @@ const LeadsPage: React.FC = () => {
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 lg:w-[1200px] flex-wrap ">
       <div className=" lg:h-[47rem]">
         <div className="text-black lg:mb-5 flex flex-row items-center justify-center md:justify-end mb-4">
-          <Link href="/leads/create" className="inline-block bg-primary rounded-md px-3 py-1.5 text-white">Create Lead</Link>
+          <Link
+            href="/leads/create"
+            className="inline-block bg-primary rounded-md px-3 py-1.5 text-white"
+          >
+            Create Lead
+          </Link>
         </div>
         <div className="overflow-x-auto">
           <div className="inline-block min-w-full overflow-hidden align-middle border border-gray-200 shadow sm:rounded-lg">
