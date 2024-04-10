@@ -8,6 +8,7 @@ import axios from "axios";
 import { LocalStore } from "@/store/localstore";
 import { useToast } from "@/components/ui/use-toast";
 import useleadDeleted from "@/store/leadDeleted";
+import useAuth from "@/app/hooks/useAuth";
 
 interface TableRowProps {
   name: string;
@@ -44,6 +45,7 @@ const TableRow: React.FC<TableRowProps> = ({
   const randomBackgroundColor = colors[randomColorIndex];
   const { toast } = useToast();
   const { setLeadDataDeleted } = useleadDeleted();
+  const {userData} = useAuth();
 
   const statusColors: Record<LeadsStatus, string> = {
     [LeadsStatus.INITIAL]: "bg-violet-500 text-white",
@@ -206,7 +208,7 @@ const TableRow: React.FC<TableRowProps> = ({
         {country}
       </td>
 
-      <td className="hidden px-4 py-4 lg:table-cell whitespace-nowrap">
+      {userData?.roles && userData.roles.some(role => role.name === 'Agent' || role.name === 'Admin') && (<td className="hidden px-4 py-4 lg:table-cell whitespace-nowrap">
         <div className="flex items-center space-x-4">
           <Sheet>
             <SheetTrigger className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-200 bg-gray-100 border border-gray-300 rounded-md shadow-sm">
@@ -277,7 +279,7 @@ const TableRow: React.FC<TableRowProps> = ({
             Remove
           </Button>
         </div>
-      </td>
+      </td>)}
     </tr>
   );
 };
