@@ -10,6 +10,7 @@ import { Agent } from './entities/agent.entity';
 import { LeadsModule } from './leads/leads.module';
 import { NotesModule } from './notes/notes.module';
 import { CustomersModule } from './customers/customers.module';
+import { SegmentsModule } from './segments/segments.module';
 
 @Module({
   imports: [
@@ -35,7 +36,8 @@ import { CustomersModule } from './customers/customers.module';
     LoggerModule,
     LeadsModule,
     NotesModule,
-    CustomersModule
+    CustomersModule,
+    SegmentsModule
   ],
   controllers: [AgentsController],
   providers: [AgentsService, AgentsRepository],

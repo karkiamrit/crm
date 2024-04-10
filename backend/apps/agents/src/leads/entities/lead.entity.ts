@@ -1,66 +1,79 @@
-import { AbstractEntity } from "@app/common";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from "typeorm";
-import { LeadTimeline } from "../../shared/objects/timelines/timelines.entity";
-import { Product } from "../../shared/objects/products/products.entity";
-import { Service } from "../../shared/objects/services/services.entity";
+import { AbstractEntity } from '@app/common';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
+import { LeadTimeline } from '../../shared/objects/timelines/timelines.entity';
+import { Product } from '../../shared/objects/products/products.entity';
+import { Service } from '../../shared/objects/services/services.entity';
+import { Segment } from '../../segments/entities/segment.entity';
 
-
-export enum LeadsStatus{
-    INITIAL= 'INITIAL',
-    PENDING= 'PENDING',
-    CONFIRMED= 'CONFIRMED',
-    REJECTED= 'REJECTED',
-    COMPLETED= 'COMPLETED',
+export enum LeadsStatus {
+  INITIAL = 'INITIAL',
+  PENDING = 'PENDING',
+  CONFIRMED = 'CONFIRMED',
+  REJECTED = 'REJECTED',
+  COMPLETED = 'COMPLETED',
 }
 @Entity()
-export class Leads extends AbstractEntity<Leads>{
+export class Leads extends AbstractEntity<Leads> {
+  @Column()
+  address: string;
 
-    @Column()
-    address: string;
+  @Column()
+  details: string;
 
-    @Column()
-    details: string;
+  @Column({
+    type: 'enum',
+    enum: LeadsStatus,
+    default: LeadsStatus.INITIAL,
+  })
+  status: LeadsStatus;
 
-    @Column({
-        type: "enum",
-        enum: LeadsStatus,
-        default: LeadsStatus.INITIAL
-    })
-    status: LeadsStatus;
+  @Column()
+  phone: string;
 
-    @Column()
-    phone: string;
+  @Column()
+  email: string;
 
-    @Column()
-    email: string;
-   
-    @Column()
-    name: string;
+  @Column()
+  name: string;
 
-    @Column({default:0, nullable: true})
-    priority: number;
+  @Column({ default: 0, nullable: true })
+  priority: number;
 
-    @CreateDateColumn()
-    createdAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @Column({nullable:true})  
-    source: string; //eg: facebook, email etc
+  @Column({ nullable: true })
+  source: string; //eg: facebook, email etc
 
-    @OneToMany(() => LeadTimeline, timeline => timeline.lead, {eager:true, onDelete: 'CASCADE'})
-    timelines: LeadTimeline[];
+  @OneToMany(() => LeadTimeline, (timeline) => timeline.lead, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
+  timelines: LeadTimeline[];
 
-    @OneToOne(() => Product, { eager: true ,nullable:true, cascade: true})
-    @JoinColumn({ name: 'productId'})
-    product: Product;
+  @OneToOne(() => Product, { eager: true, nullable: true, cascade: true })
+  @JoinColumn({ name: 'productId' })
+  product: Product;
 
-    @OneToOne(() => Service, { eager: true , nullable:true , cascade: true})
-    @JoinColumn({ name: 'serviceId'})
-    service: Service;
+  @OneToOne(() => Service, { eager: true, nullable: true, cascade: true })
+  @JoinColumn({ name: 'serviceId' })
+  service: Service;
 
-    @Column('simple-array',{nullable:true})
-    documents: string[];
+  @Column('simple-array', { nullable: true })
+  documents: string[];
 
-    @Column({nullable:true})
-    agentId: number; 
+  @Column({ nullable: true })
+  agentId: number;
 
+  @ManyToMany(() => Segment, segment => segment.leads)
+  segments: Segment[];
 }

@@ -5,7 +5,6 @@ import {
   DatabaseModule,
   LoggerModule,
   NOTIFICATIONS_SERVICE,
-  ORGANIZATION_SERVICE,
 } from '@app/common';
 import { UsersModule } from './users/users.module';
 import { User } from '@app/common';

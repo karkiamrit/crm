@@ -3,8 +3,8 @@
 /node_modules
 /build
 
-apps/auth/node_modules
-apps/notifications/node_modules
+/apps/auth/node_modules
+/apps/notifications/node_modules
 
 # Logs
 logs

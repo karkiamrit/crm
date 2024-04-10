@@ -9,11 +9,16 @@ import {
   Post,
   Put,
   Query,
+  Res,
   UploadedFile,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+
+import { Workbook } from 'exceljs';
+import { Response } from 'express';
+
 import { LeadsService } from './leads.service';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { CurrentUser, JwtAuthGuard, Roles, User } from '@app/common';
@@ -226,5 +231,49 @@ export class LeadsController {
     @Param('filename') filename: string,
   ): Promise<Leads> {
     return this.leadsService.deleteDocument(id, filename);
+  }
+
+  @Get('export/csv')
+  async export(@Query() filter: any, @Res() res: Response) {
+  
+    const leads = await this.leadsService.findAll(filter);
+
+    const workbook = new Workbook();
+    const worksheet = workbook.addWorksheet('Leads');
+
+    // Define columns in the worksheet
+    worksheet.columns = [
+      { header: 'Id', key: 'id', width: 10 },
+      { header: 'Address', key: 'address', width: 32 },
+      { header: 'Details', key: 'details', width: 32 },
+      { header: 'Status', key: 'status', width: 10 },
+      { header: 'Phone', key: 'phone', width: 15 },
+      { header: 'Email', key: 'email', width: 25 },
+      { header: 'Name', key: 'name', width: 25 },
+      { header: 'Priority', key: 'priority', width: 10 },
+      { header: 'Created At', key: 'createdAt', width: 20 },
+      { header: 'Source', key: 'source', width: 15 },
+      { header: 'Documents', key: 'documents', width: 15 },
+      { header: 'Agent Id', key: 'agentId', width: 10 },
+      { header: 'Product Id', key: 'productId', width: 10 },
+      { header: 'Service Id', key: 'serviceId', width: 10 },
+    ];
+
+    // Add rows to the worksheet
+    leads.data.forEach((lead) => {
+      worksheet.addRow(lead);
+    });
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=' + 'leads.xlsx',
+    );
+
+    await workbook.xlsx.write(res);
+    res.end();
   }
 }
