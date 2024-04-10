@@ -239,7 +239,7 @@ export function NavBarHorizontal() {
                 </Link>
               </div>
 
-              <div className="flex-1 max-w-xs ml-8 lg:ml-36 mr-auto">
+              <div className="flex-1 max-w-xs ml-8 lg:ml-40 mr-auto">
                 <label about="" className="sr-only">
                   {" "}
                   Search{" "}

@@ -23,7 +23,7 @@ import { useToast } from "../ui/use-toast";
 const signupFormSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
-  organizationId: z.string().transform(Number),
+  // organizationId: z.string().transform(Number),
 });
 
 const loginFormSchema = z.object({
@@ -47,7 +47,7 @@ export default function AuthForm() {
     defaultValues: {
       email: "",
       password: "",
-      organizationId: NaN,
+      // organizationId: NaN,
     },
   });
   const loginForm = useForm<z.infer<typeof loginFormSchema>>({
@@ -68,7 +68,7 @@ export default function AuthForm() {
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_API_URL_USERS}/users/signup`,
-        data
+        {...data, organizationId: 1}
       );
       const email = data.email;
       const res = await axios.post(
@@ -241,7 +241,7 @@ export default function AuthForm() {
                         </FormItem>
                       )}
                     />
-                    <FormField
+                    {/* <FormField
                       control={signupForm.control}
                       name="organizationId"
                       render={({ field }) => (
@@ -257,7 +257,7 @@ export default function AuthForm() {
                           <FormMessage />
                         </FormItem>
                       )}
-                    />
+                    /> */}
 
                     <Button
                       type="submit"
