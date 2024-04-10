@@ -170,12 +170,12 @@ export default function AuthForm() {
   };
 
   return (
-    <div>
-      <section className="bg-white">
+    <div >
+      <section className="bg-white w-fit items-center m-4 mt-44 lg:mt-28 drop-shadow-2xl border-slate-300 p-4 lg:ml-[35%] border rounded-lg">
         <div className="flex flex-row justify-center ">
           {isSignupNowClicked && (
-            <div className="max-w-sm ">
-              <div className="text-center">
+            <div className="max-w-sm drop-shadow-xl ">
+              <div className="text-center"> 
                 <Image
                   src="https://landingfoliocom.imgix.net/store/collection/clarity-dashboard/images/logo-symbol.svg"
                   alt=""
