@@ -225,7 +225,7 @@ export function NavBarVertical() {
   ];
 
   return (
-    <div className="flex bg-white h-[100vh] ml-2">
+    <div className="flex bg-white ml-2 ">
       <div className="hidde md:flex md:w-72 md:flex-col">
         <div className="flex flex-col pt-5 overflow-y-auto">
           <div className="flex flex-col justify-between flex-1 h-full ">
