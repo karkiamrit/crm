@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { LocalStore } from "@/store/localstore";
 import useVerticalDashboard from "@/store/dashboardStore";
+import Link from "next/link";
 
 interface NavItem {
   href: string;
@@ -148,7 +149,8 @@ export function NavBarVertical() {
             <div className="space-y-4">
               <nav className="flex-1 space-y-2">
                 {navItems1.map((item, index) => (
-                  <div
+                  <Link
+                  href={item.href}
                     key={index}
                     onClick={() => handleLinkClick(item.href)}
                     className={`flex items-center px-4 py-3 text-sm font-medium transition-all duration-200 group ${
@@ -159,7 +161,7 @@ export function NavBarVertical() {
                   >
                     {item.icon}
                     {item.name}
-                  </div>
+                  </Link>
                 ))}
               </nav>
             </div>
