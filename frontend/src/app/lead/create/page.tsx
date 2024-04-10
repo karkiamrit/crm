@@ -14,10 +14,10 @@ const Page = () => {
             <form action="#" method="POST" className="mt-2">
               <div className="space-y-6">
                 <div className="toptitle mt-2">Personal Details</div>
-                <div className="flex gap-20">
-                  <span className="text-sm inline-block font-bold text-gray-900">
+                <div className="flex">
+                  <div className="text-sm font-bold w-1/5 items-center mt-3 text-gray-900">
                     Full Name:
-                  </span>
+                  </div>
                   <input
                     type="text"
                     id="full-name"
@@ -25,10 +25,10 @@ const Page = () => {
                     className="border w-full py-3 px-4 placeholder-gray-500 border-gray-300 rounded-lg focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm"
                   />
                 </div>
-                <div className="flex inline-block ">
-                  <label htmlFor="email" className="text-sm font-bold text-gray-900">
-                    Email
-                  </label>
+                <div className="flex  ">
+                  <div className="text-sm font-bold w-1/5 items-center mt-3 text-gray-900">
+                    Email Address
+                  </div>
                   <input
                     type="email"
                     id="email"
@@ -36,10 +36,10 @@ const Page = () => {
                     className="border w-full py-3 px-4 placeholder-gray-500 border-gray-300 rounded-lg focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm"
                   />
                 </div>
-                <div>
-                  <label htmlFor="contact-no" className="text-sm font-bold text-gray-900">
+                <div className="flex">
+                  <div className="text-sm font-bold w-1/5 items-center mt-3 text-gray-900">
                     Contact No
-                  </label>
+                  </div>
                   <input
                     type="tel"
                     id="contact-no"
@@ -47,44 +47,52 @@ const Page = () => {
                     className="border w-full py-3 px-4 placeholder-gray-500 border-gray-300 rounded-lg focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm"
                   />
                 </div>
-                <div>
-                  <label htmlFor="status" className="text-sm font-bold text-gray-900">
-                    Status
-                  </label>
-                  <input
-                    type="text"
-                    id="status"
-                    placeholder="Status"
-                    className="border w-full py-3 px-4 placeholder-gray-500 border-gray-300 rounded-lg focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm"
-                  />
+                <div className="flex justify-between">
+                  <div className="flex w-1/2">
+                    <div className="text-sm font-bold w-1/5 items-center mt-3 text-gray-900">
+                      Status
+                    </div>
+                    <select
+                      id="status"
+                      className="border w-4/5 py-3 px-4 placeholder-gray-500 border-gray-300 rounded-lg focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm"
+                    >
+                      <option value="">Select Status</option>
+                      <option value="status1">Status 1</option>
+                      <option value="status2">Status 2</option>
+                      {/* Add more options as needed */}
+                    </select>
+                  </div>
+                  <div className="flex w-1/2">
+                    <div className="text-sm font-bold w-1/5 items-center mt-3 text-gray-900">
+                      Date of Birth
+                    </div>
+                    <input
+                      type="date"
+                      id="dob"
+                      className="border w-4/5 py-3 px-4 placeholder-gray-500 border-gray-300 rounded-lg focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label htmlFor="dob" className="text-sm font-bold text-gray-900">
-                    Date of Birth
-                  </label>
-                  <input
-                    type="date"
-                    id="dob"
-                    className="border w-full py-3 px-4 placeholder-gray-500 border-gray-300 rounded-lg focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="joining-date" className="text-sm font-bold text-gray-900">
+                <div className="flex">
+                  <div className="text-sm font-bold w-1/5 items-center mt-3 text-gray-900">
                     Joining Date
-                  </label>
+                  </div>
                   <input
                     type="date"
                     id="joining-date"
                     className="border w-full py-3 px-4 placeholder-gray-500 border-gray-300 rounded-lg focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm"
                   />
                 </div>
-                <div>
-                  <label htmlFor="address" className="text-sm font-bold text-gray-900">
+                <div className="flex">
+                  <div className="text-sm font-bold w-1/5 items-center mt-3 text-gray-900">
                     Address
-                  </label>
+                  </div>
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                     <div>
-                      <label htmlFor="country" className="block text-sm font-bold text-gray-900">
+                      <label
+                        htmlFor="country"
+                        className="block text-sm font-bold text-gray-900"
+                      >
                         Country
                       </label>
                       <input
@@ -95,7 +103,10 @@ const Page = () => {
                       />
                     </div>
                     <div>
-                      <label htmlFor="state" className="block text-sm font-bold text-gray-900">
+                      <label
+                        htmlFor="state"
+                        className="block text-sm font-bold text-gray-900"
+                      >
                         State
                       </label>
                       <input
@@ -106,7 +117,10 @@ const Page = () => {
                       />
                     </div>
                     <div>
-                      <label htmlFor="city" className="block text-sm font-bold text-gray-900">
+                      <label
+                        htmlFor="city"
+                        className="block text-sm font-bold text-gray-900"
+                      >
                         City
                       </label>
                       <input
