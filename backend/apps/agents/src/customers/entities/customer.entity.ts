@@ -1,32 +1,19 @@
 import { AbstractEntity } from "@app/common";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from "typeorm";
-import { LeadTimeline } from "../../shared/objects/timelines/timelines.entity";
+import { CustomerTimeline } from "../../shared/objects/timelines/timelines.entity";
 import { Product } from "../../shared/objects/products/products.entity";
 import { Service } from "../../shared/objects/services/services.entity";
 
 
-export enum LeadsStatus{
-    INITIAL= 'INITIAL',
-    PENDING= 'PENDING',
-    CONFIRMED= 'CONFIRMED',
-    REJECTED= 'REJECTED',
-    COMPLETED= 'COMPLETED',
-}
+
 @Entity()
-export class Leads extends AbstractEntity<Leads>{
+export class Customers extends AbstractEntity<Customers>{
 
     @Column()
     address: string;
 
     @Column()
     details: string;
-
-    @Column({
-        type: "enum",
-        enum: LeadsStatus,
-        default: LeadsStatus.INITIAL
-    })
-    status: LeadsStatus;
 
     @Column()
     phone: string;
@@ -46,8 +33,8 @@ export class Leads extends AbstractEntity<Leads>{
     @Column({nullable:true})  
     source: string; //eg: facebook, email etc
 
-    @OneToMany(() => LeadTimeline, timeline => timeline.lead, {eager:true, onDelete: 'CASCADE'})
-    timelines: LeadTimeline[];
+    @OneToMany(() => CustomerTimeline, timeline => timeline.customer, {eager:true, onDelete: 'CASCADE'})
+    timelines: CustomerTimeline[];
 
     @OneToOne(() => Product, { eager: true ,nullable:true, cascade: true})
     @JoinColumn({ name: 'productId'})
@@ -62,5 +49,4 @@ export class Leads extends AbstractEntity<Leads>{
 
     @Column({nullable:true})
     agentId: number; 
-
 }

@@ -1,12 +1,12 @@
 import { IsArray, IsEnum, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
-import { LeadsStatus } from "../entities/lead.entity";
+
 
 import { Type } from "class-transformer";
 import { UpdateProductInputDTO } from "../../shared/dtos/product.dto";
 import { UpdateServiceInputDTO } from "../../shared/dtos/service.dto";
 
 
-export class UpdateLeadDto {
+export class UpdateCustomerDto {
     @IsOptional()
     @IsString()
     address?: string;
@@ -14,10 +14,6 @@ export class UpdateLeadDto {
     @IsOptional()
     @IsString()
     details?: string;
-
-    @IsOptional()
-    @IsEnum(LeadsStatus)
-    status?: LeadsStatus;
 
     @IsOptional()
     @IsString()

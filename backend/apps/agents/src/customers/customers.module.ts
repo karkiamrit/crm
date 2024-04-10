@@ -1,32 +1,28 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { LeadsService } from './leads.service';
-import { LeadsController } from './leads.controller';
-import { LeadsRepository } from './leads.repository';
-import { Leads } from './entities/lead.entity';
 
 import { AUTH_SERVICE, DatabaseModule } from '@app/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 
 import { AgentsModule } from '../agents.module';
-import { CustomerTimeline, LeadTimeline } from '../shared/objects/timelines/timelines.entity';
+import { CustomerTimeline } from '../shared/objects/timelines/timelines.entity';
 import { Product } from '../shared/objects/products/products.entity';
 import { Service } from '../shared/objects/services/services.entity';
-import { LeadTimelineRepository } from '../shared/objects/timelines/leads.timelines.repository';
+import { Customers } from './entities/customer.entity';
 import { CustomerTimelineRepository } from '../shared/objects/timelines/customers.timelines.repository';
-import { CustomersService } from '../customers/customers.service';
-import { CustomersModule } from '../customers/customers.module';
+import { CustomersController } from './customers.controller';
+import { CustomersService } from './customers.service';
+import { CustomersRepository } from './customers.repository';
 
 @Module({
   imports: [
     forwardRef(() => AgentsModule), 
     DatabaseModule,
-    DatabaseModule.forFeature([Leads, LeadTimeline, Product, Service, LeadTimelineRepository, CustomerTimelineRepository, CustomerTimeline]),
+    DatabaseModule.forFeature([Customers, CustomerTimeline, Product, Service, CustomerTimelineRepository]),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: 'apps/agent/.env',
     }),
-    CustomersModule,
     ClientsModule.registerAsync([
       {
         name: AUTH_SERVICE,
@@ -41,8 +37,8 @@ import { CustomersModule } from '../customers/customers.module';
       },
     ]),
   ],
-  controllers: [LeadsController],
-  providers: [LeadsService, LeadsRepository, LeadTimelineRepository, CustomerTimelineRepository],
-  exports: [LeadsService]
+  controllers: [CustomersController],
+  providers: [CustomersService, CustomersRepository, CustomerTimelineRepository],
+  exports: [CustomersService]
 })
-export class LeadsModule {}
+export class CustomersModule {}
