@@ -9,18 +9,13 @@ import {
   Post,
   Put,
   Query,
-  Res,
   UploadedFile,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-
-import { Workbook } from 'exceljs';
-import { Response } from 'express';
-
-import { LeadsService } from './leads.service';
-import { CreateLeadDto } from './dto/create-lead.dto';
+import { CustomersService } from './customers.service';
+import { CreateCustomerDto } from './dto/create-customer.dto';
 import { CurrentUser, JwtAuthGuard, Roles, User } from '@app/common';
 import {
   ApiOperation,
@@ -29,27 +24,27 @@ import {
   ApiBody,
   ApiResponse,
 } from '@nestjs/swagger';
-import { UpdateLeadDto } from './dto/update-lead.dto';
-import { Leads } from './entities/lead.entity';
+import { UpdateCustomerDto } from './dto/update-customer.dto';
+import { Customers } from './entities/customer.entity';
 import { diskStorage } from 'multer';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { extname } from 'path';
 import { AgentsService } from '../agents.service';
 import { Agent } from '../entities/agent.entity';
 
-@Controller('leads')
-export class LeadsController {
+@Controller('customers')
+export class CustomersController {
   constructor(
-    private readonly leadsService: LeadsService,
+    private readonly customersService: CustomersService,
     private readonly agentService: AgentsService,
   ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
   @Roles('Agent')
-  @ApiOperation({ summary: 'Create a new lead' })
+  @ApiOperation({ summary: 'Create a new customer' })
   @ApiBearerAuth()
-  @ApiBody({ type: CreateLeadDto })
+  @ApiBody({ type: CreateCustomerDto })
   @UseInterceptors(
     FilesInterceptor('documents', 10, {
       // 'documents' is the name of the field that should contain the files
@@ -64,7 +59,7 @@ export class LeadsController {
   )
   async create(
     @UploadedFiles() files: Express.Multer.File[],
-    @Body() createLeadsDto: CreateLeadDto,
+    @Body() createCustomersDto: CreateCustomerDto,
     @CurrentUser() user: User,
     @Body() referenceNo?: any,
   ) {
@@ -91,48 +86,48 @@ export class LeadsController {
       documents = files.map((file) => file.path);
     }
 
-    const createLeadsDtoWithDocuments: CreateLeadDto = {
-      ...createLeadsDto,
+    const createCustomersDtoWithDocuments: CreateCustomerDto = {
+      ...createCustomersDto,
       documents,
     };
-    return await this.leadsService.create(createLeadsDtoWithDocuments, agent);
+    return await this.customersService.create(createCustomersDtoWithDocuments, agent);
   }
 
   @Put(':id')
   @UseGuards(JwtAuthGuard)
   @Roles('Agent')
-  @ApiOperation({ summary: 'Update a lead' })
+  @ApiOperation({ summary: 'Update a customer' })
   @ApiBearerAuth()
   @ApiParam({
     name: 'id',
     required: true,
-    description: 'The id of the lead to update',
+    description: 'The id of the customer to update',
   })
-  @ApiBody({ type: UpdateLeadDto })
-  async update(@Param('id') id: number, @Body() updateLeadsDto: UpdateLeadDto) {
-    return this.leadsService.update(id, updateLeadsDto);
+  @ApiBody({ type: UpdateCustomerDto })
+  async update(@Param('id') id: number, @Body() updateCustomersDto: UpdateCustomerDto) {
+    return this.customersService.update(id, updateCustomersDto);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @Roles('Agent')
-  @ApiOperation({ summary: 'Delete a lead' })
+  @ApiOperation({ summary: 'Delete a customer' })
   @ApiBearerAuth()
   @ApiParam({
     name: 'id',
     required: true,
-    description: 'The id of the lead to delete',
+    description: 'The id of the customer to delete',
   })
   async delete(@Param('id') id: number) {
-    return this.leadsService.delete(id);
+    return this.customersService.delete(id);
   }
 
-  @Get('myleads')
+  @Get('mycustomers')
   @UseGuards(JwtAuthGuard)
   @Roles('Agent')
-  @ApiOperation({ summary: 'Get all leads' })
+  @ApiOperation({ summary: 'Get all customers' })
   @ApiBearerAuth()
-  async findLeadsOfCurrentAgent(
+  async findCustomersOfCurrentAgent(
     @Query() query: any,
     @CurrentUser() user: User,
   ){
@@ -140,33 +135,33 @@ export class LeadsController {
     if (agent) {
       query.agentId = agent.id;
     }
-    return this.leadsService.findAllLeadsOfAgent(query);
+    return this.customersService.findAllCustomersOfAgent(query);
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
   // @Roles('Admin')
-  @ApiOperation({ summary: 'Get all leads' })
+  @ApiOperation({ summary: 'Get all customers' })
   @ApiBearerAuth()
   async findAll(@Query() query: any) {
-    return this.leadsService.findAll(query);
+    return this.customersService.findAll(query);
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @Roles('Admin')
-  @ApiOperation({ summary: 'Get an lead by id' })
+  @ApiOperation({ summary: 'Get an customer by id' })
   @ApiBearerAuth()
-  @ApiParam({ name: 'id', required: true, description: 'The id of the lead' })
+  @ApiParam({ name: 'id', required: true, description: 'The id of the customer' })
   async getOne(@Param('id') id: number) {
-    return this.leadsService.getOne(id);
+    return this.customersService.getOne(id);
   }
 
   @Patch(':id/upload-documents')
   @UseGuards(JwtAuthGuard)
-  @Roles('Lead')
+  @Roles('Customer')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Upload lead documents' })
+  @ApiOperation({ summary: 'Upload customer documents' })
   @ApiResponse({
     status: 200,
     description: 'The documents have been successfully uploaded.',
@@ -185,16 +180,16 @@ export class LeadsController {
   async addDocuments(
     @UploadedFiles() files: Express.Multer.File[],
     @Param('id') id: number,
-  ): Promise<Leads> {
+  ): Promise<Customers> {
     const documents = files.map((file) => file.path);
-    return this.leadsService.addDocuments(id, documents);
+    return this.customersService.addDocuments(id, documents);
   }
 
   @Patch(':id/update-document/:filename')
   @UseGuards(JwtAuthGuard)
   @Roles('Admin')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update a document of an lead' })
+  @ApiOperation({ summary: 'Update a document of an customer' })
   @ApiResponse({
     status: 200,
     description: 'The document has been successfully updated.',
@@ -213,15 +208,15 @@ export class LeadsController {
     @UploadedFile() file: Express.Multer.File,
     @Param('id') id: number,
     @Param('filename') filename: string,
-  ): Promise<Leads> {
-    return this.leadsService.updateDocument(id, filename, file.path);
+  ): Promise<Customers> {
+    return this.customersService.updateDocument(id, filename, file.path);
   }
 
   @Delete(':id/delete-document/:filename')
   @UseGuards(JwtAuthGuard)
   @Roles('Admin')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Delete a document of an lead' })
+  @ApiOperation({ summary: 'Delete a document of an customer' })
   @ApiResponse({
     status: 200,
     description: 'The document has been successfully deleted.',
@@ -229,51 +224,7 @@ export class LeadsController {
   async deleteDocument(
     @Param('id') id: number,
     @Param('filename') filename: string,
-  ): Promise<Leads> {
-    return this.leadsService.deleteDocument(id, filename);
-  }
-
-  @Get('export/csv')
-  async export(@Query() filter: any, @Res() res: Response) {
-  
-    const leads = await this.leadsService.findAll(filter);
-
-    const workbook = new Workbook();
-    const worksheet = workbook.addWorksheet('Leads');
-
-    // Define columns in the worksheet
-    worksheet.columns = [
-      { header: 'Id', key: 'id', width: 10 },
-      { header: 'Address', key: 'address', width: 32 },
-      { header: 'Details', key: 'details', width: 32 },
-      { header: 'Status', key: 'status', width: 10 },
-      { header: 'Phone', key: 'phone', width: 15 },
-      { header: 'Email', key: 'email', width: 25 },
-      { header: 'Name', key: 'name', width: 25 },
-      { header: 'Priority', key: 'priority', width: 10 },
-      { header: 'Created At', key: 'createdAt', width: 20 },
-      { header: 'Source', key: 'source', width: 15 },
-      { header: 'Documents', key: 'documents', width: 15 },
-      { header: 'Agent Id', key: 'agentId', width: 10 },
-      { header: 'Product Id', key: 'productId', width: 10 },
-      { header: 'Service Id', key: 'serviceId', width: 10 },
-    ];
-
-    // Add rows to the worksheet
-    leads.data.forEach((lead) => {
-      worksheet.addRow(lead);
-    });
-
-    res.setHeader(
-      'Content-Type',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    );
-    res.setHeader(
-      'Content-Disposition',
-      'attachment; filename=' + 'leads.xlsx',
-    );
-
-    await workbook.xlsx.write(res);
-    res.end();
+  ): Promise<Customers> {
+    return this.customersService.deleteDocument(id, filename);
   }
 }

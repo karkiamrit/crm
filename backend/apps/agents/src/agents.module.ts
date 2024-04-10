@@ -9,6 +9,8 @@ import { LoggerModule } from '@app/common';
 import { Agent } from './entities/agent.entity';
 import { LeadsModule } from './leads/leads.module';
 import { NotesModule } from './notes/notes.module';
+import { CustomersModule } from './customers/customers.module';
+import { SegmentsModule } from './segments/segments.module';
 
 @Module({
   imports: [
@@ -33,7 +35,9 @@ import { NotesModule } from './notes/notes.module';
     ]),
     LoggerModule,
     LeadsModule,
-    NotesModule
+    NotesModule,
+    CustomersModule,
+    SegmentsModule
   ],
   controllers: [AgentsController],
   providers: [AgentsService, AgentsRepository],

@@ -1,6 +1,7 @@
 import { AbstractEntity } from "@app/common";
 import { Column, Entity, OneToMany, OneToOne } from "typeorm";
 import { Leads } from "../leads/entities/lead.entity";
+import { Customers } from "../customers/entities/customer.entity";
 
 @Entity()
 export class Agent extends AbstractEntity<Agent>{
@@ -25,8 +26,9 @@ export class Agent extends AbstractEntity<Agent>{
     @Column()
     userId: number
 
-    @OneToMany(() => Leads, lead => lead.agentId)
+    @OneToMany(() => Leads, lead => lead.agentId, {nullable: true})
     leads: Leads[];
-  
-  
+
+    @OneToMany(() => Customers, customer => customer.agentId, {nullable: true})
+    customers: Customers[];
 }

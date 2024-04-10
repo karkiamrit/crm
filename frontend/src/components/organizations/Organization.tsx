@@ -201,8 +201,8 @@ const OrganizationsPage: React.FC = () => {
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 lg:w-[1200px] flex-wrap ">
-      <div className="py-8 lg:h-[47rem]">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 lg:w-[1600px] flex-wrap ">
+      <div className="py-8 lg:h-[47rem] ">
         <div className="flex flex-row items-center justify-between gap-6 lg:pb-6">
           <div className="flex flex-row items-center gap-6 pl-6">
             {organization?.logo && (
@@ -229,8 +229,8 @@ const OrganizationsPage: React.FC = () => {
             <CreateOrganizationForm />
           </div> */}
         </div>
-        <Separator className="w-full lg:mb-10" />
-        <div className="flex flex-row gap-10">
+        <Separator className="w-full lg:mb-10 mt-5 lg:mt-0" />
+        <div className="flex flex-col lg:flex-row gap-10">
           <div className="overflow-x-auto w-full">
             <div className="inline-block min-w-full overflow-hidden align-middle border border-gray-200 shadow sm:rounded-lg">
               <table className="min-w-full ">

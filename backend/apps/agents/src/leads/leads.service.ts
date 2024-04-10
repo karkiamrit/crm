@@ -1,18 +1,23 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
-import { Leads } from './entities/lead.entity';
+import { Leads, LeadsStatus } from './entities/lead.entity';
 import { LeadsRepository } from './leads.repository';
 import { ExtendedFindOptions, User } from '@app/common';
 import { promisify } from 'util';
 import { unlink } from 'fs';
-import { LeadTimeline } from './timelines/timelines.entity';
-import { Product } from './products/products.entity';
-import { Service } from './services/services.entity';
-import { LeadTimelineRepository } from './timelines/timelines.repository';
+
 import { AgentsService } from '../agents.service';
 import { join } from 'path';
 import { Agent } from '../entities/agent.entity';
+import { Service } from '../shared/objects/services/services.entity';
+import { CustomerTimeline, LeadTimeline } from '../shared/objects/timelines/timelines.entity';
+import { Product } from '../shared/objects/products/products.entity';
+import { LeadTimelineRepository } from '../shared/objects/timelines/leads.timelines.repository';
+import { CustomerTimelineRepository } from '../shared/objects/timelines/customers.timelines.repository';
+import { Customers } from '../customers/entities/customer.entity';
+import { CustomersService } from '../customers/customers.service';
+
 
 @Injectable()
 export class LeadsService {
@@ -20,6 +25,8 @@ export class LeadsService {
     private readonly leadsRepository: LeadsRepository,
     private readonly leadTimelineRepository: LeadTimelineRepository,
     private readonly agentService: AgentsService,
+    private readonly customerTimelineRepository: CustomerTimelineRepository,
+    private readonly customerService: CustomersService,
   ) {}
 
   async create(createLeadDto: CreateLeadDto, agent: Agent) {
@@ -92,11 +99,46 @@ export class LeadsService {
 
         // Add the LeadTimeline entity to the timelines array of the lead
         lead.timelines.push(timeline);
+
+        if (attribute === 'status' && updateLeadsDto.status === LeadsStatus.COMPLETED) {
+          // Delete the lead
+          await this.leadsRepository.findOneAndDelete({ id: lead.id });
+
+          // Create a new customer with the properties from the lead, except for status
+          const { status, timelines, ...leadProperties } = lead;
+          const customer = new Customers({
+            ...leadProperties,
+          });
+          const agent = await this.agentService.getOne(lead.agentId);
+
+          // Save the new customer
+          await this.customerService.create(customer, agent);
+        
+          // Map each LeadTimeline to a CustomerTimeline
+          for (const leadTimeline of lead.timelines) {
+            leadTimeline.lead=null;
+            const customerTimeline = new CustomerTimeline({
+              ...leadTimeline,
+              customer: customer, // Set the customer property to the new customer
+            });
+        
+            // Save the CustomerTimeline entity to the database
+            await this.customerTimelineRepository.create(customerTimeline);
+        
+            // Add the CustomerTimeline entity to the timelines array of the customer
+            customer.timelines.push(customerTimeline);
+          }
+        
+          // Save the updated customer
+          await this.customerService.update(customer.id, customer);
+        
+          return customer;
+        }
       }
     }
 
     // Save the updated lead
-    await this.leadsRepository.create(lead);
+    await this.leadsRepository.findOneAndUpdate({where: {id: lead.id}},lead);
 
     // Create a new object that omits the lead property from each LeadTimeline in lead.timelines
     const leadToReturn = {
