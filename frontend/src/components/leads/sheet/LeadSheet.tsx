@@ -55,14 +55,17 @@ const LeadSheet = (props: Props) => {
             },
           }
         );
-        setLeadData(response.data);
+        // setLeadData(response.data);
+        if (response.data.id === props.id) {
+          setLeadData(response.data);
+        }
       } catch (error) {
         console.error("Failed to fetch lead data:", error);
       }
     };
 
     fetchLeadData();
-  }, [props.id, updatedData]);
+  }, [updatedData]);
   useEffect(() => {
     if (leadData) {
       setUpdatedName(leadData.name);
@@ -214,6 +217,31 @@ const LeadSheet = (props: Props) => {
                               ? updatedData.phone ?? leadData?.phone ?? ""
                               : ""
                           }
+                          onKeyDown={async (e) => {
+                            if (e.key === "Enter") {
+                              setCurrentTitles([]);
+
+                              try {
+                                const response = await axios.put(
+                                  `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/leads/${props.id}`,
+                                  updatedData,
+                                  {
+                                    headers: {
+                                      Authorization: `Bearer ${LocalStore.getAccessToken()}`,
+                                    },
+                                  }
+                                );
+                                if (response.data) {
+                                  setLeadData(response.data);
+                                }
+                              } catch (error) {
+                                console.error(
+                                  "Failed to update lead data:",
+                                  error
+                                );
+                              }
+                            }
+                          }}
                           onChange={(e) => {
                             const value = e.target.value;
                             if (

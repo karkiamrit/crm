@@ -183,6 +183,7 @@ const LeadsPage: React.FC = () => {
 
   useEffect(() => {
     if (isLeadDataDeleted || isLeadFormSubmitted || leadStatus) {
+      console.log(leadStatus)
       const newAppliedFilter = Object.values(filter).map((filter) => ({
         ...filter,
       }));
