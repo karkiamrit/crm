@@ -45,22 +45,22 @@ const TableRow: React.FC<TableRowProps> = ({
   const randomBackgroundColor = colors[randomColorIndex];
   const { toast } = useToast();
   const { setLeadDataDeleted } = useleadDeleted();
-  const {userData} = useAuth();
+  const { userData } = useAuth();
 
   const statusColors: Record<LeadsStatus, string> = {
-    [LeadsStatus.INITIAL]: "bg-violet-500 text-white",
-    [LeadsStatus.PENDING]: "bg-blue-500 text-white",
-    [LeadsStatus.CONFIRMED]: "bg-blue-500 text-white",
-    [LeadsStatus.REJECTED]: "bg-red-500 text-white",
-    [LeadsStatus.COMPLETED]: "bg-green-500 text-white",
+    [LeadsStatus.INITIAL]: "border-violet-500 border  text-violet-500",
+    [LeadsStatus.PENDING]: "border-blue-500 border text-blue-500",
+    [LeadsStatus.CONFIRMED]: "border-blue-500 border text-blue-500",
+    [LeadsStatus.REJECTED]: "border-red-500 border text-red-500",
+    [LeadsStatus.COMPLETED]: "border-green-500 border text-green-500",
   };
 
   const statusIcons: Record<LeadsStatus, string> = {
-    [LeadsStatus.INITIAL]: "🔍",
-    [LeadsStatus.PENDING]: "⏳",
-    [LeadsStatus.CONFIRMED]: "✅",
-    [LeadsStatus.REJECTED]: "❌",
-    [LeadsStatus.COMPLETED]: "🎉",
+    [LeadsStatus.INITIAL]: "",
+    [LeadsStatus.PENDING]: "",
+    [LeadsStatus.CONFIRMED]: "",
+    [LeadsStatus.REJECTED]: "",
+    [LeadsStatus.COMPLETED]: "",
   };
 
   return (
@@ -199,7 +199,6 @@ const TableRow: React.FC<TableRowProps> = ({
           className={`flex items-center justify-center md:justify-start p-2 rounded-sm ${statusColors[status]}`}
         >
           {statusIcons[status]}
-
           {status}
         </div>
       </td>
@@ -208,78 +207,85 @@ const TableRow: React.FC<TableRowProps> = ({
         {country}
       </td>
 
-      {userData?.roles && userData.roles.some(role => role.name === 'Agent' || role.name === 'Admin') && (<td className="hidden px-4 py-4 lg:table-cell whitespace-nowrap">
-        <div className="flex items-center space-x-4">
-          <Sheet>
-            <SheetTrigger className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-200 bg-gray-100 border border-gray-300 rounded-md shadow-sm">
-              Edit Details
-            </SheetTrigger>
-            <SheetContent className="overflow-auto">
-              <LeadSheet id={id} />
-            </SheetContent>
-          </Sheet>
+      {userData?.roles &&
+        userData.roles.some(
+          (role) => role.name === "Agent" || role.name === "Admin"
+        ) && (
+          <td className="hidden px-4 py-4 lg:table-cell whitespace-nowrap">
+            <div className="flex items-center space-x-4">
+              <Sheet>
+                <SheetTrigger className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-200 bg-gray-100 border border-gray-300 rounded-md shadow-sm">
+                  Edit Details
+                </SheetTrigger>
+                <SheetContent className="overflow-auto">
+                  <LeadSheet id={id} />
+                </SheetContent>
+              </Sheet>
 
-          <Button
-            variant="ghost"
-            className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-200 bg-white border border-gray-300 rounded-md shadow-sm"
-            onClick={async () => {
-              try {
-                const response = await axios.delete(
-                  `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/leads/${id}`,
-                  {
-                    headers: {
-                      Authorization: `Bearer ${LocalStore.getAccessToken()}`,
-                    },
+              <Button
+                variant="ghost"
+                className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-200 bg-white border border-gray-300 rounded-md shadow-sm"
+                onClick={async () => {
+                  try {
+                    const response = await axios.delete(
+                      `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/leads/${id}`,
+                      {
+                        headers: {
+                          Authorization: `Bearer ${LocalStore.getAccessToken()}`,
+                        },
+                      }
+                    );
+
+                    if (response.status === 200 || response.status === 201) {
+                      console.log("Lead deleted successfully");
+                      setLeadDataDeleted(true);
+                    } else {
+                      throw new Error(
+                        "An error occurred while deleting the lead."
+                      );
+                    }
+                  } catch (err: any) {
+                    toast({
+                      variant: "destructive",
+                      title: "Uh oh! Something went wrong.",
+                      description:
+                        `${
+                          err.response?.data?.message ||
+                          "An error occurred while deleting the lead."
+                        } ` +
+                        `${
+                          err.response?.data?.error
+                            ? `Error: ${err.response?.data?.error?.message}`
+                            : ""
+                        } ` +
+                        `${
+                          err.response?.data?.statusCode
+                            ? `Status Code: ${err.response?.data?.statusCode}`
+                            : ""
+                        }`,
+                    });
                   }
-                );
-
-                if (response.status === 200 || response.status === 201) {
-                  console.log("Lead deleted successfully");
-                  setLeadDataDeleted(true);
-                } else {
-                  throw new Error("An error occurred while deleting the lead.");
-                }
-              } catch (err: any) {
-                toast({
-                  variant: "destructive",
-                  title: "Uh oh! Something went wrong.",
-                  description:
-                    `${
-                      err.response?.data?.message ||
-                      "An error occurred while deleting the lead."
-                    } ` +
-                    `${
-                      err.response?.data?.error
-                        ? `Error: ${err.response?.data?.error?.message}`
-                        : ""
-                    } ` +
-                    `${
-                      err.response?.data?.statusCode
-                        ? `Status Code: ${err.response?.data?.statusCode}`
-                        : ""
-                    }`,
-                });
-              }
-            }}
-          >
-            <svg
-              className="w-5 h-5 mr-2 -ml-1"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-            Remove
-          </Button>
-        </div>
-      </td>)}
+                }}
+              >
+                <svg
+                  className="w-5 h-5 mr-2 -ml-1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+                Remove
+              </Button>
+            </div>
+          </td>
+        )}
     </tr>
   );
 };
