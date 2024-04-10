@@ -10,7 +10,7 @@ export class LocalStore {
 
   static reload(){
     if (typeof window !== 'undefined') {
-      window.location.href="/";
+      window.location.href="/auth";
     }
   }
 
