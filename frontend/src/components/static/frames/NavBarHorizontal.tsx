@@ -10,6 +10,7 @@ import {
 import useVerticalDashboard from "@/store/dashboardStore";
 import { LocalStore } from "@/store/localstore";
 import useBlurStore from "@/store/useBlurStore";
+import { Separator } from "@radix-ui/react-separator";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
@@ -238,7 +239,7 @@ export function NavBarHorizontal() {
                 </Link>
               </div>
 
-              <div className="flex-1 max-w-xs ml-8 lg:ml-32 mr-auto">
+              <div className="flex-1 max-w-xs ml-8 lg:ml-36 mr-auto">
                 <label about="" className="sr-only">
                   {" "}
                   Search{" "}
@@ -364,6 +365,7 @@ export function NavBarHorizontal() {
             </div>
           </div>
         </div>
+      {/* <Separator orientation="horizontal" className="border-t border-gray-200" /> */}
       </header>
     </div>
   );
