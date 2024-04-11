@@ -16,10 +16,6 @@ import { ChevronRightIcon } from "@radix-ui/react-icons";
 
 interface NavItem {
   href: string;
-  menuBarItem: {
-    name: string;
-    href: string;
-  }[];
   icon: JSX.Element;
   name: string;
 }
@@ -44,20 +40,6 @@ export function NavBarVertical() {
   const navItems1: NavItem[] = [
     {
       href: "/dashboard",
-      menuBarItem: [
-        {
-          name: "Dashboard",
-          href: "/dashboard",
-        },
-        {
-          name: "Analytics",
-          href: "/dashboard/analytics",
-        },
-        {
-          name: "Reports",
-          href: "/dashboard/reports",
-        },
-      ],
       icon: (
         <svg
           className="flex-shrink-0 w-5 h-5 mr-4"
@@ -78,20 +60,6 @@ export function NavBarVertical() {
     },
     {
       href: "/organizations",
-      menuBarItem: [
-        {
-          name: "View",
-          href: "/organizations",
-        },
-        {
-          name: "Create",
-          href: "/organizations/create",
-        },
-        {
-          name: "Edit",
-          href: "/organizations/edit",
-        },
-      ],
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -122,20 +90,6 @@ export function NavBarVertical() {
     },
     {
       href: "/leads",
-      menuBarItem: [
-        {
-          name: "View",
-          href: "/leads",
-        },
-        {
-          name: "Create",
-          href: "/leads/create",
-        },
-        {
-          name: "View",
-          href: "/leads/view",
-        },
-      ],
       icon: (
         <svg
           className="flex-shrink-0 w-5 h-5 mr-4"
@@ -156,20 +110,6 @@ export function NavBarVertical() {
     },
     {
       href: "/agents",
-      menuBarItem: [
-        {
-          name: "View",
-          href: "/agents",
-        },
-        {
-          name: "Create",
-          href: "/agents/create",
-        },
-        {
-          name: "Edit",
-          href: "/agents/edit",
-        },
-      ],
       icon: (
         <svg
           className="flex-shrink-0 w-5 h-5 mr-4"
@@ -190,20 +130,6 @@ export function NavBarVertical() {
     },
     {
       href: "/customers",
-      menuBarItem: [
-        {
-          name: "View",
-          href: "/customers",
-        },
-        {
-          name: "Create",
-          href: "/customers/create",
-        },
-        {
-          name: "Edit",
-          href: "/customers/edit",
-        },
-      ],
       icon: (
         <svg
           className="flex-shrink-0 w-5 h-5 mr-4"
@@ -230,53 +156,24 @@ export function NavBarVertical() {
         <div className="flex flex-col pt-5 overflow-y-auto">
           <div className="flex flex-col justify-between flex-1 h-full ">
             <div className="space-y-4">
-              <nav className="flex-1 space-y-2 ">
+              <nav className="flex-1 space-y-2">
                 {navItems1.map((item, index) => (
-                  <Menubar
-                    className={`flex items-center h-auto text-sm font-medium transition-all duration-200 w-full group ${
-                      selectedLink === item.href
-                        ? "text-white bg-primary w-full"
-                        : "text-gray-900 hover:bg-gray-100"
-                    }`}
+                  <Link
+                    href={item.href}
                     key={index}
+                    onClick={() => handleLinkClick(item.href)}
+                    className={`flex items-center px-4 py-3 text-sm font-medium transition-all duration-200 group ${
+                      selectedLink === item.href
+                        ? "text-white bg-primary"
+                        : "text-gray-900 hover:bg-gray-300 "
+                    }`}
                   >
-                    <MenubarMenu key={index}>
-                      <MenubarTrigger className="w-full flex justify-between items-center h-12">
-                        <div className="flex flex-row">
-                          {" "}
-                          {item.icon}
-                          {item.name}
-                        </div>
-
-                        <div className="">
-                          <ChevronRightIcon height={18} width={18} />
-                        </div>
-                      </MenubarTrigger>
-                      <MenubarContent side="right">
-                        {item.menuBarItem.map((menu, index) => (
-                          <MenubarItem key={index}>
-                            <Link
-                              href={menu.href}
-                              key={index}
-                              className="focus:outline-none "
-                            >
-                              <div
-                                className="block px-4 py-2 w-full text-sm text-gray-700 hover:bg-gray-100"
-                                onClick={() => handleLinkClick(item.href)}
-                              >
-                                {menu.name}
-                              </div>
-                            </Link>
-                          </MenubarItem>
-                        ))}
-                      </MenubarContent>
-                    </MenubarMenu>
-                  </Menubar>
+                    {item.icon}
+                    {item.name}
+                  </Link>
                 ))}
               </nav>
             </div>
-
-            
           </div>
         </div>
       </div>
