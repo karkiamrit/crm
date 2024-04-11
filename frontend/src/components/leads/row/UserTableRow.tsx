@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import React from "react";
+import React, { useState } from "react";
 import { LeadsStatus } from "../Leads";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -22,7 +22,7 @@ interface TableRowProps {
   id: number;
   isSelected: boolean;
   onSelect: (isSelected: boolean) => void;
-  selectedLeads: number[]
+  selectedLeads: number[];
 }
 
 const TableRow: React.FC<TableRowProps> = ({
@@ -34,7 +34,7 @@ const TableRow: React.FC<TableRowProps> = ({
   id,
   isSelected,
   onSelect,
-  selectedLeads
+  selectedLeads,
 }) => {
   const colors = [
     "bg-red-200",
@@ -72,13 +72,31 @@ const TableRow: React.FC<TableRowProps> = ({
     [LeadsStatus.COMPLETED]: "",
   };
 
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const handleDrawerOpen = () => {
+    setIsDrawerOpen(true);
+    // Set overflow to 'hidden' to hide the scrollbar of the parent page
+    document.body.style.overflow = "hidden";
+  };
+
+  const handleDrawerClose = () => {
+    setIsDrawerOpen(false);
+    // Revert overflow to its default value to show the scrollbar of the parent page
+    document.body.style.overflow = "auto";
+  };
+
   return (
     <tr className="bg-white">
       <Drawer>
-        <td className="p-4 bg-white rounded-lg shadow-md md:shadow-none text-sm font-bold text-gray-900 align-top lg:align-middle whitespace-nowrap">
+        <td className="p-4 scroll-my-0 bg-white rounded-lg shadow-md md:shadow-none border-none text-sm font-bold text-gray-900 align-top lg:align-middle whitespace-nowrap">
           <div className="flex items-center">
             <DrawerTrigger asChild>
-              <Checkbox checked={isSelected} onCheckedChange={onSelect} />
+              <Checkbox
+                checked={isSelected}
+                onCheckedChange={onSelect}
+                style={{ width: "1.1rem", height: "1.1rem" }} // Adjust width and height as needed
+              />
             </DrawerTrigger>
           </div>
         </td>
@@ -305,8 +323,8 @@ const TableRow: React.FC<TableRowProps> = ({
             </td>
           )}
 
-        <DrawerContent className="flex justify-between">
-          <DrawerContentDemo leadID={selectedLeads}/>
+        <DrawerContent className="flex overflow-y-auto justify-between mx-10">
+          <DrawerContentDemo leadID={selectedLeads} />
         </DrawerContent>
       </Drawer>
     </tr>

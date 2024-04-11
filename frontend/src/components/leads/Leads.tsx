@@ -260,6 +260,8 @@ const LeadsPage: React.FC = () => {
                   <th className="px-4 py-7 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider gap-3">
                     <Checkbox
                       checked={selectedLeads.length === leads.length}
+                      style={{ width: "1.1rem", height: "1.1rem" }} // Adjust width and height as needed
+
                       onCheckedChange={(isChecked) => {
                         setSelectedLeads(
                           isChecked ? leads.map((lead) => lead.id) : []
