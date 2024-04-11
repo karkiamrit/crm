@@ -181,20 +181,18 @@ export function NavBarHorizontal() {
   };
 
   return (
-    <div >
+    <div className="sticky top-0 z-999">
       <header className="sticky top-0 z-999">
         <div className="py-3 bg-white ">
           <div className=" px-4 mx-auto sm:px-6 lg:px-8">
             <div className="flex items-center justify-between">
-              <div
-                className="statebutton"
-              >
-                <div className="block -m-2 md:hidden" ref={buttonRef} >
+              <div className="statebutton">
+                <div className="block -m-2 md:hidden" ref={buttonRef}>
                   {loggedIn && (
                     <button
                       type="button"
                       className="inline-flex items-center justify-center p-2 text-gray-400 bg-white rounded-lg hover:text-gray-500 hover:bg-gray-100 focus:outline-none  "
-                       onClick={toggleMenu}
+                      onClick={toggleMenu}
                     >
                       <svg
                         className="w-6 h-6 delay-100 duration-300 ease-in-out transform transition-all"
@@ -365,7 +363,7 @@ export function NavBarHorizontal() {
             </div>
           </div>
         </div>
-      {/* <Separator orientation="horizontal" className="border-t border-gray-200" /> */}
+        {/* <Separator orientation="horizontal" className="border-t border-gray-200" /> */}
       </header>
     </div>
   );
