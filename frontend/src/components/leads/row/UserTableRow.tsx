@@ -74,21 +74,11 @@ const TableRow: React.FC<TableRowProps> = ({
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const handleDrawerOpen = () => {
-    setIsDrawerOpen(true);
-    // Set overflow to 'hidden' to hide the scrollbar of the parent page
-    document.body.style.overflow = "hidden";
-  };
-
-  const handleDrawerClose = () => {
-    setIsDrawerOpen(false);
-    // Revert overflow to its default value to show the scrollbar of the parent page
-    document.body.style.overflow = "auto";
-  };
+ 
 
   return (
-    <tr className="bg-white">
-      <Drawer>
+    <tr className="bg-white ">
+      <Drawer >
         <td className="p-4 scroll-my-0 bg-white rounded-lg shadow-md md:shadow-none border-none text-sm font-bold text-gray-900 align-top lg:align-middle whitespace-nowrap">
           <div className="flex items-center">
             <DrawerTrigger asChild>
@@ -323,7 +313,7 @@ const TableRow: React.FC<TableRowProps> = ({
             </td>
           )}
 
-        <DrawerContent className="flex overflow-y-auto justify-between mx-10">
+        <DrawerContent className="flex overflow-y-auto justify-between mx-10 ">
           <DrawerContentDemo leadID={selectedLeads} />
         </DrawerContent>
       </Drawer>
