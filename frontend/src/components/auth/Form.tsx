@@ -20,18 +20,18 @@ import { useRouter } from "next/navigation";
 import { LocalStore } from "@/store/localstore";
 import { useToast } from "../ui/use-toast";
 
-const signupFormSchema = z.object({
+export const signupFormSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
   // organizationId: z.string().transform(Number),
 });
 
-const loginFormSchema = z.object({
+export const loginFormSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
 });
 
-const otpFormSchema = z.object({
+export const otpFormSchema = z.object({
   otp: z.string().min(5).max(8),
 });
 
