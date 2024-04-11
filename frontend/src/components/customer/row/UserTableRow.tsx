@@ -25,8 +25,8 @@ const TableRow: React.FC<TableRowProps> = ({
   phone,
   country,
   id,
-  isSelected, 
-  onSelect
+  isSelected,
+  onSelect,
 }) => {
   const colors = [
     "bg-red-200",
@@ -48,15 +48,11 @@ const TableRow: React.FC<TableRowProps> = ({
   const { setLeadDataDeleted } = useleadDeleted();
   const { userData } = useAuth();
 
-
   return (
     <tr className="bg-white">
       <td className="p-4 bg-white rounded-lg shadow-md md:shadow-none text-sm font-bold text-gray-900 align-top lg:align-middle whitespace-nowrap">
         <div className="flex items-center">
-          <Checkbox
-            checked={isSelected}
-            onChange={(e: any) => onSelect(e.target.checked)}
-          />
+          <Checkbox checked={isSelected} onCheckedChange={onSelect} />
         </div>
       </td>
       <td className="p-4 bg-white rounded-lg shadow-md md:shadow-none text-sm font-bold text-gray-900 align-top lg:align-middle whitespace-nowrap">
@@ -180,7 +176,6 @@ const TableRow: React.FC<TableRowProps> = ({
           {phone}
         </div>
       </td>
-
 
       <td className="p-4 hidden md:block text-center text-sm font-medium pt-8 uppercase text-gray-900 align-top lg:align-middle lg:text-left whitespace-nowrap">
         {country}

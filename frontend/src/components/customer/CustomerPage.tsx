@@ -180,6 +180,9 @@ const CustomerPage: React.FC = () => {
 
   // Calculate total pages
   const totalPages = Math.ceil(totalCustomers / pageSize);
+  useEffect(() => {
+    console.log("Selected customers:", selectedCustomers);
+  }, [selectedCustomers]);
 
   // Generate an array of page numbers
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -203,9 +206,7 @@ const CustomerPage: React.FC = () => {
                   <th className="px-4 py-7 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider gap-3">
                     <Checkbox
                       checked={selectedCustomers.length === customers.length}
-                      onChange={(e) => {
-                        const isChecked = (e.target as HTMLInputElement)
-                          .checked;
+                      onCheckedChange={(isChecked) => {
                         setSelectedCustomers(
                           isChecked
                             ? customers.map((customer) => customer.id)
@@ -324,7 +325,10 @@ const CustomerPage: React.FC = () => {
                         isSelected={selectedCustomers.includes(customer.id)}
                         onSelect={(isSelected) =>
                           isSelected
-                            ? setSelectedCustomers((prev) => [...prev, customer.id])
+                            ? setSelectedCustomers((prev) => [
+                                ...prev,
+                                customer.id,
+                              ])
                             : setSelectedCustomers((prev) =>
                                 prev.filter((id) => id !== customer.id)
                               )
