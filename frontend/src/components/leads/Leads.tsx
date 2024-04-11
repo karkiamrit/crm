@@ -91,6 +91,10 @@ const LeadsPage: React.FC = () => {
   const [totalLeads, setTotalLeads] = useState(0);
   const [selectedLeads, setSelectedLeads] = useState<number[]>([]);
 
+  React.useEffect(() => {
+    console.log(selectedLeads);
+  }, [selectedLeads]);
+
   const [page, setPage] = useState(1);
   const { leadStatus } = useStore();
   const [isOpen, setIsOpen] = React.useState(false);
