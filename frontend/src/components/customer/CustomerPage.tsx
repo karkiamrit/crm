@@ -21,21 +21,13 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
 import useAuth from "@/app/hooks/useAuth";
-import useleadFormSubmitted from "@/store/leadFormSubmitted";
-import useleadDeleted from "@/store/leadDeleted";
+// import usecustomerFormSubmitted from "@/store/customerFormSubmitted";
+// import usecustomerDeleted from "@/store/customerDeleted";
 import { useStore } from "@/store/useStore";
-import Link from "next/link";
+import { Checkbox } from "../ui/checkbox";
 
-interface Lead {
+interface Customer {
   name: string;
   email: string;
   phone: string;
@@ -52,7 +44,8 @@ const titles = ["Name", "Email", "Phone", "Address"];
 
 const CustomerPage: React.FC = () => {
   const { userData, loading } = useAuth();
-  const [leads, setLeads] = useState<Lead[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [selectedCustomers, setSelectedCustomers] = useState<number[]>([]);
   const [filter, setFilter] = useState<{ [property: string]: Range }>({});
   const [filterValues, setFilterValues] = useState<{
     [property: string]: string;
@@ -62,16 +55,16 @@ const CustomerPage: React.FC = () => {
     initialFilterValues[title.toLowerCase()] = "";
   });
   const [tempFilter, setTempFilter] = useState<Range | null>(null);
-  const { isLeadDataDeleted, setLeadDataDeleted } = useleadDeleted();
-  const { isLeadFormSubmitted, setLeadFormSubmitted } = useleadFormSubmitted();
-  const [totalLeads, setTotalLeads] = useState(0);
+  // const { isCustomerDataDeleted, setCustomerDataDeleted } = usecustomerDeleted();
+  // const { isCustomerFormSubmitted, setCustomerFormSubmitted } =
+  //   usecustomerFormSubmitted();
+  const [totalCustomers, setTotalCustomers] = useState(0);
 
   const [page, setPage] = useState(1);
-  const { leadStatus } = useStore();
 
   const pageSize = 8;
 
-  const fetchLeadsFromApi = async (url: string, appliedFilter: Range[]) => {
+  const fetchCustomersFromApi = async (url: string, appliedFilter: Range[]) => {
     const rangeFields = ["name", "email", "address"]; // Add other range fields here
     const range = appliedFilter
       .filter((f) => rangeFields.includes(f.property))
@@ -95,11 +88,11 @@ const CustomerPage: React.FC = () => {
       },
     });
     const data = response.data.data;
-    setTotalLeads(response.data.total);
+    setTotalCustomers(response.data.total);
     return Array.isArray(data) ? data : [];
   };
 
-  const fetchLeads = async (appliedFilter: Range[]) => {
+  const fetchCustomers = async (appliedFilter: Range[]) => {
     try {
       // const hasAgentRoleWithoutAdmin = userData?.roles.reduce(
       //   (acc, role) => {
@@ -115,18 +108,18 @@ const CustomerPage: React.FC = () => {
       //   hasAgentRoleWithoutAdmin?.isAgent &&
       //   !hasAgentRoleWithoutAdmin?.isAdmin
       // ) {
-        return fetchLeadsFromApi(
-          `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/customers`,
-          appliedFilter
-        );
+      return fetchCustomersFromApi(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/customers`,
+        appliedFilter
+      );
       // } else {
-      //   return fetchLeadsFromApi(
-      //     `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/leads`,
+      //   return fetchCustomersFromApi(
+      //     `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/customers`,
       //     appliedFilter
       //   );
       // }
     } catch (error) {
-      console.error("Error fetching leads:", error);
+      console.error("Error fetching customers:", error);
       return [];
     }
   };
@@ -157,36 +150,39 @@ const CustomerPage: React.FC = () => {
       ...filter,
     }));
     console.log(
-      "Fetching leads with filter:",
+      "Fetching customers with filter:",
       newAppliedFilter,
       "and page:",
       page
     );
 
     if (loading === false) {
-      fetchLeads(newAppliedFilter).then((newLeads) => {
-        setLeads(newLeads);
+      fetchCustomers(newAppliedFilter).then((newCustomers) => {
+        setCustomers(newCustomers);
       });
     }
   }, [filter, page, loading]);
 
-  useEffect(() => {}, [leads]);
+  useEffect(() => {}, [customers]);
 
-  useEffect(() => {
-    if (isLeadDataDeleted || isLeadFormSubmitted || leadStatus) {
-      const newAppliedFilter = Object.values(filter).map((filter) => ({
-        ...filter,
-      }));
-      fetchLeads(newAppliedFilter).then((newLeads) => {
-        setLeads(newLeads);
-      });
-      setLeadDataDeleted(false);
-      setLeadFormSubmitted(false);
-    }
-  }, [isLeadDataDeleted, isLeadFormSubmitted, leadStatus]);
+  // useEffect(() => {
+  //   if (isCustomerDataDeleted || isCustomerFormSubmitted) {
+  //     const newAppliedFilter = Object.values(filter).map((filter) => ({
+  //       ...filter,
+  //     }));
+  //     fetchCustomers(newAppliedFilter).then((newCustomers) => {
+  //       setCustomers(newCustomers);
+  //     });
+  //     setCustomerDataDeleted(false);
+  //     setCustomerFormSubmitted(false);
+  //   }
+  // }, [isCustomerDataDeleted, isCustomerFormSubmitted]);
 
   // Calculate total pages
-  const totalPages = Math.ceil(totalLeads / pageSize);
+  const totalPages = Math.ceil(totalCustomers / pageSize);
+  useEffect(() => {
+    console.log("Selected customers:", selectedCustomers);
+  }, [selectedCustomers]);
 
   // Generate an array of page numbers
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -195,11 +191,11 @@ const CustomerPage: React.FC = () => {
       <div className=" lg:h-[35rem]">
         <div className="text-black lg:mb-5 flex flex-row items-center mt-4 justify-center md:justify-end mb-4">
           {/* <Link
-            href="/leads/create"
-            className="inline-block bg-primary rounded-md px-3 py-1.5 text-white"
-          >
-            Create Lead
-          </Link> */}
+              href="/customers/create"
+              className="inline-block bg-primary rounded-md px-3 py-1.5 text-white"
+            >
+              Create Customer
+            </Link> */}
         </div>
         <div className="overflow-x-auto">
           <div className="inline-block min-w-full overflow-hidden align-middle border border-gray-200 shadow sm:rounded-lg">
@@ -207,6 +203,19 @@ const CustomerPage: React.FC = () => {
               <thead className="md:table-header-group hidden">
                 {" "}
                 <tr>
+                  <th className="px-4 py-7 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider gap-3">
+                    <Checkbox
+                      checked={selectedCustomers.length === customers.length}
+                      onCheckedChange={(isChecked) => {
+                        setSelectedCustomers(
+                          isChecked
+                            ? customers.map((customer) => customer.id)
+                            : []
+                        );
+                      }}
+                    />
+                  </th>
+
                   {titles.map((title, index) => (
                     <th
                       key={index}
@@ -266,41 +275,6 @@ const CustomerPage: React.FC = () => {
                                     }}
                                   />
                                 )}
-                                {/* {title === "Status" && (
-                                  <Select
-                                    onValueChange={(selectedValue) => {
-                                      handleFilterChange({
-                                        property: title.toLowerCase(),
-                                        lower: selectedValue,
-                                        upper: selectedValue,
-                                      });
-                                      setFilterValues((prev) => ({
-                                        ...prev,
-                                        [title.toLowerCase()]: selectedValue,
-                                      }));
-                                    }}
-                                    value={
-                                      filterValues[title.toLowerCase()] || ""
-                                    }
-                                  >
-                                    <SelectTrigger className="w-[180px]">
-                                      <SelectValue placeholder="Status" />
-                                    </SelectTrigger>
-
-                                    <SelectContent>
-                                      {Object.values(LeadsStatus).map(
-                                        (status) => (
-                                          <SelectItem
-                                            key={status}
-                                            value={status}
-                                          >
-                                            {status}
-                                          </SelectItem>
-                                        )
-                                      )}
-                                    </SelectContent>
-                                  </Select>
-                                )} */}
                                 <div className="flex flex-row justify-center items-center gap-2">
                                   <Button
                                     className="flex flex-row gap-2"
@@ -337,17 +311,28 @@ const CustomerPage: React.FC = () => {
                   ))}
                 </tr>
               </thead>
-              {leads.length !== 0 && (
+              {customers.length !== 0 && (
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {leads &&
-                    leads.map((lead, index) => (
+                  {customers &&
+                    customers.map((customer, index) => (
                       <TableRow
                         key={index}
-                        name={lead.name}
-                        email={lead.email}
-                        phone={lead.phone}
-                        country={lead.address}
-                        id={lead.id}
+                        name={customer.name}
+                        email={customer.email}
+                        phone={customer.phone}
+                        country={customer.address}
+                        id={customer.id}
+                        isSelected={selectedCustomers.includes(customer.id)}
+                        onSelect={(isSelected) =>
+                          isSelected
+                            ? setSelectedCustomers((prev) => [
+                                ...prev,
+                                customer.id,
+                              ])
+                            : setSelectedCustomers((prev) =>
+                                prev.filter((id) => id !== customer.id)
+                              )
+                        }
                       />
                     ))}
                 </tbody>
