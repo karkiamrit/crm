@@ -37,11 +37,11 @@ export default function RootLayout({
     return (
       <html lang="en">
         <body className={font.className}>
-          <div className="flex flex-col h-screen">
+          <div className="flex flex-col h-screen overflow-x-hidden">
             <NavBarHorizontal />
             <div className="flex flex-grow">
               <NavBarVertical />
-              <main className=" w-full">
+              <main className=" w-full md:mt-10">
                 {children}
                 <Toaster />
               </main>
