@@ -22,6 +22,7 @@ interface TableRowProps {
   id: number;
   isSelected: boolean;
   onSelect: (isSelected: boolean) => void;
+  selectedLeads: number[]
 }
 
 const TableRow: React.FC<TableRowProps> = ({
@@ -33,6 +34,7 @@ const TableRow: React.FC<TableRowProps> = ({
   id,
   isSelected,
   onSelect,
+  selectedLeads
 }) => {
   const colors = [
     "bg-red-200",
@@ -304,7 +306,7 @@ const TableRow: React.FC<TableRowProps> = ({
           )}
 
         <DrawerContent className="flex justify-between">
-          <DrawerContentDemo />
+          <DrawerContentDemo leadID={selectedLeads}/>
         </DrawerContent>
       </Drawer>
     </tr>

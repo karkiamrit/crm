@@ -409,6 +409,7 @@ const LeadsPage: React.FC = () => {
                         status={lead.status}
                         country={lead.address}
                         id={lead.id}
+                        selectedLeads = {selectedLeads}
                         isSelected={selectedLeads.includes(lead.id)}
                         onSelect={(isSelected) =>
                           isSelected
