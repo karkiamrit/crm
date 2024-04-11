@@ -201,34 +201,38 @@ const OrganizationsPage: React.FC = () => {
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 lg:w-[1200px] flex-wrap ">
+    <div className="container mx-auto px-4 lg:ml-[20%] sm:px-6 lg:px-8 lg:w-[1200px] z-0 flex-wrap ">
       <div className="py-16  ">
-        <div className="flex flex-row items-center justify-between gap-6 lg:pb-6">
-          <div className="flex flex-row items-center gap-6 pl-6">
-            {organization?.logo && (
-              <ProfileAvatar
-                src={
-                  process.env.NEXT_PUBLIC_BACKEND_API_URL_ORGANIZATIONS +
-                  "/" +
-                  organization?.logo
-                }
-                organizationId={organization.id}
-              />
-            )}
-            
-            {organization && (
-              <EditableOrganizationName
-                organization={organization}
-                hasAdminRole={hasAdminRole}
-              />
-            )}
-          </div>
-          <div><CreateUserForm/></div>
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:pb-6">
+  <div className="flex flex-row items-center gap-6 pl-6 z-0 lg:pl-0">
+    {organization?.logo && (
+      <ProfileAvatar
+        src={
+          process.env.NEXT_PUBLIC_BACKEND_API_URL_ORGANIZATIONS +
+          "/" +
+          organization?.logo
+        }
+        organizationId={organization.id}
+      />
+    )}
+    
+    {organization && (
+      <EditableOrganizationName
+        organization={organization}
+        hasAdminRole={hasAdminRole}
+      />
+    )}
+  </div>
+  <div className="lg:flex-grow">
+    <CreateUserForm/>
+  </div>
 
-          {/* <div className="text-black flex flex-row items-center justify-end pr-6">
-            <CreateOrganizationForm />
-          </div> */}
-        </div>
+  {/* Uncomment the following code if needed */}
+  {/* <div className="text-black flex flex-row items-center justify-end pr-6">
+    <CreateOrganizationForm />
+  </div> */}
+</div>
+
         <Separator className="w-full lg:mb-10 mt-5 lg:mt-0" />
         <div className="flex flex-col lg:flex-row gap-10">
           <div className="overflow-x-auto w-full">

@@ -28,6 +28,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 import useAuth from "@/app/hooks/useAuth";
 import CreateLead from "./sheet/CreateLead";
@@ -35,6 +45,8 @@ import useleadFormSubmitted from "@/store/leadFormSubmitted";
 import useleadDeleted from "@/store/leadDeleted";
 import { useStore } from "@/store/useStore";
 import Link from "next/link";
+// import CreateLeadForm from "./sheet/CreateLeadForm";
+import LeadCreatePage from "@/components/leads/LeadCreatePage/LeadCreatePage";
 
 export enum LeadsStatus {
   INITIAL = "INITIAL",
@@ -77,6 +89,8 @@ const LeadsPage: React.FC = () => {
 
   const [page, setPage] = useState(1);
   const { leadStatus } = useStore();
+  const [isOpen, setIsOpen] = React.useState(false);
+
 
   const pageSize = 8;
 
@@ -183,7 +197,7 @@ const LeadsPage: React.FC = () => {
 
   useEffect(() => {
     if (isLeadDataDeleted || isLeadFormSubmitted || leadStatus) {
-      console.log(leadStatus)
+      console.log(leadStatus);
       const newAppliedFilter = Object.values(filter).map((filter) => ({
         ...filter,
       }));
@@ -201,15 +215,25 @@ const LeadsPage: React.FC = () => {
   // Generate an array of page numbers
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 lg:w-[1200px] flex-wrap ">
+    <div className="container mx-auto px-4 sm:px-6 lg:ml-[20%] lg:px-8 lg:w-[1200px] flex-wrap ">
       <div className=" lg:h-[35rem]">
         <div className="text-black lg:mb-5 flex flex-row items-center mt-4 justify-center md:justify-end mb-4">
-          <Link
-            href="/leads/create"
-            className="inline-block bg-primary rounded-md px-3 py-1.5 text-white"
-          >
-            Create Lead
-          </Link>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>            <DialogTrigger asChild>
+              <Button
+                className="flex flex-row gap-2"
+                onClick={() => setIsOpen(true)}
+              >
+                <Icon type="pencil" width={15} />
+                Create new lead
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[1000px]">
+              <DialogHeader>
+              </DialogHeader>
+              {/* form here */}
+              <LeadCreatePage />
+            </DialogContent>
+          </Dialog>
         </div>
         <div className="overflow-x-auto">
           <div className="inline-block min-w-full overflow-hidden align-middle border border-gray-200 shadow sm:rounded-lg">

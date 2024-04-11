@@ -151,7 +151,7 @@ export function NavBarVertical() {
   ];
 
   return (
-    <div className="flex lg:fixed bg-white top-16 bottom-0 left-0 ml-2 w-72">
+    <div className="flex lg:fixed bg-white top-16 bottom-0 left-0 ml-2 w-72 z-999">
       <div className="hidden md:flex md:w-72 md:flex-col">
         <div className="flex flex-col pt-5 overflow-y-auto">
           <div className="flex flex-col justify-between flex-1 h-full ">
