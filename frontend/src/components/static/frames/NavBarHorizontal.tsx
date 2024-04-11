@@ -181,8 +181,8 @@ export function NavBarHorizontal() {
   };
 
   return (
-    <div className="sticky top-0 z-999">
-      <header className="sticky top-0 z-999">
+    <div className="sticky top-0 bottom-0 left-0 right-0 z-999">
+      <header className="fixed top-0 w-full z-999">
         <div className="py-3 bg-white ">
           <div className=" px-4 mx-auto sm:px-6 lg:px-8">
             <div className="flex items-center justify-between">

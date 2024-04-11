@@ -72,14 +72,13 @@ const OrganizationsPage: React.FC = () => {
   const { userData, loading } = useAuth();
   const [page, setPage] = useState(1);
   const hasAdminRole = userData?.roles.some((role) => role.name === "Admin");
-  const {isUserCreated, setUserCreated} = useUserCreated();
+  const { isUserCreated, setUserCreated } = useUserCreated();
   // const {isOrganizationFormSubmitted, setOrganizationFormSubmitted} = useOrganizationFormSubmitted();
   const pageSize = 8;
 
   const [organization, setOrganization] = useState<Organization | null>(null);
 
   useFetchOrganization(setOrganization);
-
 
   const fetchUsersFromApi = async (url: string, appliedFilter: Range[]) => {
     const rangeFields = ["email", "role"]; // Add other range fields here
@@ -181,7 +180,6 @@ const OrganizationsPage: React.FC = () => {
 
   useEffect(() => {}, [users]);
 
-
   useEffect(() => {
     if (isUserCreated) {
       const newAppliedFilter = Object.values(filter).map((filter) => ({
@@ -201,37 +199,41 @@ const OrganizationsPage: React.FC = () => {
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   return (
-    <div className="container mx-auto px-4 lg:ml-[20%] sm:px-6 lg:px-8 lg:w-[1200px] z-0 flex-wrap ">
+    <div className="container mx-auto px-4 lg:ml-[20%] sm:px-6 lg:px-8 md:w-[1000px] lg:w-[1200px] flex-wrap">
       <div className="py-16  ">
-      <div className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:pb-6">
-  <div className="flex flex-row items-center gap-6 pl-6 z-0 lg:pl-0">
-    {organization?.logo && (
-      <ProfileAvatar
-        src={
-          process.env.NEXT_PUBLIC_BACKEND_API_URL_ORGANIZATIONS +
-          "/" +
-          organization?.logo
-        }
-        organizationId={organization.id}
-      />
-    )}
-    
-    {organization && (
-      <EditableOrganizationName
-        organization={organization}
-        hasAdminRole={hasAdminRole}
-      />
-    )}
-  </div>
-  <div className="lg:flex-grow">
-    <CreateUserForm/>
-  </div>
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:pb-6">
+        <div className="flex flex-row items-center gap-6 pl-6  lg:pl-0">
+            {organization?.logo && (
+              <div className="z-0">
 
-  {/* Uncomment the following code if needed */}
-  {/* <div className="text-black flex flex-row items-center justify-end pr-6">
+              <ProfileAvatar
+                src={
+                  process.env.NEXT_PUBLIC_BACKEND_API_URL_ORGANIZATIONS +
+                  "/" +
+                  organization?.logo
+                }
+                organizationId={organization.id}
+                
+                />
+                </div>
+            )}
+
+            {organization && (
+              <EditableOrganizationName
+                organization={organization}
+                hasAdminRole={hasAdminRole}
+              />
+            )}
+          </div>
+          <div className="">
+            <CreateUserForm />
+          </div>
+
+          {/* Uncomment the following code if needed */}
+          {/* <div className="text-black flex flex-row items-center justify-end pr-6">
     <CreateOrganizationForm />
   </div> */}
-</div>
+        </div>
 
         <Separator className="w-full lg:mb-10 mt-5 lg:mt-0" />
         <div className="flex flex-col lg:flex-row gap-10">
@@ -387,12 +389,11 @@ const OrganizationsPage: React.FC = () => {
                 )}
               </table>
             </div>
-            
           </div>
-          
+
           {organization && (
             <OrganizationFrame
-              id= {organization.id}
+              id={organization.id}
               email={organization.email}
               phone={organization.phone}
               address={organization.address}
@@ -402,44 +403,44 @@ const OrganizationsPage: React.FC = () => {
         </div>
       </div>
       <Pagination className="flex justify-center pl-24">
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (page > 1) {
-                        setPage(page - 1);
-                      }
-                    }}
-                  />
-                </PaginationItem>
-                {pageNumbers.slice(0, 8).map((pageNumber) => (
-                  <PaginationItem key={pageNumber}>
-                    <PaginationLink
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setPage(pageNumber);
-                      }}
-                    >
-                      {pageNumber}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
-                <PaginationItem>
-                  <PaginationNext
-                    href="#hi"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (page < totalPages) {
-                        setPage(page + 1);
-                      }
-                    }}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                if (page > 1) {
+                  setPage(page - 1);
+                }
+              }}
+            />
+          </PaginationItem>
+          {pageNumbers.slice(0, 8).map((pageNumber) => (
+            <PaginationItem key={pageNumber}>
+              <PaginationLink
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPage(pageNumber);
+                }}
+              >
+                {pageNumber}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+          <PaginationItem>
+            <PaginationNext
+              href="#hi"
+              onClick={(e) => {
+                e.preventDefault();
+                if (page < totalPages) {
+                  setPage(page + 1);
+                }
+              }}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 };

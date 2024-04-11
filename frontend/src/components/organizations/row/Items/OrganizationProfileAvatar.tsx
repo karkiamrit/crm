@@ -1,5 +1,6 @@
 import React, { useState, useRef, ChangeEvent } from "react";
 import { LocalStore } from "@/store/localstore";
+import Image from "next/image";
 
 interface ProfileAvatarProps {
   src: string; // Initial logo URL
@@ -21,7 +22,7 @@ function ProfileAvatar({ src, organizationId }: ProfileAvatarProps) {
         {
           method: "PUT",
           headers: {
-            'Authorization': `Bearer ${LocalStore.getAccessToken()}`,
+            Authorization: `Bearer ${LocalStore.getAccessToken()}`,
           },
           body: formData,
         }
@@ -45,10 +46,10 @@ function ProfileAvatar({ src, organizationId }: ProfileAvatarProps) {
 
     try {
       const updatedOrg = await uploadAvatar(file, organizationId);
-      
+
       // Assuming the server returns the updated organization, including the new logo URL
       // setLogoSrc(updatedOrg.newLogoUrl); // Uncomment and adjust if your server responds with the new logo URL
-      
+
       // For immediate feedback without server confirmation:
       const temporaryUrl = URL.createObjectURL(file);
       setLogoSrc(temporaryUrl);
@@ -70,7 +71,7 @@ function ProfileAvatar({ src, organizationId }: ProfileAvatarProps) {
         <img
           src={logoSrc} // Use the state for the image source
           alt="Avatar"
-          className="w-full h-full rounded-full object-cover"
+          className="w-full h-full rounded-full object-cover -z-50"
         />
         {hovered && (
           <div
