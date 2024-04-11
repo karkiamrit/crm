@@ -35,6 +35,7 @@ import useleadFormSubmitted from "@/store/leadFormSubmitted";
 import useleadDeleted from "@/store/leadDeleted";
 import { useStore } from "@/store/useStore";
 import Link from "next/link";
+import useleadEdited from "@/store/useLeadsEdited";
 
 export enum LeadsStatus {
   INITIAL = "INITIAL",
@@ -60,6 +61,7 @@ interface Range {
 const titles = ["Name", "Email", "Phone", "Status", "Address", "Actions"];
 
 const LeadsPage: React.FC = () => {
+  const {isLeadEdited, setLeadEdited} = useleadEdited();
   const { userData, loading } = useAuth();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [filter, setFilter] = useState<{ [property: string]: Range }>({});
@@ -124,12 +126,12 @@ const LeadsPage: React.FC = () => {
         hasAgentRoleWithoutAdmin?.isAgent &&
         !hasAgentRoleWithoutAdmin?.isAdmin
       ) {
-        return fetchLeadsFromApi(
+        return await fetchLeadsFromApi(
           `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/leads/myleads`,
           appliedFilter
         );
       } else {
-        return fetchLeadsFromApi(
+        return await fetchLeadsFromApi(
           `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/leads`,
           appliedFilter
         );
@@ -182,19 +184,22 @@ const LeadsPage: React.FC = () => {
   useEffect(() => {}, [leads]);
 
   useEffect(() => {
-    if (isLeadDataDeleted || isLeadFormSubmitted || leadStatus) {
-      console.log(leadStatus)
+    console.log("useEffect triggered");
+    if (isLeadDataDeleted || isLeadFormSubmitted || leadStatus || isLeadEdited) {
+      console.log("Condition met, fetching leads...");
       const newAppliedFilter = Object.values(filter).map((filter) => ({
         ...filter,
       }));
       fetchLeads(newAppliedFilter).then((newLeads) => {
+        console.log("New leads fetched:", newLeads);
         setLeads(newLeads);
       });
       setLeadDataDeleted(false);
       setLeadFormSubmitted(false);
+      setLeadEdited(false);
     }
-  }, [isLeadDataDeleted, isLeadFormSubmitted, leadStatus]);
-
+  }, [isLeadDataDeleted, isLeadFormSubmitted, leadStatus, isLeadEdited]);
+  
   // Calculate total pages
   const totalPages = Math.ceil(totalLeads / pageSize);
 

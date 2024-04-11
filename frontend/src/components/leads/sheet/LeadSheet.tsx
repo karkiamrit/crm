@@ -19,13 +19,15 @@ import useOutsideClick from "@/app/hooks/useOutsideClick";
 import useleadDeleted from "@/store/leadDeleted";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
-import useVerticalDashboard from "@/store/dashboardStore";
+import useleadEdited from "@/store/useLeadsEdited";
+
 
 type Props = {
   id: number;
 };
 
 const LeadSheet = (props: Props) => {
+  const {setLeadEdited} = useleadEdited();
   const router = useRouter();
   const ref = useOutsideClick(() => {
     if (isNameEditing) {
@@ -41,9 +43,7 @@ const LeadSheet = (props: Props) => {
   const [isIconHovered, setIsIconHovered] = useState(false);
   const { toast } = useToast();
   const { leadStatus } = useStore();
-  const setSelectedLink = useVerticalDashboard(
-    (state) => state.setSelectedSection
-  ); // Access setSelectedSection action from Zustand store
+
   useEffect(() => {
     const fetchLeadData = async () => {
       try {
@@ -114,6 +114,7 @@ const LeadSheet = (props: Props) => {
                             );
                             if (response.data) {
                               setLeadData(response.data);
+                              setLeadEdited(true);
                             }
                           } catch (error) {
                             console.error("Failed to update lead data:", error);
@@ -233,6 +234,7 @@ const LeadSheet = (props: Props) => {
                                 );
                                 if (response.data) {
                                   setLeadData(response.data);
+                                  setLeadEdited(true);
                                 }
                               } catch (error) {
                                 console.error(
@@ -325,6 +327,7 @@ const LeadSheet = (props: Props) => {
                               );
                               if (response.data) {
                                 setLeadData(response.data);
+                                setLeadEdited(true);
                               }
                             } catch (error) {
                               console.error(
