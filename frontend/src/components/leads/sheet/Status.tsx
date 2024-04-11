@@ -3,6 +3,7 @@ import { LeadsStatus } from "../Leads";
 import axios from "axios";
 import { LocalStore } from "@/store/localstore";
 import {useStore} from "@/store/useStore"
+import { Button } from "@/components/ui/button";
 
 type Props = {
   initialStatus: LeadsStatus;
@@ -79,16 +80,15 @@ const ContactStatus: React.FC<Props> = ({ initialStatus, id }) => {
             className={`flex-1 px-4 py-2 ${
               getStatusColor(status, buttonStatus)
             }`}
-            
           >
-        
-            <button
+            <Button
               onClick={() => updateStatus(buttonStatus)}
-              className="text-xs font-thin"
+              variant="secondary"
+              className={`text-xs font-thin border-none hover:bg-transparent focus:bg-transparent shadow-none  ${getStatusColor(status, buttonStatus)} bg-transparent`}
             >
               {buttonStatus.charAt(0).toUpperCase() +
                 buttonStatus.slice(1).toLowerCase()}
-            </button>
+            </Button>
           </li>
         ))}
       </ul>

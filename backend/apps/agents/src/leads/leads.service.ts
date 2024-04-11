@@ -150,87 +150,94 @@ export class LeadsService {
 
   //   return leadToReturn;
   // }
-
   async update(id: number, updateLeadsDto: UpdateLeadDto) {
     const lead = await this.leadsRepository.findOne({ id });
-
     if (!lead) {
       throw new NotFoundException(`Lead with ID ${id} not found`);
     }
-
+  
+    // Use a map or object to track changes
+    let hasChanges = false;
+    const changes = {};
+  
     const attributes = [
-      'product',
-      'service',
-      'address',
-      'details',
-      'status',
-      'phone',
-      'email',
-      'name',
-      'priority',
-      'source',
-      'documents',
+      'product', 'service', 'address', 'details', 'status',
+      'phone', 'email', 'name', 'priority', 'source', 'documents',
     ];
-
-    for (const attribute of attributes) {
-      if (
-        updateLeadsDto[attribute] &&
-        updateLeadsDto[attribute] !== lead[attribute]
-      ) {
-        lead[attribute] = updateLeadsDto[attribute];
-
-        const timeline = new LeadTimeline({
-          lead: lead,
-          attribute: attribute,
-          value: updateLeadsDto[attribute],
-        });
-
-        await this.leadTimelineRepository.create(timeline);
-        lead.timelines.push(timeline);
-
-        if (
-          attribute === 'status' &&
-          updateLeadsDto.status === LeadsStatus.COMPLETED
-        ) {
-          await this.leadsRepository.findOneAndDelete({ id: lead.id });
-
-          const { status, timelines, ...leadProperties } = lead;
-          const customer = new Customers({
-            ...leadProperties,
-          });
-          const agent = await this.agentService.getOne(lead.agentId);
-
-          await this.customerService.create(customer, agent);
-
-          for (const leadTimeline of lead.timelines) {
-            leadTimeline.lead = null;
-            const customerTimeline = new CustomerTimeline({
-              ...leadTimeline,
-              customer: customer,
-            });
-
-            await this.customerTimelineRepository.create(customerTimeline);
-          }
-
-          await this.customerService.update(customer.id, customer);
-
-          return customer;
-        }
+  
+    attributes.forEach(attribute => {
+      if (updateLeadsDto[attribute] !== undefined && updateLeadsDto[attribute] !== lead[attribute]) {
+        changes[attribute] = updateLeadsDto[attribute];
+        hasChanges = true;
+      }
+    });
+  
+    if (hasChanges) {
+      // Apply all changes in one go to the lead
+      Object.assign(lead, changes);
+      await this.leadsRepository.create(lead); // Assuming save() method can handle partial updates efficiently.
+  
+      // Create and save timeline records
+      const timelines = Object.entries(changes).map(([attribute, value]) => {
+        return {
+          lead,
+          attribute,
+          value,
+          // createdAt: new Date(), 
+        };
+      });
+      await Promise.all(timelines);
+      if ('status' in changes && changes.status === LeadsStatus.COMPLETED) {
+        await this.handleLeadConversion(lead); // Abstract the lead completion logic into a separate method.
+        // This method would handle deletion of the lead, conversion to customer, etc.
       }
     }
-
-    await this.leadsRepository.create(lead);
-
-    const leadToReturn = {
-      ...lead,
-      timelines: lead.timelines.map((timeline) => {
-        const { lead, ...timelineWithoutLead } = timeline;
-        return timelineWithoutLead;
-      }),
-    };
-
-    return leadToReturn;
+  
+    // Prepare and return the updated lead information
+    const updatedLead = { ...lead, timelines: lead.timelines.map(({ lead, ...rest }) => rest) };
+    return updatedLead;
   }
+  private async handleLeadConversion(lead: Leads) {
+    // Delete the lead
+    await this.leadsRepository.findOneAndDelete({id:lead.id});
+  
+    // Create a customer from the lead information
+    const customer = await this.createCustomerFromLead(lead);
+  
+    // Update related timelines
+    await this.updateTimelinesForCustomerConversion(lead, customer);
+  
+    return customer;
+  }
+  
+  async createCustomerFromLead(lead: Leads): Promise<Customers> {
+    const agent = await this.agentService.getOne(lead.agentId);
+  
+    const { status, timelines, ...leadProperties } = lead;
+    const customer = new Customers({
+      ...leadProperties,
+    });
+  
+    return await this.customerService.create(customer, agent);
+  }
+  
+  async updateTimelinesForCustomerConversion(lead: Leads, customer: Customers) {
+    // Iterate over lead timelines and update them to associate with the customer
+    for (const leadTimeline of lead.timelines) {
+      // Omit the 'lead' property from LeadTimeline to create CustomerTimeline
+      const { lead, ...timelineWithoutLead } = leadTimeline;
+      
+      // Create a new CustomerTimeline instance
+      const customerTimeline = new CustomerTimeline({
+        ...timelineWithoutLead, // Copy other properties from LeadTimeline
+        customer, // Associate the timeline with the customer
+      });
+  
+      // Save the CustomerTimeline entity to the database
+      await this.customerTimelineRepository.create(customerTimeline);
+    }
+  }
+  
 
   async delete(id: number) {
     return this.leadsRepository.findOneAndDelete({ id });

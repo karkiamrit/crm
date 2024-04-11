@@ -47,6 +47,7 @@ import { useStore } from "@/store/useStore";
 import Link from "next/link";
 // import CreateLeadForm from "./sheet/CreateLeadForm";
 import LeadCreatePage from "@/components/leads/LeadCreatePage/LeadCreatePage";
+import useleadEdited from "@/store/useLeadsEdited";
 
 export enum LeadsStatus {
   INITIAL = "INITIAL",
@@ -72,6 +73,7 @@ interface Range {
 const titles = ["Name", "Email", "Phone", "Status", "Address", "Actions"];
 
 const LeadsPage: React.FC = () => {
+  const { isLeadEdited, setLeadEdited } = useleadEdited();
   const { userData, loading } = useAuth();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [filter, setFilter] = useState<{ [property: string]: Range }>({});
@@ -90,7 +92,6 @@ const LeadsPage: React.FC = () => {
   const [page, setPage] = useState(1);
   const { leadStatus } = useStore();
   const [isOpen, setIsOpen] = React.useState(false);
-
 
   const pageSize = 8;
 
@@ -138,12 +139,12 @@ const LeadsPage: React.FC = () => {
         hasAgentRoleWithoutAdmin?.isAgent &&
         !hasAgentRoleWithoutAdmin?.isAdmin
       ) {
-        return fetchLeadsFromApi(
+        return await fetchLeadsFromApi(
           `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/leads/myleads`,
           appliedFilter
         );
       } else {
-        return fetchLeadsFromApi(
+        return await fetchLeadsFromApi(
           `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/leads`,
           appliedFilter
         );
@@ -196,18 +197,26 @@ const LeadsPage: React.FC = () => {
   useEffect(() => {}, [leads]);
 
   useEffect(() => {
-    if (isLeadDataDeleted || isLeadFormSubmitted || leadStatus) {
-      console.log(leadStatus);
+    console.log("useEffect triggered");
+    if (
+      isLeadDataDeleted ||
+      isLeadFormSubmitted ||
+      leadStatus ||
+      isLeadEdited
+    ) {
+      console.log("Condition met, fetching leads...");
       const newAppliedFilter = Object.values(filter).map((filter) => ({
         ...filter,
       }));
       fetchLeads(newAppliedFilter).then((newLeads) => {
+        console.log("New leads fetched:", newLeads);
         setLeads(newLeads);
       });
       setLeadDataDeleted(false);
       setLeadFormSubmitted(false);
+      setLeadEdited(false);
     }
-  }, [isLeadDataDeleted, isLeadFormSubmitted, leadStatus]);
+  }, [isLeadDataDeleted, isLeadFormSubmitted, leadStatus, isLeadEdited]);
 
   // Calculate total pages
   const totalPages = Math.ceil(totalLeads / pageSize);
@@ -218,7 +227,9 @@ const LeadsPage: React.FC = () => {
     <div className="container mx-auto px-4 sm:px-6 lg:ml-[20%] lg:px-8 lg:w-[1200px] flex-wrap ">
       <div className=" lg:h-[35rem]">
         <div className="text-black lg:mb-5 flex flex-row items-center mt-4 justify-center md:justify-end mb-4">
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>            <DialogTrigger asChild>
+          <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            {" "}
+            <DialogTrigger asChild>
               <Button
                 className="flex flex-row gap-2"
                 onClick={() => setIsOpen(true)}
@@ -228,8 +239,7 @@ const LeadsPage: React.FC = () => {
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[1000px]">
-              <DialogHeader>
-              </DialogHeader>
+              <DialogHeader></DialogHeader>
               {/* form here */}
               <LeadCreatePage />
             </DialogContent>
