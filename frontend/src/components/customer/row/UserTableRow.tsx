@@ -50,11 +50,11 @@ const TableRow: React.FC<TableRowProps> = ({
 
   return (
     <tr className="bg-white">
-      <td className="p-4 bg-white rounded-lg shadow-md md:shadow-none text-sm font-bold text-gray-900 align-top lg:align-middle whitespace-nowrap">
-        <div className="flex items-center">
-          <Checkbox checked={isSelected} onCheckedChange={onSelect} />
-        </div>
-      </td>
+        <td className="p-4 bg-white rounded-lg shadow-md md:shadow-none text-sm font-bold text-gray-900 align-top lg:align-middle whitespace-nowrap">
+          <div className="flex items-center">
+            <Checkbox checked={isSelected} onCheckedChange={onSelect} />
+          </div>
+        </td>
       <td className="p-4 bg-white rounded-lg shadow-md md:shadow-none text-sm font-bold text-gray-900 align-top lg:align-middle whitespace-nowrap">
         <div className="flex-col md:flex-row font-bold space-y-4 flex items-center gap-2">
           <Avatar className="m-2 ">

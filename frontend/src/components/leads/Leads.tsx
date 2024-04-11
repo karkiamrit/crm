@@ -48,6 +48,7 @@ import Link from "next/link";
 // import CreateLeadForm from "./sheet/CreateLeadForm";
 import LeadCreatePage from "@/components/leads/LeadCreatePage/LeadCreatePage";
 import useleadEdited from "@/store/useLeadsEdited";
+import { Checkbox } from "../ui/checkbox";
 
 export enum LeadsStatus {
   INITIAL = "INITIAL",
@@ -88,6 +89,7 @@ const LeadsPage: React.FC = () => {
   const { isLeadDataDeleted, setLeadDataDeleted } = useleadDeleted();
   const { isLeadFormSubmitted, setLeadFormSubmitted } = useleadFormSubmitted();
   const [totalLeads, setTotalLeads] = useState(0);
+  const [selectedLeads, setSelectedLeads] = useState<number[]>([]);
 
   const [page, setPage] = useState(1);
   const { leadStatus } = useStore();
@@ -251,6 +253,16 @@ const LeadsPage: React.FC = () => {
               <thead className="md:table-header-group hidden">
                 {" "}
                 <tr>
+                  <th className="px-4 py-7 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider gap-3">
+                    <Checkbox
+                      checked={selectedLeads.length === leads.length}
+                      onCheckedChange={(isChecked) => {
+                        setSelectedLeads(
+                          isChecked ? leads.map((lead) => lead.id) : []
+                        );
+                      }}
+                    />
+                  </th>
                   {titles.map((title, index) => (
                     <th
                       key={index}
@@ -393,6 +405,17 @@ const LeadsPage: React.FC = () => {
                         status={lead.status}
                         country={lead.address}
                         id={lead.id}
+                        isSelected={selectedLeads.includes(lead.id)}
+                        onSelect={(isSelected) =>
+                          isSelected
+                            ? setSelectedLeads((prev) => [
+                                ...prev,
+                                lead.id,
+                              ])
+                            : setSelectedLeads((prev) =>
+                                prev.filter((id) => id !== lead.id)
+                              )
+                        }
                       />
                     ))}
                 </tbody>

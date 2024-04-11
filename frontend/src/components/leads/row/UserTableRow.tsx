@@ -9,6 +9,7 @@ import { LocalStore } from "@/store/localstore";
 import { useToast } from "@/components/ui/use-toast";
 import useleadDeleted from "@/store/leadDeleted";
 import useAuth from "@/app/hooks/useAuth";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface TableRowProps {
   name: string;
@@ -17,6 +18,8 @@ interface TableRowProps {
   status: LeadsStatus;
   country: string;
   id: number;
+  isSelected: boolean;
+  onSelect: (isSelected: boolean) => void;
 }
 
 const TableRow: React.FC<TableRowProps> = ({
@@ -26,6 +29,8 @@ const TableRow: React.FC<TableRowProps> = ({
   status,
   country,
   id,
+  isSelected,
+  onSelect
 }) => {
   const colors = [
     "bg-red-200",
@@ -65,6 +70,11 @@ const TableRow: React.FC<TableRowProps> = ({
 
   return (
     <tr className="bg-white">
+      <td className="p-4 bg-white rounded-lg shadow-md md:shadow-none text-sm font-bold text-gray-900 align-top lg:align-middle whitespace-nowrap">
+          <div className="flex items-center">
+            <Checkbox checked={isSelected} onCheckedChange={onSelect} />
+          </div>
+        </td>
       <td className="p-4 bg-white rounded-lg shadow-md md:shadow-none text-sm font-bold text-gray-900 align-top lg:align-middle whitespace-nowrap">
         <div className="flex-col md:flex-row font-bold space-y-4 flex items-center gap-2">
           <Avatar className="m-2 ">
