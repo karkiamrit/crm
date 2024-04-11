@@ -189,12 +189,15 @@ const LeadCreatePage = () => {
                     <div className="flex flex-col w-1/3 relative">
                       <FormControl>
                         <Input
-                          className="border block px-4 py-3 w-[250px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm peer border-b placeholder:text-gray-500 "
+                          className="border block px-4 py-3 w-[250px] peer-placeholder-shown:bg-white bg-white border-gray-300 rounded-lg sm:text-sm peer  placeholder:text-gray-500 "
                           placeholder=""
+                          style={{
+                            WebkitBoxShadow: '0 0 0px 1000px white inset',
+                          }}
                           {...field}
                         />
                       </FormControl>
-                      <FormLabel className="absolute left-0 right-0 top-3 -translate-y-3 bg-white ml-3 px-3 text-sm duration-100 ease-linear peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:ml-4 peer-focus:bb-10 peer-focus:-translate-y-5 peer-focus:px-1 peer-focus:text-xs whitespace-nowrap">
+                      <FormLabel className="absolute left-0 right-0 top-3 -translate-y-5 bg-white ml-3 px-3 text-xs duration-100 ease-linear  peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:ml-4  peer-focus:-translate-y-5 peer-focus:px-1 peer-focus:text-xs whitespace-nowrap">
                         Email Address
                       </FormLabel>
                       <FormMessage className="w-[250px] text-xs" />
@@ -210,12 +213,15 @@ const LeadCreatePage = () => {
                     <div className="flex flex-col w-1/3 relative">
                       <FormControl>
                         <Input
-                          className="border block px-4 py-3 w-[250px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm peer border-b placeholder:text-gray-500 "
+                          className="border block px-4 py-3 w-[250px] bg-white  border-gray-300 rounded-lg sm:text-sm peer border-b  "
+                          style={{
+                            WebkitBoxShadow: '0 0 0px 1000px white inset',
+                          }}
                           placeholder=""
                           {...field}
                         />
                       </FormControl>
-                      <FormLabel className="absolute left-0 right-0 top-3 -translate-y-3 bg-white ml-3 px-3 text-sm duration-100 ease-linear peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:ml-4 peer-focus:bb-10 peer-focus:-translate-y-5 peer-focus:px-1 peer-focus:text-xs whitespace-nowrap">
+                      <FormLabel className="absolute left-0 right-0 top-3 -translate-y-5 bg-white ml-3 px-3 text-xs duration-100 ease-linear peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:ml-4 peer-focus:bb-10 peer-focus:-translate-y-5 peer-focus:px-1 peer-focus:text-xs whitespace-nowrap">
                         Address
                       </FormLabel>
                       <FormMessage className="w-[250px] text-xs" />
@@ -233,10 +239,13 @@ const LeadCreatePage = () => {
                         <Input
                           className="border block px-4 py-3 w-[250px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm peer border-b placeholder:text-gray-500 "
                           placeholder=""
+                          style={{
+                            WebkitBoxShadow: '0 0 0px 1000px white inset',
+                          }}
                           {...field}
                         />
                       </FormControl>
-                      <FormLabel className="absolute left-0 right-0 top-3 -translate-y-3 bg-white ml-3 px-3 text-sm duration-100 ease-linear peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:ml-4 peer-focus:bb-10 peer-focus:-translate-y-5 peer-focus:px-1 peer-focus:text-xs whitespace-nowrap">
+                      <FormLabel className="absolute left-0 right-0 top-3 -translate-y-5 bg-white ml-3 px-3 text-xs duration-100 ease-linear peer-placeholder-shown:text-gray-500 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base  peer-focus:ml-4 peer-focus:bb-10 peer-focus:-translate-y-5 peer-focus:px-1 peer-focus:text-xs whitespace-nowrap">
                         Name
                       </FormLabel>
                       <FormMessage className="w-[250px] text-xs" />
@@ -256,10 +265,13 @@ const LeadCreatePage = () => {
                         <Input
                           className="border block px-4 py-3 w-[250px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm peer border-b placeholder:text-gray-500 "
                           placeholder=""
+                          style={{
+                            WebkitBoxShadow: '0 0 0px 1000px white inset',
+                          }}
                           {...field}
                         />
                       </FormControl>
-                      <FormLabel className="absolute left-0 right-0 top-3 -translate-y-3 bg-white ml-3 px-3 text-sm duration-100 ease-linear peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:ml-4 peer-focus:bb-10 peer-focus:-translate-y-5 peer-focus:px-1 peer-focus:text-xs whitespace-nowrap">
+                      <FormLabel className="absolute left-0 right-0 top-3 -translate-y-5 bg-white ml-3 px-3 text-xs duration-100 ease-linear peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:ml-4 peer-focus:bb-10 peer-focus:-translate-y-5 peer-focus:px-1 peer-focus:text-xs whitespace-nowrap">
                         Reference No
                       </FormLabel>
                       <FormMessage className="w-[250px] text-xs" />
@@ -277,10 +289,13 @@ const LeadCreatePage = () => {
                         <Input
                           className="border block px-4 py-3 w-[250px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm peer border-b placeholder:text-gray-500 "
                           placeholder=""
+                          style={{
+                            WebkitBoxShadow: '0 0 0px 1000px white inset',
+                          }}
                           {...field}
                         />
                       </FormControl>
-                      <FormLabel className="absolute left-0 right-0 top-3 -translate-y-3 bg-white ml-3 px-3 text-sm duration-100 ease-linear peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:ml-4 peer-focus:bb-10 peer-focus:-translate-y-5 peer-focus:px-1 peer-focus:text-xs whitespace-nowrap">
+                      <FormLabel className="absolute left-0 right-0 top-3 -translate-y-5 bg-white ml-3 px-3 text-xs duration-100 ease-linear peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:ml-4 peer-focus:bb-10 peer-focus:-translate-y-5 peer-focus:px-1 peer-focus:text-xs whitespace-nowrap">
                         Phone
                       </FormLabel>
                       <FormMessage className="w-[250px] text-xs" />
@@ -298,10 +313,13 @@ const LeadCreatePage = () => {
                         <Input
                           className="border block px-4 py-3 w-[250px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm peer border-b placeholder:text-gray-500 "
                           placeholder=""
+                          style={{
+                            WebkitBoxShadow: '0 0 0px 1000px white inset',
+                          }}
                           {...field}
                         />
                       </FormControl>
-                      <FormLabel className="absolute left-0 right-0 top-3 -translate-y-3 bg-white ml-3 px-3 text-sm duration-100 ease-linear peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:ml-4 peer-focus:bb-10 peer-focus:-translate-y-5 peer-focus:px-1 peer-focus:text-xs whitespace-nowrap">
+                      <FormLabel className="absolute left-0 right-0 top-3 -translate-y-5 bg-white ml-3 px-3 text-xs duration-100 ease-linear peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:ml-4 peer-focus:bb-10 peer-focus:-translate-y-5 peer-focus:px-1 peer-focus:text-xs whitespace-nowrap">
                         Source
                       </FormLabel>
                       <FormMessage className="w-[250px] text-xs" />
@@ -322,10 +340,13 @@ const LeadCreatePage = () => {
                         <Input
                           className="border block px-4 py-3 w-[250px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm peer border-b placeholder:text-gray-500 "
                           placeholder=""
+                          style={{
+                            WebkitBoxShadow: '0 0 0px 1000px white inset',
+                          }}
                           {...field}
                         />
                       </FormControl>
-                      <FormLabel className="absolute left-0 right-0 top-3 -translate-y-3 bg-white ml-3 px-3 text-sm duration-100 ease-linear peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:ml-4 peer-focus:bb-10 peer-focus:-translate-y-5 peer-focus:px-1 peer-focus:text-xs whitespace-nowrap">
+                      <FormLabel className="absolute left-0 right-0 top-3 -translate-y-5 bg-white ml-3 px-3 text-xs duration-100 ease-linear peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:ml-4 peer-focus:bb-10 peer-focus:-translate-y-5 peer-focus:px-1 peer-focus:text-xs whitespace-nowrap">
                         Product
                       </FormLabel>
                       <FormMessage className="w-[250px] text-xs" />
@@ -343,10 +364,13 @@ const LeadCreatePage = () => {
                         <Input
                           className="border block px-4 py-3 w-[250px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm peer border-b placeholder:text-gray-500 "
                           placeholder=""
+                          style={{
+                            WebkitBoxShadow: '0 0 0px 1000px white inset',
+                          }}
                           {...field}
                         />
                       </FormControl>
-                      <FormLabel className="absolute left-0 right-0 top-3 -translate-y-3 bg-white ml-3 px-3 text-sm duration-100 ease-linear peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:ml-4 peer-focus:bb-10 peer-focus:-translate-y-5 peer-focus:px-1 peer-focus:text-xs whitespace-nowrap">
+                      <FormLabel className="absolute left-0 right-0 top-3 -translate-y-5 bg-white ml-3 px-3 text-xs duration-100 ease-linear peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:ml-4 peer-focus:bb-10 peer-focus:-translate-y-5 peer-focus:px-1 peer-focus:text-xs whitespace-nowrap">
                         Service
                       </FormLabel>
                       <FormMessage className="w-[250px] text-xs" />
@@ -404,10 +428,13 @@ const LeadCreatePage = () => {
                         <Input
                           className="border block px-4 py-3 w-[400px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm peer border-b placeholder:text-gray-500 "
                           placeholder=""
+                          style={{
+                            WebkitBoxShadow: '0 0 0px 1000px white inset',
+                          }}
                           {...field}
                         />
                       </FormControl>
-                      <FormLabel className="absolute left-0 right-0 top-3 -translate-y-3 bg-white ml-3 px-3 text-sm duration-100 ease-linear peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:ml-4 peer-focus:bb-10 peer-focus:-translate-y-5 peer-focus:px-1 peer-focus:text-xs whitespace-nowrap">
+                      <FormLabel className="absolute left-0 right-0 top-3 -translate-y-5 bg-white ml-3 px-3 text-xs duration-100 ease-linear peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:ml-4 peer-focus:bb-10 peer-focus:-translate-y-5 peer-focus:px-1 peer-focus:text-xs whitespace-nowrap">
                         Reference No
                       </FormLabel>
                       <FormMessage className="w-[250px]" />
