@@ -225,7 +225,7 @@ const LeadsPage: React.FC = () => {
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:ml-[20%] lg:px-8 lg:w-[1200px] flex-wrap ">
-      <div className=" lg:h-[35rem]">
+      <div className=" lg:min-h-[37rem]">
         <div className="text-black lg:mb-5 flex flex-row items-center mt-4 justify-center md:justify-end mb-4">
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             {" "}
@@ -276,7 +276,7 @@ const LeadsPage: React.FC = () => {
                                   <Input
                                     id="width"
                                     placeholder={`Search ${title}`}
-                                    className="col-span-2 h-8"
+                                    className="col-span-2 h-10"
                                     value={
                                       filterValues[title.toLowerCase()] || ""
                                     }
@@ -345,7 +345,7 @@ const LeadsPage: React.FC = () => {
                                     </SelectContent>
                                   </Select>
                                 )}
-                                <div className="flex flex-row justify-center items-center gap-2">
+                                <div className="flex flex-row justify-center mt-4  items-center gap-4">
                                   <Button
                                     className="flex flex-row gap-2"
                                     onClick={applyFilter}

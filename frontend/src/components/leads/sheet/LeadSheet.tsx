@@ -73,7 +73,7 @@ const LeadSheet = (props: Props) => {
   }, [leadData]);
   return (
     <SheetHeader className="flex flex-col bg-gray-200">
-      <div className="bg-white h-12"></div>
+      <div className="bg-transparent h-12"></div>
 
       {leadData && (
         <div className="flex flex-col ">

@@ -14,6 +14,12 @@ export class LocalStore {
     }
   }
 
+  static reloadLead(){
+    if (typeof window !== 'undefined') {
+      window.location.href="/leads";
+    }
+  }
+
   static set(key: string, value: string) {
     if (typeof window !== 'undefined') {
       localStorage.setItem(key, value);

@@ -72,12 +72,12 @@ const ContactStatus: React.FC<Props> = ({ initialStatus, id }) => {
   };
 
   return (
-    <div>
+    <div className="sm:-mx-2">
       <ul className="flex rounded-2xl overflow-hidden border border-gray-200 text-center bg-white">
         {statusList.map((buttonStatus) => (
           <li
             key={buttonStatus}
-            className={`flex-1 px-4 py-2 ${
+            className={`flex-1 px-0 lg:px-2 py-2 ${
               getStatusColor(status, buttonStatus)
             }`}
           >

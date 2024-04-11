@@ -40,7 +40,7 @@ const leadSchema = z.object({
     .optional(),
   details: z
     .string()
-    .min(1, { message: "Address field can't be empty " })
+    .min(1, { message: "Details field can't be empty " })
     .max(255)
     .optional(),
   status: z.nativeEnum(LeadsStatus).optional(),
@@ -123,7 +123,8 @@ const LeadCreatePage = () => {
         setLeadFormSubmitted(true);
         setIsOpen(false);
         leadCreationForm.reset();
-        router.push("/leads");
+        // router.push("/leads");
+        LocalStore.reloadLead();
       } else {
         throw new Error("An error occurred while creating the lead.");
       }
@@ -198,7 +199,7 @@ const LeadCreatePage = () => {
                         />
                       </FormControl>
                       <FormLabel className="absolute left-0 right-0 top-3 -translate-y-5 bg-white ml-3 px-3 text-xs duration-100 ease-linear  peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:ml-4  peer-focus:-translate-y-5 peer-focus:px-1 peer-focus:text-xs whitespace-nowrap">
-                        Email Address
+                        Email Address<span className="text-primary">*</span>
                       </FormLabel>
                       <FormMessage className="w-[250px] text-xs" />
                     </div>
@@ -222,7 +223,7 @@ const LeadCreatePage = () => {
                         />
                       </FormControl>
                       <FormLabel className="absolute left-0 right-0 top-3 -translate-y-5 bg-white ml-3 px-3 text-xs duration-100 ease-linear peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:ml-4 peer-focus:bb-10 peer-focus:-translate-y-5 peer-focus:px-1 peer-focus:text-xs whitespace-nowrap">
-                        Address
+                        Address<span className="text-primary">*</span>
                       </FormLabel>
                       <FormMessage className="w-[250px] text-xs" />
                     </div>
@@ -246,7 +247,7 @@ const LeadCreatePage = () => {
                         />
                       </FormControl>
                       <FormLabel className="absolute left-0 right-0 top-3 -translate-y-5 bg-white ml-3 px-3 text-xs duration-100 ease-linear peer-placeholder-shown:text-gray-500 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base  peer-focus:ml-4 peer-focus:bb-10 peer-focus:-translate-y-5 peer-focus:px-1 peer-focus:text-xs whitespace-nowrap">
-                        Name
+                        Name<span className="text-primary">*</span>
                       </FormLabel>
                       <FormMessage className="w-[250px] text-xs" />
                     </div>
@@ -272,7 +273,7 @@ const LeadCreatePage = () => {
                         />
                       </FormControl>
                       <FormLabel className="absolute left-0 right-0 top-3 -translate-y-5 bg-white ml-3 px-3 text-xs duration-100 ease-linear peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:ml-4 peer-focus:bb-10 peer-focus:-translate-y-5 peer-focus:px-1 peer-focus:text-xs whitespace-nowrap">
-                        Reference No
+                        Details<span className="text-primary">*</span>
                       </FormLabel>
                       <FormMessage className="w-[250px] text-xs" />
                     </div>
@@ -296,7 +297,7 @@ const LeadCreatePage = () => {
                         />
                       </FormControl>
                       <FormLabel className="absolute left-0 right-0 top-3 -translate-y-5 bg-white ml-3 px-3 text-xs duration-100 ease-linear peer-placeholder-shown:translate-y-0 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:ml-4 peer-focus:bb-10 peer-focus:-translate-y-5 peer-focus:px-1 peer-focus:text-xs whitespace-nowrap">
-                        Phone
+                        Phone<span className="text-primary">*</span>
                       </FormLabel>
                       <FormMessage className="w-[250px] text-xs" />
                     </div>
