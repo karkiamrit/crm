@@ -49,6 +49,7 @@ import Link from "next/link";
 import LeadCreatePage from "@/components/leads/LeadCreatePage/LeadCreatePage";
 import useleadEdited from "@/store/useLeadsEdited";
 import { Checkbox } from "../ui/checkbox";
+import { useSelectedLeadsStore } from "@/store/useSelectedLeadsStore";
 
 export enum LeadsStatus {
   INITIAL = "INITIAL",
@@ -89,7 +90,7 @@ const LeadsPage: React.FC = () => {
   const { isLeadDataDeleted, setLeadDataDeleted } = useleadDeleted();
   const { isLeadFormSubmitted, setLeadFormSubmitted } = useleadFormSubmitted();
   const [totalLeads, setTotalLeads] = useState(0);
-  const [selectedLeads, setSelectedLeads] = useState<number[]>([]);
+  const { selectedLeads, setSelectedLeads } = useSelectedLeadsStore();
 
   React.useEffect(() => {
     console.log(selectedLeads);
@@ -265,7 +266,7 @@ const LeadsPage: React.FC = () => {
                   <th className="px-4 py-7 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider gap-3">
                     <Checkbox
                       checked={selectedLeads.length === leads.length}
-                      style={{ width: "1.1rem", height: "1.1rem" }} // Adjust width and height as needed
+                      style={{ width: "1.1rem", height: "1.1rem" }}
                       onCheckedChange={(isChecked) => {
                         setSelectedLeads(
                           isChecked ? leads.map((lead) => lead.id) : []
@@ -277,7 +278,7 @@ const LeadsPage: React.FC = () => {
                     <th
                       key={index}
                       className={cn({
-                        "px-4 py-7 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider gap-3 ":
+                        "px-4 py-7 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider gap-3":
                           true,
                         "text-center justify-center items-center":
                           title === "Actions",
@@ -407,6 +408,24 @@ const LeadsPage: React.FC = () => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {leads &&
                     leads.map((lead, index) => (
+                      // <TableRow
+                      //   key={index}
+                      //   name={lead.name}
+                      //   email={lead.email}
+                      //   phone={lead.phone}
+                      //   status={lead.status}
+                      //   // country={lead.address}
+                      //   id={lead.id}
+                      //   selectedLeads={selectedLeads}
+                      //   isSelected={selectedLeads.includes(lead.id)}
+                      //   onSelect={(isSelected) =>
+                      //     isSelected
+                      //       ? setSelectedLeads((prev) => [...prev, lead.id])
+                      //       : setSelectedLeads((prev) =>
+                      //           prev.filter((id) => id !== lead.id)
+                      //         )
+                      //   }
+                      // />
                       <TableRow
                         key={index}
                         name={lead.name}
@@ -419,9 +438,9 @@ const LeadsPage: React.FC = () => {
                         isSelected={selectedLeads.includes(lead.id)}
                         onSelect={(isSelected) =>
                           isSelected
-                            ? setSelectedLeads((prev) => [...prev, lead.id])
-                            : setSelectedLeads((prev) =>
-                                prev.filter((id) => id !== lead.id)
+                            ? setSelectedLeads([...selectedLeads, lead.id])
+                            : setSelectedLeads(
+                                selectedLeads.filter((id) => id !== lead.id)
                               )
                         }
                       />

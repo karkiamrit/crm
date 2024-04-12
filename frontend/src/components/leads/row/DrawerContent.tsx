@@ -4,14 +4,15 @@ import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { LocalStore } from "@/store/localstore";
 import { useToast } from "@/components/ui/use-toast";
+import { useSelectedLeadsStore } from "@/store/useSelectedLeadsStore";
 
 interface Props {
   leadID: number[];
-
 }
 
 export default function DrawerContentDemo({ leadID,  }: Props) {
   const { toast } = useToast();
+  const {setSelectedLeads} = useSelectedLeadsStore();
   const handleSegement = async (data: number[]) => {
     try {
       const response = await axios.post(
@@ -52,7 +53,11 @@ export default function DrawerContentDemo({ leadID,  }: Props) {
     <div className="flex justify-between mx-10 items-center my-1 " >
       <div className="flex gap-3  items-center">
         <div className="bg-transparent text-black">{leadcount} Selected</div>
-        <Button className="text-primary bg-transparent hover:bg-transparent shadow-none   underline underline-offset-2 underline-primary">
+        <Button className="text-primary bg-transparent hover:bg-transparent shadow-none   underline underline-offset-2 underline-primary"
+          onClick={() => {
+            setSelectedLeads([]);
+          }}
+        >
           Clear All
         </Button>
       </div>
