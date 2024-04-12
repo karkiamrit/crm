@@ -56,6 +56,7 @@ export default function DrawerContentDemo({ leadID,  }: Props) {
           Clear All
         </Button>
       </div>
+      
 
       <Button
         className="w-60 my-2 px-4"
@@ -63,7 +64,7 @@ export default function DrawerContentDemo({ leadID,  }: Props) {
           handleSegement(leadID);
         }}
       >
-        Segment
+       Create  Segment
       </Button>
     </div>
   );

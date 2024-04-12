@@ -1,9 +1,8 @@
-
 import React from "react";
 import UpdateOrganizationForm from "./UpdateOrganization";
 
 interface Props {
-  id:number
+  id: number;
   email: string;
   phone: string;
   address: string;
@@ -12,59 +11,61 @@ interface Props {
 
 const OrganizationFrame = ({ id, email, phone, address }: Props) => {
   return (
-    <div className="overflow-x-auto w-3/6">
+    <div className="overflow-x-auto w-full lg:w-3/6">
       <div className="inline-block min-w-full overflow-hidden align-middle border border-gray-200 shadow sm:rounded-lg">
         <table className="min-w-full ">
           <thead>
             <tr>
-              <th className="px-4 py-7 bg-gray-50 text-left text-xs font-bold  uppercase tracking-wider gap-3 ">
-                <div>
-                  <div className="flex gap-3 items-center justify-between">
-                    <div className="flex gap-3 items-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="lucide lucide-building"
-                      >
-                        <rect
-                          width="16"
-                          height="20"
-                          x="4"
-                          y="2"
-                          rx="2"
-                          ry="2"
-                        />
-                        <path d="M9 22v-4h6v4" />
-                        <path d="M8 6h.01" />
-                        <path d="M16 6h.01" />
-                        <path d="M12 6h.01" />
-                        <path d="M12 10h.01" />
-                        <path d="M12 14h.01" />
-                        <path d="M16 10h.01" />
-                        <path d="M16 14h.01" />
-                        <path d="M8 10h.01" />
-                        <path d="M8 14h.01" />
-                      </svg>
-                      Organization Details
-                    </div>
-                    <UpdateOrganizationForm address={address} email={email} id={id} phone={phone}/>
+              <th className="px-4 py-7 bg-gray-50 text-left text-xs font-bold uppercase tracking-wider gap-3 ">
+                <div className="flex gap-3 items-center justify-between">
+                  <div className="flex gap-3 items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="lucide lucide-building"
+                    >
+                      <rect
+                        width="16"
+                        height="20"
+                        x="4"
+                        y="2"
+                        rx="2"
+                        ry="2"
+                      />
+                      <path d="M9 22v-4h6v4" />
+                      <path d="M8 6h.01" />
+                      <path d="M16 6h.01" />
+                      <path d="M12 6h.01" />
+                      <path d="M12 10h.01" />
+                      <path d="M12 14h.01" />
+                      <path d="M16 10h.01" />
+                      <path d="M16 14h.01" />
+                      <path d="M8 10h.01" />
+                      <path d="M8 14h.01" />
+                    </svg>
+                    Organization Details
                   </div>
+                  <UpdateOrganizationForm
+                    address={address}
+                    email={email}
+                    id={id}
+                    phone={phone}
+                  />
                 </div>
               </th>
             </tr>
           </thead>
 
           <tbody className="bg-white divide-y divide-gray-200">
-            {/* <tr className="bg-white"> */}
             <tr>
-              <th className="px-4 py-3 flex items-center text-left text-xs font-medium text-gray-500  tracking-wider gap-3 ">
+              <th className="px-4 py-3 flex items-center text-left text-xs font-medium text-gray-500 tracking-wider gap-3 ">
                 <div className="flex flex-col">
                   <div className="flex flex-row gap-4 items-center">
                     <svg
@@ -91,7 +92,7 @@ const OrganizationFrame = ({ id, email, phone, address }: Props) => {
               </th>
             </tr>
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500  tracking-wider gap-3 flex items-center">
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider gap-3 flex items-center">
                 <div className="flex flex-col">
                   <div className="flex flex-row gap-4 items-center">
                     <svg

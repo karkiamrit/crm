@@ -428,7 +428,7 @@ const LeadsPage: React.FC = () => {
         </div>
       </div>
       <div>
-        <Pagination className="mt-2">
+        <Pagination className="mt-2 absolute">
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
