@@ -13,6 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 // import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import DrawerContentDemo from "./DrawerContent";
 import { Cross2Icon, Pencil2Icon } from "@radix-ui/react-icons";
+import { cn } from "@/lib/utils";
 
 interface TableRowProps {
   name: string;
@@ -240,7 +241,7 @@ const TableRow: React.FC<TableRowProps> = ({
             <div className="flex items-center space-x-4">
               <Sheet>
                 <SheetTrigger className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-200 bg-gray-100 border border-gray-300 rounded-md shadow-sm gap-2">
-                  <Pencil2Icon/>
+                  <Pencil2Icon />
                   Edit
                 </SheetTrigger>
                 <SheetContent className="overflow-auto">
@@ -293,7 +294,7 @@ const TableRow: React.FC<TableRowProps> = ({
                   }
                 }}
               >
-                <Cross2Icon/>
+                <Cross2Icon />
                 Delete
               </Button>
             </div>
@@ -301,7 +302,11 @@ const TableRow: React.FC<TableRowProps> = ({
         )}
 
       {isSelected && (
-        <div className="absolute bottom-0 left-0 w-[96%] mx-8 rounded-xl  bg-white stroke-gray-300 border">
+        <div
+          className={cn(
+            "absolute bottom-0 mb-16 left-0 w-[96%] mx-8 rounded-xl bg-white stroke-gray-300 border"
+          )}
+        >
           <DrawerContentDemo leadID={selectedLeads} />
         </div>
       )}
