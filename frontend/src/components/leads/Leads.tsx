@@ -99,7 +99,7 @@ const LeadsPage: React.FC = () => {
   const { leadStatus } = useStore();
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const pageSize = 8;
+  const pageSize = 7;
 
   const fetchLeadsFromApi = async (url: string, appliedFilter: Range[]) => {
     const rangeFields = ["name", "email", "address"]; // Add other range fields here
@@ -231,7 +231,12 @@ const LeadsPage: React.FC = () => {
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
   return (
     <div className="container mx-auto mt-10 px-4 relative lg:left-[10%] sm:px-6 lg:px-8 md:w-[1000px] lg:w-[1200px] flex-wrap">
-      <div className=" lg:min-h-[45rem]">
+      <div
+        className={cn(
+          "lg:min-h-[45rem] ",
+          selectedLeads.length > 0 ? "lg:min-h-[45rem] " : "lg:min-h-[40rem] "
+        )}
+      >
         <div className="text-black lg:mb-5 flex flex-row items-center mt-4 justify-center md:justify-end mb-4">
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             {" "}
@@ -428,7 +433,7 @@ const LeadsPage: React.FC = () => {
         </div>
       </div>
       <div>
-        <Pagination className="mt-2 absolute">
+        <Pagination className={cn("mt-2")}>
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious

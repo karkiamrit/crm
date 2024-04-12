@@ -49,7 +49,7 @@ export default function DrawerContentDemo({ leadID,  }: Props) {
   const leadcount = leadID.length;
 
   return (
-    <div className="flex justify-between mx-10 mx items-center my-1 " >
+    <div className="flex justify-between mx-10 items-center my-1 " >
       <div className="flex gap-3  items-center">
         <div className="bg-transparent text-black">{leadcount} Selected</div>
         <Button className="text-primary bg-transparent hover:bg-transparent shadow-none   underline underline-offset-2 underline-primary">

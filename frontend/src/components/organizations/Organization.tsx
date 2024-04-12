@@ -74,7 +74,7 @@ const OrganizationsPage: React.FC = () => {
   const hasAdminRole = userData?.roles.some((role) => role.name === "Admin");
   const { isUserCreated, setUserCreated } = useUserCreated();
   // const {isOrganizationFormSubmitted, setOrganizationFormSubmitted} = useOrganizationFormSubmitted();
-  const pageSize = 6;
+  const pageSize = 5;
 
   const [organization, setOrganization] = useState<Organization | null>(null);
 
@@ -200,7 +200,7 @@ const OrganizationsPage: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 mt-20 relative lg:left-[10%] sm:px-6 lg:px-8 md:w-[1000px] lg:w-[1200px] flex-wrap">
-      <div className=" lg:min-h-[45rem]">
+      <div className=" lg:min-h-[38rem]">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:pb-6">
           <div className="flex flex-row items-center gap-6 pl-6  lg:pl-0">
             {organization?.logo && (
@@ -400,7 +400,7 @@ const OrganizationsPage: React.FC = () => {
           )}
         </div>
       </div>
-      <Pagination className="flex justify-center pl-24">
+      <Pagination className="flex justify-end md:w-[20%] ">
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
@@ -413,7 +413,7 @@ const OrganizationsPage: React.FC = () => {
               }}
             />
           </PaginationItem>
-          {pageNumbers.slice(0, 8).map((pageNumber) => (
+          {pageNumbers.slice(0, 5).map((pageNumber) => (
             <PaginationItem key={pageNumber}>
               <PaginationLink
                 href="#"
