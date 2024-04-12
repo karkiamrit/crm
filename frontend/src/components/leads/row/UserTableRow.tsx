@@ -301,7 +301,7 @@ const TableRow: React.FC<TableRowProps> = ({
         )}
 
       {isSelected && (
-        <div className="absolute bottom-0 left-0 w-[96%] mx-8 rounded-xl  bg-white stroke-gray-300 border">
+        <div className="absolute bottom-0 left-0 w-[96%] mx-8 rounded-xl  bg-transparent  stroke-gray-300 border">
           <DrawerContentDemo leadID={selectedLeads} />
         </div>
       )}
