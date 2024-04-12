@@ -74,7 +74,7 @@ const OrganizationsPage: React.FC = () => {
   const hasAdminRole = userData?.roles.some((role) => role.name === "Admin");
   const { isUserCreated, setUserCreated } = useUserCreated();
   // const {isOrganizationFormSubmitted, setOrganizationFormSubmitted} = useOrganizationFormSubmitted();
-  const pageSize = 8;
+  const pageSize = 6;
 
   const [organization, setOrganization] = useState<Organization | null>(null);
 
@@ -199,23 +199,21 @@ const OrganizationsPage: React.FC = () => {
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   return (
-    <div className="container mx-auto px-4 lg:ml-[20%] sm:px-6 lg:px-8 md:w-[1000px] lg:w-[1200px] flex-wrap">
-      <div className="py-16  ">
+    <div className="container mx-auto px-4 mt-20 relative lg:left-[10%] sm:px-6 lg:px-8 md:w-[1000px] lg:w-[1200px] flex-wrap">
+      <div className=" lg:min-h-[45rem]">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:pb-6">
-        <div className="flex flex-row items-center gap-6 pl-6  lg:pl-0">
+          <div className="flex flex-row items-center gap-6 pl-6  lg:pl-0">
             {organization?.logo && (
               <div className="z-0">
-
-              <ProfileAvatar
-                src={
-                  process.env.NEXT_PUBLIC_BACKEND_API_URL_ORGANIZATIONS +
-                  "/" +
-                  organization?.logo
-                }
-                organizationId={organization.id}
-                
+                <ProfileAvatar
+                  src={
+                    process.env.NEXT_PUBLIC_BACKEND_API_URL_ORGANIZATIONS +
+                    "/" +
+                    organization?.logo
+                  }
+                  organizationId={organization.id}
                 />
-                </div>
+              </div>
             )}
 
             {organization && (

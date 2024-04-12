@@ -197,18 +197,18 @@ export class LeadsService {
     const updatedLead = { ...lead, timelines: lead.timelines.map(({ lead, ...rest }) => rest) };
     return updatedLead;
   }
-  private async handleLeadConversion(lead: Leads) {
-    // Delete the lead
-    await this.leadsRepository.findOneAndDelete({id:lead.id});
+  // private async handleLeadConversion(lead: Leads) {
+  //   // Delete the lead
+  //   await this.leadsRepository.findOneAndDelete({id:lead.id});
   
-    // Create a customer from the lead information
-    const customer = await this.createCustomerFromLead(lead);
+  //   // Create a customer from the lead information
+  //   const customer = await this.createCustomerFromLead(lead);
   
-    // Update related timelines
-    await this.updateTimelinesForCustomerConversion(lead, customer);
+  //   // Update related timelines
+  //   await this.updateTimelinesForCustomerConversion(lead, customer);
   
-    return customer;
-  }
+  //   return customer;
+  // }
   
   async createCustomerFromLead(lead: Leads): Promise<Customers> {
     const agent = await this.agentService.getOne(lead.agentId);

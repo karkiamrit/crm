@@ -71,7 +71,7 @@ interface Range {
   lower: string;
   upper: string;
 }
-const titles = ["Name", "Email", "Phone", "Status", "Address", "Actions"];
+const titles = ["Name", "Email", "Phone", "Status", "Actions"];
 
 const LeadsPage: React.FC = () => {
   const { isLeadEdited, setLeadEdited } = useleadEdited();
@@ -230,8 +230,8 @@ const LeadsPage: React.FC = () => {
   // Generate an array of page numbers
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
   return (
-    <div className="container mx-auto px-4 mt-20 sm:px-6 md:ml-[20%] lg:px-8 lg:w-[1200px] flex-wrap ">
-      <div className=" lg:min-h-[37rem]">
+    <div className="container mx-auto mt-10 px-4 relative lg:left-[10%] sm:px-6 lg:px-8 md:w-[1000px] lg:w-[1200px] flex-wrap">
+      <div className=" lg:min-h-[45rem]">
         <div className="text-black lg:mb-5 flex flex-row items-center mt-4 justify-center md:justify-end mb-4">
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             {" "}
@@ -261,7 +261,6 @@ const LeadsPage: React.FC = () => {
                     <Checkbox
                       checked={selectedLeads.length === leads.length}
                       style={{ width: "1.1rem", height: "1.1rem" }} // Adjust width and height as needed
-
                       onCheckedChange={(isChecked) => {
                         setSelectedLeads(
                           isChecked ? leads.map((lead) => lead.id) : []
@@ -409,16 +408,13 @@ const LeadsPage: React.FC = () => {
                         email={lead.email}
                         phone={lead.phone}
                         status={lead.status}
-                        country={lead.address}
+                        // country={lead.address}
                         id={lead.id}
-                        selectedLeads = {selectedLeads}
+                        selectedLeads={selectedLeads}
                         isSelected={selectedLeads.includes(lead.id)}
                         onSelect={(isSelected) =>
                           isSelected
-                            ? setSelectedLeads((prev) => [
-                                ...prev,
-                                lead.id,
-                              ])
+                            ? setSelectedLeads((prev) => [...prev, lead.id])
                             : setSelectedLeads((prev) =>
                                 prev.filter((id) => id !== lead.id)
                               )
