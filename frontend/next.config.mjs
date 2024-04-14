@@ -2,6 +2,9 @@
 
 const nextConfig = {
   images: { domains: ["localhost"] },
+  images: {
+    remotePatterns: [{ hostname: "crm.homepapa.ca" }],
+  },
   webpack: (
     config,
     { buildId, dev, isServer, defaultLoaders, nextRuntime, webpack }
@@ -12,3 +15,4 @@ const nextConfig = {
 };
 
 export default nextConfig;
+

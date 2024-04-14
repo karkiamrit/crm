@@ -22,7 +22,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Organization } from "../../Organization";
-// import Icon from "@/components/icons";
+import Icon from "@/components/Iconlist";
 import useOrganizationFormSubmitted from "@/store/organizationFormSubmitted";
 
 interface Props {
@@ -94,7 +94,7 @@ const UpdateOrganizationForm = ({ id, email, phone, address }: Props) => {
             onClick={() => setIsOpen(true)}
             className="bg-transparent rounded-full border-none shadow-none"
           >
-            {/* <Icon type="pencil" width={15} /> */}
+            <Icon type="pencil" width={15} />
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[600px]">

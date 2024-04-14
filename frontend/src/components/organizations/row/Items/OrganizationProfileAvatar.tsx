@@ -68,7 +68,9 @@ function ProfileAvatar({ src, organizationId }: ProfileAvatarProps) {
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        <img
+        <Image
+          height={96}
+          width={96}
           src={logoSrc} // Use the state for the image source
           alt="Avatar"
           className="w-full h-full rounded-full object-cover -z-50"

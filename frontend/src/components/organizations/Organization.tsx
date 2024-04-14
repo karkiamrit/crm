@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { LocalStore } from "@/store/localstore";
 import axios from "axios";
-// import Icon from "../icons";
+import Icon  from "@/components/Iconlist";
 import {
   Popover,
   PopoverContent,
@@ -22,9 +22,7 @@ import {
 
 import useAuth from "@/app/hooks/useAuth";
 // import CreateUser from "./sheet/CreateUser";
-import useOrganizationFormSubmitted from "@/store/organizationFormSubmitted";
 import OrganizationTableRow from "./row/OrganizationUserTableRow";
-import { Avatar, AvatarImage } from "../ui/avatar";
 import { Separator } from "../ui/separator";
 import OrganizationFrame from "./row/Items/OrganizationFrame";
 import EditableOrganizationName from "./row/Items/Editable OrganizationName";
@@ -291,11 +289,11 @@ const OrganizationsPage: React.FC = () => {
                           {title !== "Role" && (
                             <Popover>
                               <PopoverTrigger>
-                                {/* <Icon
+                                <Icon
                                   type="list_filter"
                                   width={20}
                                   height={15}
-                                /> */}
+                                />
                               </PopoverTrigger>
 
                               <PopoverContent className="w-52">
@@ -343,11 +341,11 @@ const OrganizationsPage: React.FC = () => {
                                       onClick={applyFilter}
                                     >
                                       Filter
-                                      {/* <Icon
+                                      <Icon
                                         type="filter"
                                         width={20}
                                         height={15}
-                                      /> */}
+                                      />
                                     </Button>
                                     <Button
                                       variant={"secondary"}

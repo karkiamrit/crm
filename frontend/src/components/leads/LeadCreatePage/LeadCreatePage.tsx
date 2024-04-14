@@ -31,6 +31,7 @@ import { useToast } from "@/components/ui/use-toast";
 import useleadFormSubmitted from "@/store/leadFormSubmitted";
 import { BreadcrumbDemo } from "@/components/Breadcrumb/Breadcrumb";
 import { useRouter } from "next/navigation";
+import Icon from "@/components/Iconlist";
 
 const leadSchema = z.object({
   address: z
@@ -193,7 +194,7 @@ const LeadCreatePage = () => {
                           className="border block px-4 py-3 w-[250px] peer-placeholder-shown:bg-white bg-white border-gray-300 rounded-lg sm:text-sm peer  placeholder:text-gray-500 "
                           placeholder=""
                           style={{
-                            WebkitBoxShadow: '0 0 0px 1000px white inset',
+                            WebkitBoxShadow: "0 0 0px 1000px white inset",
                           }}
                           {...field}
                         />
@@ -216,7 +217,7 @@ const LeadCreatePage = () => {
                         <Input
                           className="border block px-4 py-3 w-[250px] bg-white  border-gray-300 rounded-lg sm:text-sm peer border-b  "
                           style={{
-                            WebkitBoxShadow: '0 0 0px 1000px white inset',
+                            WebkitBoxShadow: "0 0 0px 1000px white inset",
                           }}
                           placeholder=""
                           {...field}
@@ -241,7 +242,7 @@ const LeadCreatePage = () => {
                           className="border block px-4 py-3 w-[250px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm peer border-b placeholder:text-gray-500 "
                           placeholder=""
                           style={{
-                            WebkitBoxShadow: '0 0 0px 1000px white inset',
+                            WebkitBoxShadow: "0 0 0px 1000px white inset",
                           }}
                           {...field}
                         />
@@ -267,7 +268,7 @@ const LeadCreatePage = () => {
                           className="border block px-4 py-3 w-[250px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm peer border-b placeholder:text-gray-500 "
                           placeholder=""
                           style={{
-                            WebkitBoxShadow: '0 0 0px 1000px white inset',
+                            WebkitBoxShadow: "0 0 0px 1000px white inset",
                           }}
                           {...field}
                         />
@@ -291,7 +292,7 @@ const LeadCreatePage = () => {
                           className="border block px-4 py-3 w-[250px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm peer border-b placeholder:text-gray-500 "
                           placeholder=""
                           style={{
-                            WebkitBoxShadow: '0 0 0px 1000px white inset',
+                            WebkitBoxShadow: "0 0 0px 1000px white inset",
                           }}
                           {...field}
                         />
@@ -315,7 +316,7 @@ const LeadCreatePage = () => {
                           className="border block px-4 py-3 w-[250px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm peer border-b placeholder:text-gray-500 "
                           placeholder=""
                           style={{
-                            WebkitBoxShadow: '0 0 0px 1000px white inset',
+                            WebkitBoxShadow: "0 0 0px 1000px white inset",
                           }}
                           {...field}
                         />
@@ -342,7 +343,7 @@ const LeadCreatePage = () => {
                           className="border block px-4 py-3 w-[250px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm peer border-b placeholder:text-gray-500 "
                           placeholder=""
                           style={{
-                            WebkitBoxShadow: '0 0 0px 1000px white inset',
+                            WebkitBoxShadow: "0 0 0px 1000px white inset",
                           }}
                           {...field}
                         />
@@ -366,7 +367,7 @@ const LeadCreatePage = () => {
                           className="border block px-4 py-3 w-[250px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm peer border-b placeholder:text-gray-500 "
                           placeholder=""
                           style={{
-                            WebkitBoxShadow: '0 0 0px 1000px white inset',
+                            WebkitBoxShadow: "0 0 0px 1000px white inset",
                           }}
                           {...field}
                         />
@@ -430,7 +431,7 @@ const LeadCreatePage = () => {
                           className="border block px-4 py-3 w-[400px] placeholder-gray-500 border-gray-300 rounded-lg sm:text-sm peer border-b placeholder:text-gray-500 "
                           placeholder=""
                           style={{
-                            WebkitBoxShadow: '0 0 0px 1000px white inset',
+                            WebkitBoxShadow: "0 0 0px 1000px white inset",
                           }}
                           {...field}
                         />
@@ -473,6 +474,7 @@ const LeadCreatePage = () => {
               variant="default"
               className="inline-flex items-center justify-center w-full px-6 py-6 text-sm font-semibold leading-5 text-white transition-all duration-200 bg-primary border border-transparent rounded-md"
             >
+              <Icon type="pencil" width={20} />
               Create Lead
             </Button>
           </form>

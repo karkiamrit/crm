@@ -4,7 +4,7 @@ import TableRow from "./row/UserTableRow";
 import { cn } from "@/lib/utils";
 import { LocalStore } from "@/store/localstore";
 import axios from "axios";
-// import Icon from "../icons";
+import Icon from "@/components/Iconlist"
 import {
   Popover,
   PopoverContent,
@@ -250,7 +250,7 @@ const LeadsPage: React.FC = () => {
                 className="flex flex-row gap-2"
                 onClick={() => setIsOpen(true)}
               >
-                {/* <Icon type="pencil" width={15} /> */}
+                <Icon type="pencil" width={15} />
                 Create new lead
               </Button>
             </DialogTrigger>
@@ -367,11 +367,11 @@ const LeadsPage: React.FC = () => {
                                     onClick={applyFilter}
                                   >
                                     Filter
-                                    {/* <Icon
+                                    <Icon
                                       type="filter"
                                       width={20}
                                       height={15}
-                                    /> */}
+                                    />
                                   </Button>
                                   <Button
                                     variant={"secondary"}
