@@ -181,7 +181,7 @@ export function NavBarHorizontal() {
   };
 
   return (
-    <div className="absolute top-0 bottom-0 left-0 right-0">
+    <div className="fixed top-0 left-0 right-0 supports-backdrop-blur:bg-background/60 border-b bg-background/95 backdrop-blur z-20">
       <header className="absolute z-10 top-0 w-full">
         <div className="py-3 bg-white ">
           <div className=" px-4 mx-auto sm:px-6 lg:px-8">

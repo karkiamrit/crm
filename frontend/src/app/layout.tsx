@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { NavBarVertical } from "@/components/static/frames/NavBarVertical";
@@ -37,9 +37,9 @@ export default function RootLayout({
     return (
       <html lang="en">
         <body className={font.className}>
-          <div className="flex flex-col h-screen overflow-x-hidden">
+          <div >
             <NavBarHorizontal />
-            <div className="flex flex-grow">
+            <div className="flex h-screen overflow-hidden">
               <NavBarVertical />
               <main className=" w-full md:mt-10">
                 {children}

@@ -15,6 +15,8 @@ import DrawerContentDemo from "./DrawerContent";
 import { Cross2Icon, Pencil2Icon } from "@radix-ui/react-icons";
 import { cn } from "@/lib/utils";
 
+
+
 interface TableRowProps {
   name: string;
   email: string;
@@ -74,7 +76,11 @@ const TableRow: React.FC<TableRowProps> = ({
     [LeadsStatus.COMPLETED]: "",
   };
 
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isSelectedLeads, setIsSelectedLeads] = useState([]);
+
+  const clearSelection = () => {
+    setIsSelectedLeads([]);
+  };
 
   return (
     <tr className="bg-white ">
@@ -86,7 +92,7 @@ const TableRow: React.FC<TableRowProps> = ({
             checked={isSelected}
             onCheckedChange={onSelect}
             style={{ width: "1.1rem", height: "1.1rem" }} // Adjust width and height as needed
-          />
+          />    
           {/* </DrawerTrigger> */}
         </div>
       </td>
@@ -304,10 +310,10 @@ const TableRow: React.FC<TableRowProps> = ({
       {isSelected && (
         <div
           className={cn(
-            "absolute bottom-0 mb-16 left-0 w-[96%] mx-8 rounded-xl bg-white stroke-gray-300 border"
+            "absolute bottom-0 mb-16 left-0 w-[95%] mx-8 rounded-xl bg-white stroke-gray-300 border"
           )}
         >
-          <DrawerContentDemo leadID={selectedLeads} />
+          <DrawerContentDemo leadID={selectedLeads} clearSelection={clearSelection}  />
         </div>
       )}
       {/* </Drawer> */}
