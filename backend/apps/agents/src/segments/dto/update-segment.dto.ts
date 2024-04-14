@@ -4,4 +4,8 @@ export class UpdateSegmentDto {
     @IsString()
     @IsOptional()
     name: string;
+
+    @IsString()
+    @IsNotEmpty()
+    description: string;
   }

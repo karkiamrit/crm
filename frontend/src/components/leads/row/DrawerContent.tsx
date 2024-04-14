@@ -24,7 +24,7 @@ export default function DrawerContentDemo({ leadID }: Props) {
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/segments`,
-        { leads: data, name: "My Segment" },
+        { leads: data, name: "My Segment", description: "my leads" },
         {
           headers: {
             Authorization: `Bearer ${LocalStore.getAccessToken()}`,
