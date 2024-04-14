@@ -10,7 +10,6 @@ import {
 import useVerticalDashboard from "@/store/dashboardStore";
 import { LocalStore } from "@/store/localstore";
 import useBlurStore from "@/store/useBlurStore";
-import { Separator } from "@radix-ui/react-separator";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
