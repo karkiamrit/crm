@@ -10,7 +10,7 @@ export class Segment extends AbstractEntity<Segment>{
   name: string;
 
   @ManyToMany(() => Leads, leads => leads.segments)
-  leads: Leads[];
+  lead: Leads[];
 
   @Column()
   userId: number;
