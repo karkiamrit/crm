@@ -17,7 +17,7 @@ export class SegmentsService {
     createSegmentDto: CreateSegmentDto,
     user: User,
   ): Promise<Segment> {
-    const leads = createSegmentDto.leads 
+    const leads = createSegmentDto.leads
     ? await Promise.all(createSegmentDto.leads.map((id) => this.leadsService.getOne(id)))
     : [];
 

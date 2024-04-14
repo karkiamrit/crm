@@ -5,6 +5,10 @@ export class CreateSegmentDto {
   @IsNotEmpty()
   name: string;
 
+  @IsString()
+  @IsNotEmpty()
+  description: string;
+
   @IsArray()
   @IsOptional()
   leads: number[];

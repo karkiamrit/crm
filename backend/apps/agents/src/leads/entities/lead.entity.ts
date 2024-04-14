@@ -75,9 +75,9 @@ export class Leads extends AbstractEntity<Leads> {
   @Column({ nullable: true })
   agentId: number;
 
-  @ManyToMany(() => Segment, (segment) => segment.lead, {
-    cascade: true,
+  @ManyToMany(() => Segment, (segment) => segment.leads, {
     eager: true,
+    onDelete: 'CASCADE',
   })
   @JoinTable()
   segments: Segment[];
