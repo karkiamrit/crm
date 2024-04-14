@@ -9,8 +9,7 @@ export class Segment extends AbstractEntity<Segment>{
   @Column()
   name: string;
 
-  @ManyToMany(() => Leads, lead => lead.segments, { cascade: true, eager: true })
-  @JoinTable()
+  @ManyToMany(() => Leads, leads => leads.segments)
   leads: Leads[];
 
   @Column()

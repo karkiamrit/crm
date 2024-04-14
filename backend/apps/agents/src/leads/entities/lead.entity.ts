@@ -4,6 +4,7 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
   ManyToMany,
   ManyToOne,
   OneToMany,
@@ -74,6 +75,10 @@ export class Leads extends AbstractEntity<Leads> {
   @Column({ nullable: true })
   agentId: number;
 
-  @ManyToMany(() => Segment, segment => segment.leads)
+  @ManyToMany(() => Segment, (segment) => segment.leads, {
+    cascade: true,
+    eager: true,
+  })
+  @JoinTable()
   segments: Segment[];
 }
