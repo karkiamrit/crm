@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, CreateDateColumn } from 'typeorm';
 import { AbstractEntity } from '@app/common';
 import { Leads } from '../../leads/entities/lead.entity';
 
@@ -14,6 +14,9 @@ export class Segment extends AbstractEntity<Segment>{
 
   @ManyToMany(() => Leads, leads => leads.segments)
   leads: Leads[];
+
+  @CreateDateColumn()
+  createdAt: Date;
 
   @Column()
   userId: number;

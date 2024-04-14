@@ -58,7 +58,7 @@ export enum LeadsStatus {
   REJECTED = "REJECTED",
   COMPLETED = "COMPLETED",
 }
-interface Lead {
+export interface Lead {
   name: string;
   email: string;
   phone: string;

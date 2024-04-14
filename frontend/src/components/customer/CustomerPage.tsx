@@ -62,7 +62,7 @@ const CustomerPage: React.FC = () => {
 
   const [page, setPage] = useState(1);
 
-  const pageSize = 8;
+  const pageSize = 7;
 
   const fetchCustomersFromApi = async (url: string, appliedFilter: Range[]) => {
     const rangeFields = ["name", "email", "address"]; // Add other range fields here
@@ -188,7 +188,7 @@ const CustomerPage: React.FC = () => {
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-      <div className=" lg:h-[35rem]">
+      <div className=" lg:h-[42rem]">
         <div className="text-black lg:mb-5 flex flex-row items-center mt-4 justify-center md:justify-end mb-4">
           {/* <Link
               href="/customers/create"

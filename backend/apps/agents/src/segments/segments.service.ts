@@ -33,6 +33,7 @@ export class SegmentsService {
   async findAll(
     options: ExtendedFindOptions<Segment>,
   ): Promise<{ data: Segment[]; total: number }> {
+    options.relations = ['leads'];
     const result = await this.segmentsRepository.findAll(options);
     const data = result.data;
     const total = result.total;

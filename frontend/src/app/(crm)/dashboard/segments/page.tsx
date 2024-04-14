@@ -1,10 +1,11 @@
+"use client"
 import SegmentPage from "@/components/segments/Segment";
 
-const breadcrumbItems = [{ title: "User", link: "/dashboard/user" }];
+const breadcrumbItems = [{ title: "User", link: "/dashboard/segments" }];
 export default function page() {
   return (
     <>
-      <SegmentPage />
+      <SegmentPage/>
     </>
   );
 }
