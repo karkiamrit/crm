@@ -38,6 +38,7 @@ export default function DrawerContentDemo({ leadID }: Props) {
           variant: "default",
           title: "Segment created successfully.",
         });
+        setSelectedLeads([]);
       } else {
         throw new Error("An error occurred while creating the segment.");
       }

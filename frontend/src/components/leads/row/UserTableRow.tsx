@@ -24,9 +24,7 @@ interface TableRowProps {
   status: LeadsStatus;
   // country: string;
   id: number;
-  isSelected: boolean;
-  onSelect: (isSelected: boolean) => void;
-  selectedLeads: number[];
+
 }
 
 const TableRow: React.FC<TableRowProps> = ({
@@ -36,9 +34,7 @@ const TableRow: React.FC<TableRowProps> = ({
   status,
   // country,
   id,
-  isSelected,
-  onSelect,
-  selectedLeads,
+
 }) => {
   const colors = [
     "bg-red-200",
@@ -85,17 +81,7 @@ const TableRow: React.FC<TableRowProps> = ({
   return (
     <tr className="bg-white ">
       {/* <Drawer > */}
-      <td className="p-4 scroll-my-0 bg-white rounded-lg shadow-md md:shadow-none border-none text-sm font-bold text-gray-900 align-top lg:align-middle whitespace-nowrap">
-        <div className="flex items-center">
-          {/* <DrawerTrigger asChild> */}
-          <Checkbox
-            checked={isSelected}
-            onCheckedChange={onSelect}
-            style={{ width: "1.1rem", height: "1.1rem" }} // Adjust width and height as needed
-          />    
-          {/* </DrawerTrigger> */}
-        </div>
-      </td>
+     
 
       <td className="p-1 bg-white rounded-lg shadow-md md:shadow-none text-sm font-bold text-gray-900 align-top lg:align-middle whitespace-nowrap">
         <div className="flex-col md:flex-row font-bold space-y-4 flex items-center gap-2">
@@ -307,15 +293,7 @@ const TableRow: React.FC<TableRowProps> = ({
           </td>
         )}
 
-      {isSelected && (
-        <div
-          className={cn(
-            "absolute bottom-0 mb-16 left-0 w-[95%] mx-8 rounded-xl bg-white stroke-gray-300 border"
-          )}
-        >
-          <DrawerContentDemo leadID={selectedLeads} clearSelection={clearSelection}  />
-        </div>
-      )}
+    
       {/* </Drawer> */}
     </tr>
   );

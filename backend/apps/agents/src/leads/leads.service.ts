@@ -31,7 +31,7 @@ export class LeadsService {
     private readonly customerService: CustomersService,
   ) {}
 
-  async create(createLeadDto: CreateLeadDto, agent: Agent) {
+  async create(createLeadDto: CreateLeadDto, agent?: Agent) {
     // Convert CreateTimelineInputDTO[] to LeadTimeline[]
     let product: Product, service: Service, timelines: LeadTimeline[];
     // Convert CreateProductInputDTO to Product
@@ -48,8 +48,9 @@ export class LeadsService {
       product,
     });
     console.log(agent);
-
-    lead.agentId = agent.id;
+    if (agent) {
+      lead.agentId = agent.id;
+    }
 
     await this.leadsRepository.create(lead);
 

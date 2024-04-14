@@ -69,32 +69,30 @@ export class LeadsController {
     @Body() referenceNo?: any,
   ) {
     let agent: Agent;
-    if (!referenceNo) {
-      agent = await this.agentService.getOne(user.id);
+    
 
-      if (!agent) {
-        throw new NotFoundException(`Agent with user ID ${user.id} not found`);
-      }
+    let documents: any;
+    if (files) {
+      documents = files.map((file) => file.path);
+    }
+    const createLeadsDtoWithDocuments: CreateLeadDto = {
+      ...createLeadsDto,
+      documents,
+    };
+    if (referenceNo.referenceNo === "" || null || undefined) {
+      return await this.leadsService.create(createLeadsDtoWithDocuments);
     } else {
       agent = await this.agentService.getOneByReferenceNo(
         referenceNo.referenceNo,
       );
       if (!agent) {
         throw new NotFoundException(
-          `Agent with reference no ${referenceNo} not found`,
+          `Agent with reference no ${referenceNo.referenceNo} not found`
         );
       }
     }
 
-    let documents: any;
-    if (files) {
-      documents = files.map((file) => file.path);
-    }
-
-    const createLeadsDtoWithDocuments: CreateLeadDto = {
-      ...createLeadsDto,
-      documents,
-    };
+  
     return await this.leadsService.create(createLeadsDtoWithDocuments, agent);
   }
 
