@@ -313,7 +313,7 @@ const TableRow: React.FC<TableRowProps> = ({
             "absolute bottom-0 mb-16 left-0 w-[95%] mx-8 rounded-xl bg-white stroke-gray-300 border"
           )}
         >
-          <DrawerContentDemo leadID={selectedLeads} clearSelection={clearSelection}  />
+          {/* <DrawerContentDemo leadID={selectedLeads} clearSelection={clearSelection}  /> */}
         </div>
       )}
       {/* </Drawer> */}

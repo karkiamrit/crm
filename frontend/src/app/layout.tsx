@@ -5,6 +5,8 @@ import { NavBarVertical } from "@/components/static/frames/NavBarVertical";
 import { NavBarHorizontal } from "@/components/static/frames/NavBarHorizontal";
 import { Toaster } from "@/components/ui/toaster";
 import useAuth from "./hooks/useAuth";
+import Header from "@/components/layout/header";
+import Sidebar from "@/components/layout/sidebar";
 
 const font = Poppins({ weight: "400", subsets: ["latin"] });
 // export const metadata: Metadata = {
@@ -37,11 +39,13 @@ export default function RootLayout({
     return (
       <html lang="en">
         <body className={font.className}>
-          <div >
-            <NavBarHorizontal />
+          <div>
+            {/* <NavBarHorizontal /> */}
+            <Header />
             <div className="flex h-screen overflow-hidden">
-              <NavBarVertical />
-              <main className=" w-full md:mt-10">
+              {/* <NavBarVertical /> */}
+              <Sidebar />
+              <main className=" w-full md:pt-16">
                 {children}
                 <Toaster />
               </main>

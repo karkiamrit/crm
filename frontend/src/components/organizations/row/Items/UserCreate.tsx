@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/components/ui/use-toast";
 import useAuth from "@/app/hooks/useAuth";
-import Icon from "@/components/icons";
+// import Icon from "@/components/icons";
 import { LocalStore } from "@/store/localstore";
 import {
   DialogTrigger,
@@ -118,7 +118,7 @@ const CreateUserForm = () => {
             className="flex flex-row gap-2"
             onClick={() => setIsOpen(true)}
           >
-            <Icon type="pencil" width={15} />
+            {/* <Icon type="pencil" width={15} /> */}
             Create new user
           </Button>
         </DialogTrigger>

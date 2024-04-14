@@ -4,7 +4,7 @@ import TableRow from "./row/UserTableRow";
 import { cn } from "@/lib/utils";
 import { LocalStore } from "@/store/localstore";
 import axios from "axios";
-import Icon from "../icons";
+// import Icon from "../icons";
 import {
   Popover,
   PopoverContent,
@@ -231,7 +231,7 @@ const LeadsPage: React.FC = () => {
   // Generate an array of page numbers
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
   return (
-    <div className="container mx-auto mt-10 px-4 relative lg:left-[10%] sm:px-6 lg:px-8 md:w-[1000px] lg:w-[1200px] flex-wrap">
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div
         className={cn(
           "lg:min-h-[45rem] ",
@@ -246,7 +246,7 @@ const LeadsPage: React.FC = () => {
                 className="flex flex-row gap-2"
                 onClick={() => setIsOpen(true)}
               >
-                <Icon type="pencil" width={15} />
+                {/* <Icon type="pencil" width={15} /> */}
                 Create new lead
               </Button>
             </DialogTrigger>
@@ -290,7 +290,7 @@ const LeadsPage: React.FC = () => {
                         {title !== "Actions" && (
                           <Popover>
                             <PopoverTrigger>
-                              <Icon type="list_filter" width={20} height={15} />
+                              {/* <Icon type="list_filter" width={20} height={15} /> */}
                             </PopoverTrigger>
 
                             <PopoverContent className="w-52">
@@ -374,11 +374,11 @@ const LeadsPage: React.FC = () => {
                                     onClick={applyFilter}
                                   >
                                     Filter
-                                    <Icon
+                                    {/* <Icon
                                       type="filter"
                                       width={20}
                                       height={15}
-                                    />
+                                    /> */}
                                   </Button>
                                   <Button
                                     variant={"secondary"}

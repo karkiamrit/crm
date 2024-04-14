@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import Icon from "@/components/icons";
+// import Icon from "@/components/icons";
 import { LocalStore } from "@/store/localstore";
 import { Organization } from "../../Organization";
 import useAuth from "@/app/hooks/useAuth";
@@ -65,7 +65,7 @@ const EditableOrganizationName: React.FC<EditableOrganizationNameProps> = ({
           {updatedName}
           {isIconHovered && hasAdminRole && (
             <button onClick={() => setIsNameEditing(true)} className="ml-2">
-              <Icon type="pencil" width={20} />
+              {/* <Icon type="pencil" width={20} /> */}
             </button>
           )}
         </div>

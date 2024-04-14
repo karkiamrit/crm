@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { LocalStore } from "@/store/localstore";
 import axios from "axios";
-import Icon from "../icons";
+// import Icon from "../icons";
 import {
   Popover,
   PopoverContent,
@@ -199,8 +199,8 @@ const OrganizationsPage: React.FC = () => {
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   return (
-    <div className="container mx-auto px-4 mt-20 relative lg:left-[10%] sm:px-6 lg:px-8 md:w-[1000px] lg:w-[1200px] flex-wrap">
-      <div className=" lg:min-h-[38rem]">
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+      <div className=" ">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:pb-6">
           <div className="flex flex-row items-center gap-6 pl-6  lg:pl-0">
             {organization?.logo && (
@@ -291,11 +291,11 @@ const OrganizationsPage: React.FC = () => {
                           {title !== "Role" && (
                             <Popover>
                               <PopoverTrigger>
-                                <Icon
+                                {/* <Icon
                                   type="list_filter"
                                   width={20}
                                   height={15}
-                                />
+                                /> */}
                               </PopoverTrigger>
 
                               <PopoverContent className="w-52">
@@ -343,11 +343,11 @@ const OrganizationsPage: React.FC = () => {
                                       onClick={applyFilter}
                                     >
                                       Filter
-                                      <Icon
+                                      {/* <Icon
                                         type="filter"
                                         width={20}
                                         height={15}
-                                      />
+                                      /> */}
                                     </Button>
                                     <Button
                                       variant={"secondary"}
