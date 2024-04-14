@@ -259,6 +259,7 @@ export class LeadsService {
   }
 
   async findAll(options: ExtendedFindOptions<Leads>) {
+    options.relations = ['product', 'service', 'timelines']
     return this.leadsRepository.findAll(options);
   }
 
