@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/select";
 import useAuth from "@/app/hooks/useAuth";
 import axios from "axios";
-import Icon from "@/components/icons";
+import Icon from "@/components/Iconlist";
 import { LocalStore } from "@/store/localstore";
 import { useToast } from "@/components/ui/use-toast";
 import useleadFormSubmitted from "@/store/leadFormSubmitted";

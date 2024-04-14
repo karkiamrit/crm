@@ -10,7 +10,7 @@ export class CreateSegmentDto {
   description: string;
 
   @IsArray()
-  @IsOptional()
+  @IsNotEmpty()
   leads: number[];
 
 }

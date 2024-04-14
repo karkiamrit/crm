@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
-import Icon from "@/components/icons";
+import Icon from "@/components/Iconlist";
 
 type Note = {
   id: number;

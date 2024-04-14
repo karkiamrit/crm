@@ -283,7 +283,7 @@ const LeadsPage: React.FC = () => {
                         {title !== "Actions" && (
                           <Popover>
                             <PopoverTrigger>
-                              {/* <Icon type="list_filter" width={20} height={15} /> */}
+                              <Icon type="list_filter" width={20} height={15} />
                             </PopoverTrigger>
 
                             <PopoverContent className="w-52">

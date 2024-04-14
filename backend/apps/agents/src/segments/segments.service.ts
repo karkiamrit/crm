@@ -20,7 +20,6 @@ export class SegmentsService {
     const leads = createSegmentDto.leads
     ? await Promise.all(createSegmentDto.leads.map((id) => this.leadsService.getOne(id)))
     : [];
-
     const segment = new Segment({
       ...createSegmentDto,
       leads,

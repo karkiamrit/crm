@@ -177,7 +177,7 @@ const TableRow: React.FC<TableRowProps> = ({
         </div>
       </td>
 
-      <td className="p-4 hidden md:block text-center text-sm font-medium pt-8 uppercase text-gray-900 align-top lg:align-middle lg:text-left whitespace-nowrap">
+      <td className="p-4 hidden md:block text-center text-sm font-medium pt-8 text-gray-900 align-top lg:align-middle lg:text-left whitespace-nowrap">
         {country}
       </td>
 

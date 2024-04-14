@@ -40,7 +40,7 @@ interface Range {
   lower: string;
   upper: string;
 }
-const titles = ["Name", "Email", "Phone", "Address"];
+const titles = ["Name", "Email", "Phone", "Address","Actions"];
 
 const CustomerPage: React.FC = () => {
   const { userData, loading } = useAuth();
@@ -200,7 +200,7 @@ const CustomerPage: React.FC = () => {
         <div className="overflow-x-auto">
           <div className="inline-block min-w-full overflow-hidden align-middle border border-gray-200 shadow sm:rounded-lg">
             <table className="min-w-full ">
-              <thead className="md:table-header-group hidden">
+              <thead className="md:table-header-group hidden ">
                 {" "}
                 <tr>
                   <th className="px-4 py-7 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider gap-3">

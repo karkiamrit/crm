@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/components/ui/use-toast";
 import useAuth from "@/app/hooks/useAuth";
-import Icon from "@/components/icons";
+import Icon from "@/components/Iconlist";
 import { LocalStore } from "@/store/localstore";
 import {
   DialogTrigger,
