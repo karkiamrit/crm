@@ -44,6 +44,7 @@ import { useStore } from "@/store/useStore";
 import Link from "next/link";
 import { Lead } from "../leads/Leads";
 import SegmentTableRow from "./row/SegmentTableUser";
+import CreateSegmentForm from "./frames/CreateSegmentForm";
 // import CreateSegmentForm from "./sheet/CreateSegmentForm";
 
 
@@ -233,7 +234,7 @@ const SegmentsPage: React.FC = () => {
             <DialogContent className="sm:max-w-[1000px]">
               <DialogHeader></DialogHeader>
 
-              {/* <SegmentCreatePage /> */}
+              <CreateSegmentForm />
             </DialogContent>
           </Dialog>
         </div>

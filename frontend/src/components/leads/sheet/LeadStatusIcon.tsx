@@ -1,6 +1,6 @@
 // LeadStatusIcon.tsx
 import React from 'react';
-import Icon from "@/components/icons";
+import Icon from "@/components/Iconlist";
 import { LeadsStatus } from "../Leads";
 
 type Props = {
