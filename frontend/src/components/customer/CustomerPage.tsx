@@ -4,7 +4,6 @@ import TableRow from "./row/UserTableRow";
 import { cn } from "@/lib/utils";
 import { LocalStore } from "@/store/localstore";
 import axios from "axios";
-import Icon from "../icons";
 import {
   Popover,
   PopoverContent,
@@ -26,6 +25,7 @@ import useAuth from "@/app/hooks/useAuth";
 // import usecustomerDeleted from "@/store/customerDeleted";
 import { useStore } from "@/store/useStore";
 import { Checkbox } from "../ui/checkbox";
+import { FilterIcon } from "lucide-react";
 
 interface Customer {
   name: string;
@@ -187,7 +187,7 @@ const CustomerPage: React.FC = () => {
   // Generate an array of page numbers
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 lg:ml-[20%] lg:w-[1200px] flex-wrap ">
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className=" lg:h-[35rem]">
         <div className="text-black lg:mb-5 flex flex-row items-center mt-4 justify-center md:justify-end mb-4">
           {/* <Link
@@ -232,7 +232,7 @@ const CustomerPage: React.FC = () => {
                         {title !== "Actions" && (
                           <Popover>
                             <PopoverTrigger>
-                              <Icon type="list_filter" width={20} height={15} />
+                              <FilterIcon width={20} height={15} />
                             </PopoverTrigger>
 
                             <PopoverContent className="w-52">
@@ -281,11 +281,7 @@ const CustomerPage: React.FC = () => {
                                     onClick={applyFilter}
                                   >
                                     Filter
-                                    <Icon
-                                      type="filter"
-                                      width={20}
-                                      height={15}
-                                    />
+                                    <FilterIcon width={20} height={15} />
                                   </Button>
                                   <Button
                                     variant={"secondary"}

@@ -5,10 +5,10 @@ import { cn } from "@/lib/utils";
 export default function Sidebar() {
   return (
     <nav
-      className={cn(`relative hidden h-screen border-r pt-16 lg:block w-72`)}
+      className={cn(`relative hidden h-screen border-r pt-16 lg:block w-80`)}
     >
       <div className="space-y-4 py-4">
-        <div className="px-3 py-2">
+        <div className="px-2 py-2">
           <div className="space-y-1">
             <DashboardNav items={navItems} />
           </div>
