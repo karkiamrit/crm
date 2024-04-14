@@ -11,7 +11,6 @@ import LeadStatusText from "./LeadStatusText";
 import LeadAvatar from "./LeadAvatar";
 import { SheetHeader } from "@/components/ui/sheet";
 import LeadNote from "./LeadNote";
-import Icon from "@/components/icons";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/store/useStore";
@@ -20,6 +19,7 @@ import useleadDeleted from "@/store/leadDeleted";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import useleadEdited from "@/store/useLeadsEdited";
+import { Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
 
 
 type Props = {
@@ -131,7 +131,7 @@ const LeadSheet = (props: Props) => {
                           onClick={() => setIsNameEditing(true)}
                           className="ml-2"
                         >
-                          <Icon type="pencil" width={16} />
+                          <Pencil1Icon width={16}/>
                         </button>
                       )}
                     </div>
@@ -354,7 +354,7 @@ const LeadSheet = (props: Props) => {
                                 ]);
                               }}
                             >
-                              <Icon type="pencil" width={16} />
+                              <Pencil1Icon width={16}/>
                             </button>
                           </div>
                         )}
@@ -430,7 +430,7 @@ const LeadSheet = (props: Props) => {
                     }
                   }}
                 >
-                  <Icon type="trash" width={10} />
+                  <TrashIcon width={10}/>
                   Delete Lead
                 </div>
               </div>
