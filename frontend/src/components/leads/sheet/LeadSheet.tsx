@@ -66,6 +66,7 @@ const LeadSheet = (props: Props) => {
 
     fetchLeadData();
   }, [props.id, updatedData]);
+
   useEffect(() => {
     if (leadData) {
       setUpdatedName(leadData.name);

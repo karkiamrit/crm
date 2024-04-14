@@ -1,5 +1,5 @@
 "use-client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import TableRow from "./row/UserTableRow";
 import { cn } from "@/lib/utils";
 import { LocalStore } from "@/store/localstore";
@@ -90,11 +90,12 @@ const LeadsPage: React.FC = () => {
   const { isLeadDataDeleted, setLeadDataDeleted } = useleadDeleted();
   const { isLeadFormSubmitted, setLeadFormSubmitted } = useleadFormSubmitted();
   const [totalLeads, setTotalLeads] = useState(0);
-  const { selectedLeads, setSelectedLeads } = useSelectedLeadsStore();
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);  
+  // const { selectedLeads, setSelectedLeads } = useSelectedLeadsStore();
 
-  React.useEffect(() => {
-    console.log(selectedLeads);
-  }, [selectedLeads]);
+  // React.useEffect(() => {
+  //   console.log(selectedLeads);
+  // }, [selectedLeads]);
 
   const [page, setPage] = useState(1);
   const { leadStatus } = useStore();
@@ -193,7 +194,6 @@ const LeadsPage: React.FC = () => {
       "and page:",
       page
     );
-
     if (loading === false) {
       fetchLeads(newAppliedFilter).then((newLeads) => {
         setLeads(newLeads);
@@ -208,23 +208,28 @@ const LeadsPage: React.FC = () => {
     if (
       isLeadDataDeleted ||
       isLeadFormSubmitted ||
-      leadStatus ||
-      isLeadEdited
+      isLeadEdited ||
+      leadStatus
     ) {
-      console.log("Condition met, fetching leads...");
-      const newAppliedFilter = Object.values(filter).map((filter) => ({
-        ...filter,
-      }));
-      fetchLeads(newAppliedFilter).then((newLeads) => {
-        console.log("New leads fetched:", newLeads);
-        setLeads(newLeads);
-      });
-      setLeadDataDeleted(false);
-      setLeadFormSubmitted(false);
-      setLeadEdited(false);
+      console.log("Condition met, setting up debounce...");
+      if (debounceTimeout.current !== null) {
+        clearTimeout(debounceTimeout.current);
+      }
+      debounceTimeout.current = setTimeout(() => {
+        console.log("Debounce time passed, fetching leads...");
+        const newAppliedFilter = Object.values(filter).map((filter) => ({
+          ...filter,
+        }));
+        fetchLeads(newAppliedFilter).then((newLeads) => {
+          console.log("New leads fetched:", newLeads);
+          setLeads(newLeads);
+        });
+        setLeadDataDeleted(false);
+        setLeadFormSubmitted(false);
+        setLeadEdited(false);
+      }, 500); // 500ms debounce time
     }
-  }, [isLeadDataDeleted, isLeadFormSubmitted, leadStatus, isLeadEdited]);
-
+  }, [isLeadDataDeleted, isLeadFormSubmitted, isLeadEdited, leadStatus]);
   // Calculate total pages
   const totalPages = Math.ceil(totalLeads / pageSize);
 
@@ -234,8 +239,7 @@ const LeadsPage: React.FC = () => {
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div
         className={cn(
-          "lg:min-h-[45rem] ",
-          selectedLeads.length > 0 ? "lg:min-h-[45rem] " : "lg:min-h-[40rem] "
+          "lg:min-h-[45rem] "
         )}
       >
         <div className="text-black lg:mb-5 flex flex-row items-center mt-4 justify-center md:justify-end mb-4">
@@ -263,17 +267,6 @@ const LeadsPage: React.FC = () => {
               <thead className="md:table-header-group hidden">
                 {" "}
                 <tr>
-                  <th className="px-4 py-7 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider gap-3">
-                    <Checkbox
-                      checked={selectedLeads.length === leads.length}
-                      style={{ width: "1.1rem", height: "1.1rem" }}
-                      onCheckedChange={(isChecked) => {
-                        setSelectedLeads(
-                          isChecked ? leads.map((lead) => lead.id) : []
-                        );
-                      }}
-                    />
-                  </th>
                   {titles.map((title, index) => (
                     <th
                       key={index}
@@ -408,41 +401,14 @@ const LeadsPage: React.FC = () => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {leads &&
                     leads.map((lead, index) => (
-                      // <TableRow
-                      //   key={index}
-                      //   name={lead.name}
-                      //   email={lead.email}
-                      //   phone={lead.phone}
-                      //   status={lead.status}
-                      //   // country={lead.address}
-                      //   id={lead.id}
-                      //   selectedLeads={selectedLeads}
-                      //   isSelected={selectedLeads.includes(lead.id)}
-                      //   onSelect={(isSelected) =>
-                      //     isSelected
-                      //       ? setSelectedLeads((prev) => [...prev, lead.id])
-                      //       : setSelectedLeads((prev) =>
-                      //           prev.filter((id) => id !== lead.id)
-                      //         )
-                      //   }
-                      // />
                       <TableRow
-                        key={index}
+                        key={lead.id}
                         name={lead.name}
                         email={lead.email}
                         phone={lead.phone}
                         status={lead.status}
-                        // country={lead.address}
                         id={lead.id}
-                        selectedLeads={selectedLeads}
-                        isSelected={selectedLeads.includes(lead.id)}
-                        onSelect={(isSelected) =>
-                          isSelected
-                            ? setSelectedLeads([...selectedLeads, lead.id])
-                            : setSelectedLeads(
-                                selectedLeads.filter((id) => id !== lead.id)
-                              )
-                        }
+                      
                       />
                     ))}
                 </tbody>
