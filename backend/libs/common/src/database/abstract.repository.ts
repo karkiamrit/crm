@@ -59,7 +59,6 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
     return entity;
   }
 
-
   // async findOneAndUpdate(
   //   where: FindOptionsWhere<T>,
   //   partialEntity: QueryDeepPartialEntity<T>, //subset of properties that exist on our entity that we want to update
@@ -84,17 +83,18 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
       this.logger.warn('Entity not found with where', where);
       throw new NotFoundException('Entity not found ');
     }
-  
+
     // Merge the existing entity with the partial update
-    const updatedEntity = this.entityRepository.merge(entity, partialEntity as DeepPartial<T>);
-  
+    const updatedEntity = this.entityRepository.merge(
+      entity,
+      partialEntity as DeepPartial<T>,
+    );
+
     // Save the updated entity
     await this.entityRepository.save(updatedEntity);
-  
+
     return updatedEntity;
   }
-
-
 
   async findOneAndDelete(where: FindOptionsWhere<T>) {
     await this.entityRepository.delete(where);
@@ -103,44 +103,58 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
   async findAll(
     options: ExtendedFindOptions<T>,
   ): Promise<{ data: T[]; total: number }> {
-
     let queryBuilder = this.entityRepository.createQueryBuilder('entity'); // Define qb outside the conditional block
-
     // If where is a function, use a query builder
     if (typeof options.where === 'function') {
-       
+      // Call the where function with the query builder
+      options.where(queryBuilder);
 
-        // Call the where function with the query builder
-        options.where(queryBuilder);
-
-        // Apply ordering
-        if (options.order) {
-            for (const [key, value] of Object.entries(options.order)) {
-              queryBuilder.addOrderBy(`entity.${key}`, value);
-            }
+      // Apply ordering
+      if (options.order) {
+        for (const [key, value] of Object.entries(options.order)) {
+          queryBuilder.addOrderBy(`entity.${key}`, value);
         }
+      }
 
-        // Apply pagination
-        if (options.skip) {
-          queryBuilder.skip(options.skip);
-        }
-        if (options.take) {
-          queryBuilder.take(options.take);
-        }
+      // Apply pagination
+      if (options.skip) {
+        queryBuilder.skip(options.skip);
+      }
+      if (options.take) {
+        queryBuilder.take(options.take);
+      }
 
-        // Execute the query
-        const [data, total] = await queryBuilder.getManyAndCount(); // Modify the return statement to get the query results and count
+      // Execute the query
+      const [data, total] = await queryBuilder.getManyAndCount(); // Modify the return statement to get the query results and count
 
-        return { data, total }; // Return an object with the properties 'data' and 'total'
+      return { data, total }; // Return an object with the properties 'data' and 'total'
     }
 
-    // If where is not a function, use the existing implementation
-    const validProperties = this.entityRepository.metadata.columns.map(
-      (column) => column.propertyName,
-    );
+    // // If where is not a function, use the existing implementation
+    // const validProperties = this.entityRepository.metadata.columns.map(
+    //   (column) => column.propertyName,
+    // );
+
+    const validProperties = [
+      ...this.entityRepository.metadata.columns.map((column) => column.propertyName),
+      ...this.entityRepository.metadata.relations.map((relation) => relation.propertyName),
+    ];
+
+    // const where = Object.keys(options).reduce((conditions, key) => {
+    //   if (validProperties.includes(key) && key !== 'range' && key !== 'order') {
+    //     conditions[key] = options[key];
+    //   }
+    //   return conditions;
+    // }, {} as FindOptionsWhere<T>);
 
     const where = Object.keys(options).reduce((conditions, key) => {
-      if (validProperties.includes(key) && key !== 'range' && key !== 'order') {
+      if (key === 'where') {
+        Object.keys(options[key]).forEach((nestedKey) => {
+          if (validProperties.includes(nestedKey)) {
+            conditions[nestedKey] = options[key][nestedKey];
+          }
+        });
+      } else if (validProperties.includes(key) && key !== 'range' && key !== 'order') {
         conditions[key] = options[key];
       }
       return conditions;
@@ -148,12 +162,10 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
 
     let qb = this.entityRepository.createQueryBuilder('entity');
     if (options.relations && options.relations.length > 0) {
-      options.relations.forEach(relation => {
+      options.relations.forEach((relation) => {
         qb = qb.leftJoinAndSelect(`entity.${relation}`, relation);
       });
-      
-    
-  }
+    }
     const { skip, take } = options;
 
     let orderOption = {};
@@ -165,7 +177,11 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
       }
     }
     let isFirstCondition = true;
+
+
     Object.entries(where).forEach(([key, value], index) => {
+      console.log(`Processing key: ${key}, value: ${value}`);
+
       const metadata = this.getMetadata();
       const relationNames = metadata.relations.map(
         (relation) => relation.propertyName,
@@ -214,11 +230,18 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
           }
         }
       } else {
-        // If the property is not a valid property, it might be a relation
-        qb.leftJoinAndSelect(`entity.${key}`, key).andWhere(
-          `${key}.id = :value`,
-          { value },
-        );
+        // If the property is a relation
+        console.log('reached here');
+        if (typeof value === 'object' && 'id' in value) {
+          // If the value is an object with an 'id' property, filter by the related entity's ID
+          qb.andWhere(`${key}.id = :${key}Id`, { [`${key}Id`]: value.id });
+        } else if (typeof value === 'number' || typeof value === 'string') {
+          // If the value is a number or a string, assume it's the ID of the related entity
+          qb.andWhere(`${key}.id = :${key}Id`, { [`${key}Id`]: value });
+        } else {
+          // If the value is not an object with an 'id' property or a number/string, join the relation without adding a condition
+          qb.leftJoinAndSelect(`entity.${key}`, key);
+        }
       }
 
       isFirstCondition = false;

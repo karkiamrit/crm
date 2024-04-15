@@ -148,6 +148,15 @@ export class LeadsController {
     return this.leadsService.findAll(query);
   }
 
+  @Get('segment/:id')
+  // @UseGuards(JwtAuthGuard)
+  @Roles('Agent')
+  @ApiOperation({ summary: 'Get all leads' })
+  @ApiBearerAuth()
+  async findAllBySegmentId(@Param('id') id: number, @Query() query: any) {
+    return this.leadsService.findAllWithSegmentId(query,id);
+  }
+
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @Roles('Admin')

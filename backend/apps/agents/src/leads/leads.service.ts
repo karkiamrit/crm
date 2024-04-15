@@ -47,7 +47,6 @@ export class LeadsService {
       service,
       product,
     });
-    console.log(agent);
     if (agent) {
       lead.agentId = agent.id;
     }
@@ -259,7 +258,15 @@ export class LeadsService {
   }
 
   async findAll(options: ExtendedFindOptions<Leads>) {
-    options.relations = ['product', 'service', 'timelines']
+    options.relations = ['product', 'service', 'timelines', 'segments']
+    return this.leadsRepository.findAll(options);
+  }
+
+  async findAllWithSegmentId(options: ExtendedFindOptions<Leads>, id: number) {
+    options.relations = ['product', 'service', 'timelines', 'segments'];
+    options.where = {segments: {
+      id:id
+    }}
     return this.leadsRepository.findAll(options);
   }
 
