@@ -91,7 +91,7 @@ const SegmentsPage: React.FC = () => {
   const [page, setPage] = useState(1);
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const pageSize = 7;
+  const pageSize = 8;
 
   const fetchSegmentsFromApi = async (url: string, appliedFilter: Range[]) => {
     const rangeFields = ["name", "description", "Created Date"]; 
@@ -213,7 +213,7 @@ const SegmentsPage: React.FC = () => {
   // Generate an array of page numbers
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6  ">
       <div
         className={cn(
           "lg:min-h-[45rem] "

@@ -1,7 +1,9 @@
+"use client"
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { LocalStore } from "@/store/localstore";
 import { jwtDecode } from "jwt-decode";
+import { setDocumentLoading } from "@cyntler/react-doc-viewer/dist/esm/store/actions";
 
 interface Role {
   id: number;
@@ -37,7 +39,6 @@ const useAuth = () => {
   const [userData, setUserData] = useState<User | null>(null);
   const [isClient, setIsClient] = useState(false); // State to track client-side rendering
   const [loading, setLoading] = useState(true); // New state to track loading status
-
   useEffect(() => {
     setIsClient(true); // Set to true once the component mounts
     const token = LocalStore.getAccessToken();
@@ -88,16 +89,21 @@ const useAuth = () => {
   useEffect(() => {
     if (!isClient) return;
 
+
     const handleAuthChange = async () => {
       setLoading(true); // Start loading when auth status changes
       const token = LocalStore.getAccessToken();
       setLoggedIn(!!token);
-      await getUserDataFromToken(token).then((user) => {
+      const user = await getUserDataFromToken(token);
+      if (user) {
         setUserData(user);
         setLoading(false); // Stop loading once user data is fetched
-      });
-    };
 
+      } else {
+        console.error("Error in handleAuthChange: user data is null");
+      }
+    };
+  
     window.addEventListener("storage", handleAuthChange);
 
     return () => {

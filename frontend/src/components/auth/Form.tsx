@@ -113,7 +113,7 @@ export default function AuthForm() {
       if (response.data) {
         LocalStore.remove("jwt");
         LocalStore.setAccessToken(response.data);
-        router.push("/dashboard");
+        LocalStore.reloadDashboard();
       }
       if (response.status === 200 || response.status === 201) {
         // Handle success

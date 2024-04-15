@@ -20,6 +20,12 @@ export class LocalStore {
     }
   }
 
+  static reloadDashboard(){
+    if (typeof window !== 'undefined') {
+      window.location.href="/dashboard";
+    }
+  }
+
   static set(key: string, value: string) {
     if (typeof window !== 'undefined') {
       localStorage.setItem(key, value);

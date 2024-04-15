@@ -250,7 +250,6 @@ const CreateSegmentForm = (props: Props) => {
     try {
       const leads = await fetchLeads(filters);
       const leadIds = leads.map((lead: any) => lead.id);
-      console.log(leadIds)
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_API_URL_LEADS}/segments`,
         { leads: leadIds, name: "My Segment", description: "My leads" },

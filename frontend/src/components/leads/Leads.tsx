@@ -408,7 +408,6 @@ const LeadsPage: React.FC = () => {
                         phone={lead.phone}
                         status={lead.status}
                         id={lead.id}
-                      
                       />
                     ))}
                 </tbody>

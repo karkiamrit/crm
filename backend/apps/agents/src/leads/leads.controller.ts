@@ -91,8 +91,6 @@ export class LeadsController {
         );
       }
     }
-
-  
     return await this.leadsService.create(createLeadsDtoWithDocuments, agent);
   }
 
