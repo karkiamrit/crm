@@ -74,7 +74,6 @@ export class InvoicesService {
 
         // Commit the transaction
         await queryRunner.commitTransaction();
-        console.log(savedInvoice)
         return savedInvoice;
     } catch (err) {
         // If any operation fails, roll back the transaction
