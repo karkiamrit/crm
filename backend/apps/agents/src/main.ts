@@ -7,7 +7,7 @@ import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import { json } from 'express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { HttpExceptionFilter } from '@app/common/exception/exception.filter';
+import { BadRequestExceptionFilter, HttpExceptionFilter } from '@app/common/exception/exception.filter';
 import * as express from 'express';
 
 async function bootstrap() {
@@ -42,7 +42,7 @@ async function bootstrap() {
   });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useLogger(app.get(Logger));
-  app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalFilters(new HttpExceptionFilter(), new BadRequestExceptionFilter());
   app.use(cookieParser());
   app.enableCors({
     origin: true,

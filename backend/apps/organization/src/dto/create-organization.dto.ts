@@ -20,5 +20,5 @@ export class CreateOrganizationsDto {
 
   @IsString()
   @IsOptional()
-  logo: string;
+  logo?: string;
 }

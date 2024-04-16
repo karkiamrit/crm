@@ -14,18 +14,16 @@ import { LeadTimeline } from '../../shared/objects/timelines/timelines.entity';
 import { Product } from '../../shared/objects/products/products.entity';
 import { Service } from '../../shared/objects/services/services.entity';
 import { Segment } from '../../segments/entities/segment.entity';
+import { Document } from '../../documents/entities/document.entity';
+import { LeadsStatus, LeadType } from '../../shared/data';
 
-export enum LeadsStatus {
-  INITIAL = 'INITIAL',
-  PENDING = 'PENDING',
-  CONFIRMED = 'CONFIRMED',
-  REJECTED = 'REJECTED',
-  COMPLETED = 'COMPLETED',
-}
 @Entity()
 export class Leads extends AbstractEntity<Leads> {
   @Column()
   address: string;
+
+  @Column({ default: LeadType.SOLE, type: 'enum', enum: LeadType })
+  type: LeadType;
 
   @Column()
   details: string;
@@ -69,8 +67,8 @@ export class Leads extends AbstractEntity<Leads> {
   @JoinColumn({ name: 'serviceId' })
   service: Service;
 
-  @Column('simple-array', { nullable: true })
-  documents: string[];
+  @Column({ nullable: true })
+  profilePicture: string;
 
   @Column({ nullable: true })
   agentId: number;
@@ -81,4 +79,7 @@ export class Leads extends AbstractEntity<Leads> {
   })
   @JoinTable()
   segments: Segment[];
+
+  @OneToMany(() => Document, (document) => document.lead, { nullable: true })
+  officialDocs: Document[];
 }

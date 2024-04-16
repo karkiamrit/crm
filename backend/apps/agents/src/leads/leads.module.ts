@@ -14,7 +14,6 @@ import { Product } from '../shared/objects/products/products.entity';
 import { Service } from '../shared/objects/services/services.entity';
 import { LeadTimelineRepository } from '../shared/objects/timelines/leads.timelines.repository';
 import { CustomerTimelineRepository } from '../shared/objects/timelines/customers.timelines.repository';
-import { CustomersService } from '../customers/customers.service';
 import { CustomersModule } from '../customers/customers.module';
 
 @Module({

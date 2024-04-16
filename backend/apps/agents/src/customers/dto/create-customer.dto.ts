@@ -1,7 +1,8 @@
-import { IsArray, IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsEnum, IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 import { CreateProductInputDTO } from "../../shared/dtos/product.dto";
 import { CreateServiceInputDTO } from "../../shared/dtos/service.dto";
+import { LeadType } from "../../shared/data";
 
 
 export class CreateCustomerDto {
@@ -28,6 +29,10 @@ export class CreateCustomerDto {
     @IsOptional()
     // @IsNumber()
     priority?: number;
+
+    @IsOptional()
+    @IsEnum(LeadType)
+    type?: LeadType;
 
     @IsOptional()
     @IsString()

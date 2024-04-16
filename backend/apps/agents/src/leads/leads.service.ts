@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
-import { Leads, LeadsStatus } from './entities/lead.entity';
+import { Leads } from './entities/lead.entity';
 import { LeadsRepository } from './leads.repository';
 import { ExtendedFindOptions, User } from '@app/common';
 import { promisify } from 'util';
@@ -20,6 +20,7 @@ import { LeadTimelineRepository } from '../shared/objects/timelines/leads.timeli
 import { CustomerTimelineRepository } from '../shared/objects/timelines/customers.timelines.repository';
 import { Customers } from '../customers/entities/customer.entity';
 import { CustomersService } from '../customers/customers.service';
+import { LeadsStatus } from '../shared/data';
 
 @Injectable()
 export class LeadsService {
@@ -171,7 +172,7 @@ export class LeadsService {
       'name',
       'priority',
       'source',
-      'documents',
+      'profilePicture',
     ];
 
     attributes.forEach((attribute) => {
@@ -278,50 +279,63 @@ export class LeadsService {
     return this.leadsRepository.findOne({ id });
   }
 
-  async addDocuments(id: number, documents: string[]): Promise<Leads> {
-    const lead = await this.leadsRepository.findOne({ id });
-    lead.documents = [...lead.documents, ...documents];
-    return this.leadsRepository.findOneAndUpdate({ where: { id } }, lead);
-  }
-
-  async updateDocument(
-    id: number,
-    filename: string,
-    newFilePath: string,
+  async updateProfilePicture(
+    leadId: number,
+    filePath: string,
   ): Promise<Leads> {
-    const lead = await this.leadsRepository.findOne({ id });
-    const index = lead.documents.findIndex((doc) => doc.includes(filename));
-    if (index !== -1) {
-      const unlinkAsync = promisify(unlink);
-      await unlinkAsync(lead.documents[index]); // delete the old file
-      lead.documents[index] = newFilePath; // replace with the new file
-    }
-    return this.leadsRepository.findOneAndUpdate({ where: { id } }, lead);
+    // const organization = await this.organizationsRepository.findOne({id: organizationId});
+    console.log('filePath', filePath);
+    const organization = await this.leadsRepository.findOneAndUpdate(
+      { where: { id: leadId } },
+      { profilePicture: filePath },
+    );
+    return organization;
   }
 
-  async deleteDocument(id: number, filename: string): Promise<Leads> {
-    const lead = await this.leadsRepository.findOne({ id });
+  // async addDocuments(id: number, documents: string[]): Promise<Leads> {
+  //   const lead = await this.leadsRepository.findOne({ id });
+  //   lead.documents = [...lead.documents, ...documents];
+  //   return this.leadsRepository.findOneAndUpdate({ where: { id } }, lead);
+  // }
 
-    if (!lead) {
-      throw new NotFoundException(`Agent with ID ${id} not found`);
-    }
+  // async updateDocument(
+  //   id: number,
+  //   filename: string,
+  //   newFilePath: string,
+  // ): Promise<Leads> {
+  //   const lead = await this.leadsRepository.findOne({ id });
+  //   const index = lead.documents.findIndex((doc) => doc.includes(filename));
+  //   if (index !== -1) {
+  //     const unlinkAsync = promisify(unlink);
+  //     await unlinkAsync(lead.documents[index]); // delete the old file
+  //     lead.documents[index] = newFilePath; // replace with the new file
+  //   }
+  //   return this.leadsRepository.findOneAndUpdate({ where: { id } }, lead);
+  // }
 
-    const fullFilename = join('uploads', filename);
-    const index = lead.documents.findIndex((doc) => doc === fullFilename);
+  // async deleteDocument(id: number, filename: string): Promise<Leads> {
+  //   const lead = await this.leadsRepository.findOne({ id });
 
-    if (index !== -1) {
-      const unlinkAsync = promisify(unlink);
-      try {
-        await unlinkAsync(fullFilename); // delete the file
-      } catch (error) {
-        throw new NotFoundException(`File ${filename} not found`);
-      }
+  //   if (!lead) {
+  //     throw new NotFoundException(`Agent with ID ${id} not found`);
+  //   }
 
-      lead.documents.splice(index, 1); // remove the file from the documents array
+  //   const fullFilename = join('uploads', filename);
+  //   const index = lead.documents.findIndex((doc) => doc === fullFilename);
 
-      await this.leadsRepository.create(lead); // save the updated agent
-    }
+  //   if (index !== -1) {
+  //     const unlinkAsync = promisify(unlink);
+  //     try {
+  //       await unlinkAsync(fullFilename); // delete the file
+  //     } catch (error) {
+  //       throw new NotFoundException(`File ${filename} not found`);
+  //     }
 
-    return lead;
-  }
+  //     lead.documents.splice(index, 1); // remove the file from the documents array
+
+  //     await this.leadsRepository.create(lead); // save the updated agent
+  //   }
+
+  //   return lead;
+  // }
 }

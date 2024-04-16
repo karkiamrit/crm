@@ -51,8 +51,7 @@ export class LeadsController {
   @ApiBearerAuth()
   @ApiBody({ type: CreateLeadDto })
   @UseInterceptors(
-    FilesInterceptor('documents', 10, {
-      // 'documents' is the name of the field that should contain the files
+    FileInterceptor('profile', {
       storage: diskStorage({
         destination: './uploads', // specify the path where the files should be saved
         filename: (req, file, callback) => {
@@ -60,10 +59,20 @@ export class LeadsController {
           callback(null, name);
         },
       }),
+      fileFilter: (req, file, callback) => {
+        // Only accept images
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif|webp)$/)) {
+          // Reject file
+          return callback(new Error('Only image files are allowed!'), false);
+        }
+        // Accept file
+        callback(null, true);
+      },
     }),
+    
   )
   async create(
-    @UploadedFiles() files: Express.Multer.File[],
+    @UploadedFile() file: Express.Multer.File,
     @Body() createLeadsDto: CreateLeadDto,
     @CurrentUser() user: User,
     @Body() referenceNo?: any,
@@ -71,13 +80,13 @@ export class LeadsController {
     let agent: Agent;
     
 
-    let documents: any;
-    if (files) {
-      documents = files.map((file) => file.path);
+    let profilePicture: any;
+    if (file) {
+      profilePicture = file.path;
     }
     const createLeadsDtoWithDocuments: CreateLeadDto = {
       ...createLeadsDto,
-      documents,
+      profilePicture,
     };
     if (referenceNo.referenceNo === "" || null || undefined) {
       return await this.leadsService.create(createLeadsDtoWithDocuments);
@@ -167,17 +176,41 @@ export class LeadsController {
     return this.leadsService.getOne(id);
   }
 
-  @Patch(':id/upload-documents')
+  // @Patch(':id/upload-documents')
+  // @UseGuards(JwtAuthGuard)
+  // @Roles('Lead')
+  // @ApiBearerAuth()
+  // @ApiOperation({ summary: 'Upload lead documents' })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'The documents have been successfully uploaded.',
+  // })
+  // @UseInterceptors(
+  //   FilesInterceptor('documents', 10, {
+  //     storage: diskStorage({
+  //       destination: './uploads', // specify the path where the files should be saved
+  //       filename: (req, file, callback) => {
+  //         const name = Date.now() + extname(file.originalname); // generate a unique filename
+  //         callback(null, name);
+  //       },
+  //     }),
+  //   }),
+  // )
+  // async addDocuments(
+  //   @UploadedFiles() files: Express.Multer.File[],
+  //   @Param('id') id: number,
+  // ): Promise<Leads> {
+  //   const documents = files.map((file) => file.path);
+  //   return this.leadsService.addDocuments(id, documents);
+  // }
+
+  @Put(':id/update-profile-picture')
   @UseGuards(JwtAuthGuard)
-  @Roles('Lead')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Upload lead documents' })
-  @ApiResponse({
-    status: 200,
-    description: 'The documents have been successfully uploaded.',
-  })
+  @ApiOperation({ summary: 'Upload lead picture' })
+  @ApiResponse({ status: 200, description: 'The picture has been successfully uploaded.'})
   @UseInterceptors(
-    FilesInterceptor('documents', 10, {
+    FileInterceptor('file', {
       storage: diskStorage({
         destination: './uploads', // specify the path where the files should be saved
         filename: (req, file, callback) => {
@@ -187,56 +220,29 @@ export class LeadsController {
       }),
     }),
   )
-  async addDocuments(
-    @UploadedFiles() files: Express.Multer.File[],
-    @Param('id') id: number,
-  ): Promise<Leads> {
-    const documents = files.map((file) => file.path);
-    return this.leadsService.addDocuments(id, documents);
-  }
-
-  @Patch(':id/update-document/:filename')
-  @UseGuards(JwtAuthGuard)
-  @Roles('Admin')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update a document of an lead' })
-  @ApiResponse({
-    status: 200,
-    description: 'The document has been successfully updated.',
-  })
-  @UseInterceptors(
-    FileInterceptor('document', {
-      storage: diskStorage({
-        destination: './uploads',
-        filename: (req, file, callback) => {
-          callback(null, req.params.filename); // use the existing filename
-        },
-      }),
-    }),
-  )
-  async updateDocument(
+  async updateProfilePicture(
     @UploadedFile() file: Express.Multer.File,
     @Param('id') id: number,
     @Param('filename') filename: string,
   ): Promise<Leads> {
-    return this.leadsService.updateDocument(id, filename, file.path);
+    return this.leadsService.updateProfilePicture(id, file.path);
   }
 
-  @Delete(':id/delete-document/:filename')
-  @UseGuards(JwtAuthGuard)
-  @Roles('Admin')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Delete a document of an lead' })
-  @ApiResponse({
-    status: 200,
-    description: 'The document has been successfully deleted.',
-  })
-  async deleteDocument(
-    @Param('id') id: number,
-    @Param('filename') filename: string,
-  ): Promise<Leads> {
-    return this.leadsService.deleteDocument(id, filename);
-  }
+  // @Delete(':id/delete-document/:filename')
+  // @UseGuards(JwtAuthGuard)
+  // @Roles('Admin')
+  // @ApiBearerAuth()
+  // @ApiOperation({ summary: 'Delete a document of an lead' })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'The document has been successfully deleted.',
+  // })
+  // async deleteDocument(
+  //   @Param('id') id: number,
+  //   @Param('filename') filename: string,
+  // ): Promise<Leads> {
+  //   return this.leadsService.deleteDocument(id, filename);
+  // }
 
   @Get('export/csv')
   async export(@Query() filter: any, @Res() res: Response) {

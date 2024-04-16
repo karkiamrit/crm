@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { AgentsService } from './agents.service';
 import { AgentsController } from './agents.controller';
 import { AgentsRepository } from './agent.repository';
@@ -11,8 +11,11 @@ import { LeadsModule } from './leads/leads.module';
 import { NotesModule } from './notes/notes.module';
 import { CustomersModule } from './customers/customers.module';
 import { SegmentsModule } from './segments/segments.module';
+import { DocumentsModule } from './documents/documents.module';
+import { InvoicesModule } from './invoices/invoices.module';
 
 @Module({
+  
   imports: [
     DatabaseModule,
     DatabaseModule.forFeature([Agent]),
@@ -37,7 +40,9 @@ import { SegmentsModule } from './segments/segments.module';
     LeadsModule,
     NotesModule,
     CustomersModule,
-    SegmentsModule
+    SegmentsModule,
+    DocumentsModule,
+    InvoicesModule
   ],
   controllers: [AgentsController],
   providers: [AgentsService, AgentsRepository],

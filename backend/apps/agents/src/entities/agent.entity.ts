@@ -2,6 +2,7 @@ import { AbstractEntity } from "@app/common";
 import { Column, Entity, OneToMany, OneToOne } from "typeorm";
 import { Leads } from "../leads/entities/lead.entity";
 import { Customers } from "../customers/entities/customer.entity";
+import { Invoice } from "../invoices/entities/invoice.entity";
 
 @Entity()
 export class Agent extends AbstractEntity<Agent>{
@@ -31,4 +32,7 @@ export class Agent extends AbstractEntity<Agent>{
 
     @OneToMany(() => Customers, customer => customer.agentId, {nullable: true})
     customers: Customers[];
+
+    @OneToMany(() => Invoice, invoice => invoice.agent)
+    invoices: Invoice[];
 }

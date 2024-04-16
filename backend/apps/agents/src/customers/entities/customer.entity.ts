@@ -3,6 +3,8 @@ import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, One
 import { CustomerTimeline } from "../../shared/objects/timelines/timelines.entity";
 import { Product } from "../../shared/objects/products/products.entity";
 import { Service } from "../../shared/objects/services/services.entity";
+import { LeadType } from "../../shared/data";
+import { Invoice } from "../../invoices/entities/invoice.entity";
 
 
 
@@ -12,6 +14,9 @@ export class Customers extends AbstractEntity<Customers>{
     @Column()
     address: string;
 
+    @Column({ default: LeadType.SOLE, type: 'enum', enum: LeadType })
+    type: LeadType;
+  
     @Column()
     details: string;
 
@@ -39,6 +44,9 @@ export class Customers extends AbstractEntity<Customers>{
     @OneToOne(() => Product, { eager: true ,nullable:true, cascade: true})
     @JoinColumn({ name: 'productId'})
     product: Product;
+
+    @OneToMany(() => Invoice, invoice => invoice.customer)
+    invoices: Invoice[];
 
     @OneToOne(() => Service, { eager: true , nullable:true , cascade: true})
     @JoinColumn({ name: 'serviceId'})

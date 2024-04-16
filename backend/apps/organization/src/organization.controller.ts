@@ -73,7 +73,6 @@ export class OrganizationsController {
     @UploadedFile() file: Express.Multer.File,
     @Body() createOrganizationsDto: CreateOrganizationsDto,
   ) {
-    console.log('pathis'+file.path)
     createOrganizationsDto.logo = file.path;
    
     return await this.organizationsService.create(createOrganizationsDto);
