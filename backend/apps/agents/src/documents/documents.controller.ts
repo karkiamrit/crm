@@ -19,12 +19,15 @@ export class DocumentsController {
       storage: diskStorage({
         destination: './uploads', // specify the path where the files should be saved
         filename: (req, file, callback) => {
+          console.log(file)
           const name = Date.now() + extname(file.originalname); // generate a unique filename
           callback(null, name);
         },
       }),
       fileFilter: (req, file, callback) => {
-        if (!file.originalname.match(/\.(pdf|docx|xlsx|csv|doc)$/)) {
+        
+
+        if (!file.originalname.match(/\.(pdf|docx|xlsx|csv|doc|jpeg|gif|png|svg|jpg)$/)) {
           return callback(new Error('Only document files are allowed!'), false);
         }
         // Accept file
@@ -42,6 +45,13 @@ export class DocumentsController {
   @Roles('Agent')
   findAll(@Query() query: any) {
     return this.documentsService.findAll(query);
+  }
+
+  @Get('lead/:id')
+  @UseGuards(JwtAuthGuard)
+  @Roles('Agent')
+  findAllByLeadId(@Query() query: any, @Param('id') id: number) {
+    return this.documentsService.findAllByLeadId(query, id);
   }
 
   @Get(':id')

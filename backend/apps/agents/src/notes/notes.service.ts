@@ -53,6 +53,7 @@ export class NotesService {
   }
 
   async findAll(options: ExtendedFindOptions<Note>) {
+    options.relations = ['lead'];
     return this.notesRepository.findAll(options);
   }
 

@@ -1,6 +1,7 @@
 import { Type } from "class-transformer";
-import { IsDate, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
+import { IsDate, IsEnum, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
 import { UpdateProductInputDTO } from "../../shared/dtos/product.dto";
+import { InvoiceStatus } from "../../shared/data/enums/invoice.status.enum";
 
 export class UpdateInvoiceDto {
     @IsNumber()
@@ -23,6 +24,10 @@ export class UpdateInvoiceDto {
     @IsOptional()
     dueDate?: Date;
   
+    @IsOptional()
+    @IsEnum(InvoiceStatus, { message: 'status must be a valid enum' })
+    status: InvoiceStatus;
+
     @IsString()
     @IsOptional()
     remarks?: string;

@@ -12,6 +12,7 @@ import {
 import { Product } from '../../shared/objects/products/products.entity';
 import { Agent } from '../../entities/agent.entity';
 import { Customers } from '../../customers/entities/customer.entity';
+import { InvoiceStatus } from '../../shared/data/enums/invoice.status.enum';
 
 @Entity()
 export class Invoice extends AbstractEntity<Invoice> {
@@ -20,6 +21,9 @@ export class Invoice extends AbstractEntity<Invoice> {
 
   @Column()
   tax: number;
+
+  @Column({default: InvoiceStatus.PENDING, type: 'enum', enum: InvoiceStatus})
+  status: InvoiceStatus
 
   @Column()
   total: number;

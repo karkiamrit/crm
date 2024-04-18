@@ -34,6 +34,12 @@ export class DocumentsService {
     return this.documentsRepository.findAll(options);
   }
 
+  async findAllByLeadId(options: ExtendedFindOptions<Document>, id: number) {
+    options.relations = ['lead'];
+    options.where = { lead: { id: id } };
+    return this.documentsRepository.findAll(options);
+  }
+
   async getOne(id: number) {
     const document = await this.documentsRepository.findOne({ id });
     if (!document) {

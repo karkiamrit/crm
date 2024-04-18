@@ -55,8 +55,7 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
   }
 
   async findOne(where: FindOptionsWhere<T>): Promise<T> {
-    const entity = await this.entityRepository.findOne({ where });
-    return entity;
+    return await this.entityRepository.findOne({ where });
   }
 
   // async findOneAndUpdate(
@@ -136,8 +135,12 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
     // );
 
     const validProperties = [
-      ...this.entityRepository.metadata.columns.map((column) => column.propertyName),
-      ...this.entityRepository.metadata.relations.map((relation) => relation.propertyName),
+      ...this.entityRepository.metadata.columns.map(
+        (column) => column.propertyName,
+      ),
+      ...this.entityRepository.metadata.relations.map(
+        (relation) => relation.propertyName,
+      ),
     ];
 
     // const where = Object.keys(options).reduce((conditions, key) => {
@@ -154,7 +157,11 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
             conditions[nestedKey] = options[key][nestedKey];
           }
         });
-      } else if (validProperties.includes(key) && key !== 'range' && key !== 'order') {
+      } else if (
+        validProperties.includes(key) &&
+        key !== 'range' &&
+        key !== 'order'
+      ) {
         conditions[key] = options[key];
       }
       return conditions;
@@ -178,7 +185,6 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
     }
     let isFirstCondition = true;
 
-
     Object.entries(where).forEach(([key, value], index) => {
       console.log(`Processing key: ${key}, value: ${value}`);
 
@@ -186,6 +192,8 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
       const relationNames = metadata.relations.map(
         (relation) => relation.propertyName,
       );
+      const isoDateTimeRegex = /^\d{4}-\d{2}-\d{T}\d{2}:\d{2}:\d{2}.\d{3}Z$/;
+
       if (!relationNames.includes(key)) {
         if (
           value instanceof Object &&
@@ -195,6 +203,7 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
         ) {
           const lower = value._value[0];
           const upper = value._value[1];
+
           if (isNaN(Number(lower)) || isNaN(Number(upper))) {
             // If lower or upper is not a number, treat them as strings
             const condition = `entity.${key} BETWEEN :lower AND :upper`;
@@ -210,6 +219,22 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
               ? qb.where(condition, parameters)
               : qb.andWhere(condition, parameters);
           }
+        } else if (
+          value instanceof Object &&
+          '_operator' in value &&
+          '_value' in value
+        ) {
+          // New code to handle comparison operators
+          const operator = value._operator; // could be '<', '>', '<=', '>=', etc.
+          let val = value._value;
+          if (isoDateTimeRegex.test(val)) {
+            val = new Date(val);
+          }
+          const condition = `DATE_TRUNC('millisecond', entity.${key} AT TIME ZONE 'UTC') ${operator} :${key}`;          
+          const parameters = { [key]: val };
+          index === 0
+            ? qb.where(condition, parameters)
+            : qb.andWhere(condition, parameters);
         } else {
           // Treat enum properties as strings
           const propertyType = this.entityRepository.metadata.columns.find(
@@ -222,8 +247,21 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
               ? qb.where(condition, parameters)
               : qb.andWhere(condition, parameters);
           } else {
-            const condition = `entity.${key} = :${key}`;
-            const parameters = { [key]: value };
+            // const condition = `entity.${key} = :${key}`;
+            // const parameters = { [key]: value };
+            // index === 0
+            //   ? qb.where(condition, parameters)
+            //   : qb.andWhere(condition, parameters);
+            let val = value;
+            if (isoDateTimeRegex.test(val)) {
+              val = new Date(val);
+              val = new Date(val.getTime() - val.getTimezoneOffset() * 60000)
+                .toISOString()
+                .split('.')[0]
+                .replace('T', ' ');
+            }
+            const condition = `DATE_TRUNC('millisecond', entity.${key} AT TIME ZONE 'UTC') = :${key}`;
+            const parameters = { [key]: val };
             index === 0
               ? qb.where(condition, parameters)
               : qb.andWhere(condition, parameters);
@@ -231,7 +269,6 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
         }
       } else {
         // If the property is a relation
-        console.log('reached here');
         if (typeof value === 'object' && 'id' in value) {
           // If the value is an object with an 'id' property, filter by the related entity's ID
           qb.andWhere(`${key}.id = :${key}Id`, { [`${key}Id`]: value.id });
@@ -243,7 +280,6 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
           qb.leftJoinAndSelect(`entity.${key}`, key);
         }
       }
-
       isFirstCondition = false;
     });
 

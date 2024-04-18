@@ -16,6 +16,7 @@ import { Service } from '../../shared/objects/services/services.entity';
 import { Segment } from '../../segments/entities/segment.entity';
 import { Document } from '../../documents/entities/document.entity';
 import { LeadsStatus, LeadType } from '../../shared/data';
+import { Note } from '../../notes/entities/note.entity';
 
 @Entity()
 export class Leads extends AbstractEntity<Leads> {

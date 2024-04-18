@@ -1,5 +1,6 @@
 import {
   IsDate,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -9,6 +10,7 @@ import {
 import { CreateProductInputDTO } from '../../shared/dtos/product.dto';
 import { Type } from 'class-transformer';
 import { IsDateString } from '@app/common/validators/date.validator';
+import { InvoiceStatus } from '../../shared/data/enums/invoice.status.enum';
 
 export class CreateInvoiceDto {
   @IsNumber()
@@ -22,6 +24,10 @@ export class CreateInvoiceDto {
   @IsNumber()
   @IsNotEmpty({ message: 'total is required' })
   total: number;
+
+  @IsOptional()
+  @IsEnum(InvoiceStatus, { message: 'status must be a valid enum' })
+  status?: InvoiceStatus;
 
   @IsNumber()
   @IsNotEmpty({ message: 'discount is required' })
