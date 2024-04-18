@@ -4,11 +4,8 @@ import { UpdateLeadDto } from './dto/update-lead.dto';
 import { Leads } from './entities/lead.entity';
 import { LeadsRepository } from './leads.repository';
 import { ExtendedFindOptions, User } from '@app/common';
-import { promisify } from 'util';
-import { unlink } from 'fs';
 
 import { AgentsService } from '../agents.service';
-import { join } from 'path';
 import { Agent } from '../entities/agent.entity';
 import { Service } from '../shared/objects/services/services.entity';
 import {
@@ -55,6 +52,27 @@ export class LeadsService {
     await this.leadsRepository.create(lead);
 
     return lead;
+  }
+
+  async createMany(createLeadDtos: CreateLeadDto[]) {
+    const leads = createLeadDtos.map(dto => {
+      let product: Product, service: Service;
+      if (dto.product) {
+        product = new Product(dto.product);
+      }
+      if (dto.service) {
+        service = new Service(dto.service);
+      }
+      return new Leads({
+        ...dto,
+        service,
+        product,
+      });
+    });
+  
+    await this.leadsRepository.createMany(leads);
+  
+    return leads;
   }
 
   // async update(id: number, updateLeadsDto: UpdateLeadDto) {

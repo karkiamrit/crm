@@ -8,13 +8,13 @@ import { LeadsStatus, LeadType } from "../../shared/data";
 
 
 export class CreateLeadDto {
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
-    address: string;
+    address?: string;
 
     @IsOptional()
     @IsString()
-    details: string;
+    details?: string;
 
     @IsOptional()
     @IsEnum(LeadsStatus)
@@ -37,12 +37,8 @@ export class CreateLeadDto {
     name: string;
 
     @IsOptional()
-    // @IsNumber()
-    priority?: number;
-
-    @IsOptional()
     @IsString()
-    source: string;
+    source?: string;
 
     @IsOptional()
     @ValidateNested({ each: true })
@@ -52,9 +48,9 @@ export class CreateLeadDto {
     @IsOptional()
     @ValidateNested({ each: true })
     @Type(() => CreateServiceInputDTO)
-    service: CreateServiceInputDTO;
+    service?: CreateServiceInputDTO;
 
     @IsOptional()
     @IsString()
-    profilePicture: string;
+    profilePicture?: string;
 }

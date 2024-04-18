@@ -1,5 +1,5 @@
 export enum InvoiceStatus {
-    PAID = 'PAID',
+    DRAFT = 'DRAFT',
     PENDING = 'PENDING',
-
+    SAVED = 'SAVED'
   }

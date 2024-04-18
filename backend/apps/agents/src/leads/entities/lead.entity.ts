@@ -16,7 +16,6 @@ import { Service } from '../../shared/objects/services/services.entity';
 import { Segment } from '../../segments/entities/segment.entity';
 import { Document } from '../../documents/entities/document.entity';
 import { LeadsStatus, LeadType } from '../../shared/data';
-import { Note } from '../../notes/entities/note.entity';
 
 @Entity()
 export class Leads extends AbstractEntity<Leads> {
@@ -32,7 +31,7 @@ export class Leads extends AbstractEntity<Leads> {
   @Column({
     type: 'enum',
     enum: LeadsStatus,
-    default: LeadsStatus.INITIAL,
+    default: LeadsStatus.NOTSET,
   })
   status: LeadsStatus;
 
@@ -44,9 +43,6 @@ export class Leads extends AbstractEntity<Leads> {
 
   @Column()
   name: string;
-
-  @Column({ default: 0, nullable: true })
-  priority: number;
 
   @CreateDateColumn()
   createdAt: Date;

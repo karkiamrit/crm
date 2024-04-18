@@ -36,6 +36,7 @@ import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { extname } from 'path';
 import { AgentsService } from '../agents.service';
 import { Agent } from '../entities/agent.entity';
+import { LeadsStatus, LeadType } from '../shared/data';
 
 @Controller('leads')
 export class LeadsController {
@@ -287,4 +288,71 @@ export class LeadsController {
     await workbook.xlsx.write(res);
     res.end();
   }
+
+  @Post('import/csv')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, callback) => {
+          const name = Date.now() + extname(file.originalname);
+          callback(null, name);
+        },
+      }),
+      fileFilter: (req, file, callback) => {
+        if (!file.originalname.match(/\.(csv|xlsx)$/)) {
+          return callback(new Error('Only CSV files are allowed!'), false);
+        }
+        callback(null, true);
+      },
+    }),
+  )
+  async import(@UploadedFile() file: Express.Multer.File, @Res() res: Response) {
+    const workbook = new Workbook();
+
+    await workbook.csv.readFile(file.path);
+    const worksheet = workbook.getWorksheet(1);
+    
+    const requiredHeaders = ['phone', 'email', 'name'].map(this.normalizeHeader);;
+    const optionalHeaders = ['address', 'details', 'status', 'type', 'source', 'product', 'service', 'profilepicture'].map(this.normalizeHeader);    const headers = worksheet.getRow(1).values as string[];  
+    const missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
+    if (missingHeaders.length > 0) {
+      return ({ message: `Missing required headers: ${missingHeaders.join(', ')}` });
+    }
+  
+    const leads = [];
+    worksheet.eachRow((row, rowNumber) => {
+      if (rowNumber === 1) return; // Skip header row
+      const lead = {
+        address: row.getCell(headers.indexOf('address') + 1).value,
+        details: row.getCell(headers.indexOf('details') + 1).value,
+        status: LeadsStatus[this.normalizeEnumValue(row.getCell(headers.indexOf('status') + 1).value, LeadsStatus)],        
+        type: LeadType[this.normalizeEnumValue(row.getCell(headers.indexOf('type') + 1).value, LeadType)],     
+        phone: row.getCell(headers.indexOf('phone') + 1).value,
+        email: row.getCell(headers.indexOf('email') + 1).value,
+        name: row.getCell(headers.indexOf('name') + 1).value,
+        source: row.getCell(headers.indexOf('source') + 1).value,
+        product: row.getCell(headers.indexOf('product') + 1).value,
+        service: row.getCell(headers.indexOf('service') + 1).value,
+      };
+      leads.push(lead);
+    });
+  
+    await this.leadsService.createMany(leads);
+    return({ message: 'Leads imported successfully' });
+  }
+
+  private normalizeEnumValue(value: any, enumObject: any): string {
+    const normalizedValue = String(value).toUpperCase().trim();
+    const matchedEnumKey = Object.keys(enumObject).find(key => 
+      key.substring(0, 3) === normalizedValue.substring(0, 3)
+    );
+    return matchedEnumKey ? enumObject[matchedEnumKey] : normalizedValue;
+  }
+
+  private normalizeHeader(header: string): string {
+    return header.toLowerCase().trim();
+  }
+  
 }
+

@@ -36,10 +36,6 @@ export class UpdateLeadDto {
     name?: string;
 
     @IsOptional()
-    @IsNumber()
-    priority?: number;
-
-    @IsOptional()
     @IsString()
     source?: string;
 
