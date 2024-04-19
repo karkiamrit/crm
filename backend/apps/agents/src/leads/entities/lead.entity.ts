@@ -19,13 +19,13 @@ import { LeadsStatus, LeadType } from '../../shared/data';
 
 @Entity()
 export class Leads extends AbstractEntity<Leads> {
-  @Column()
+  @Column({nullable:true})
   address: string;
 
   @Column({ default: LeadType.SOLE, type: 'enum', enum: LeadType })
   type: LeadType;
 
-  @Column()
+  @Column({nullable: true})
   details: string;
 
   @Column({

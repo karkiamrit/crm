@@ -151,9 +151,6 @@ export class AgentsService {
 
   async getAgentByUserId(id: number): Promise<Agent> {
     const agent = await this.agentsRepository.findOne({ userId: id });
-    if (!agent) {
-      throw new Error('Agent not found');
-    }
     return agent;
   }
 }

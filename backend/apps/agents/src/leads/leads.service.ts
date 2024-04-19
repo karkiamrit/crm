@@ -69,10 +69,8 @@ export class LeadsService {
         product,
       });
     });
+    return await this.leadsRepository.createMany(leads);
   
-    await this.leadsRepository.createMany(leads);
-  
-    return leads;
   }
 
   // async update(id: number, updateLeadsDto: UpdateLeadDto) {

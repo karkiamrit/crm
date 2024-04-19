@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  InternalServerErrorException,
   NotFoundException,
   Param,
   Patch,
@@ -70,7 +71,6 @@ export class LeadsController {
         callback(null, true);
       },
     }),
-    
   )
   async create(
     @UploadedFile() file: Express.Multer.File,
@@ -79,7 +79,6 @@ export class LeadsController {
     @Body() referenceNo?: any,
   ) {
     let agent: Agent;
-    
 
     let profilePicture: any;
     if (file) {
@@ -89,7 +88,7 @@ export class LeadsController {
       ...createLeadsDto,
       profilePicture,
     };
-    if (referenceNo.referenceNo === "" || null || undefined) {
+    if (referenceNo.referenceNo === '' || null || undefined) {
       return await this.leadsService.create(createLeadsDtoWithDocuments);
     } else {
       agent = await this.agentService.getOneByReferenceNo(
@@ -97,7 +96,7 @@ export class LeadsController {
       );
       if (!agent) {
         throw new NotFoundException(
-          `Agent with reference no ${referenceNo.referenceNo} not found`
+          `Agent with reference no ${referenceNo.referenceNo} not found`,
         );
       }
     }
@@ -141,7 +140,7 @@ export class LeadsController {
   async findLeadsOfCurrentAgent(
     @Query() query: any,
     @CurrentUser() user: User,
-  ){
+  ) {
     const agent = await this.agentService.getAgentByUserId(user.id);
     if (agent) {
       query.agentId = agent.id;
@@ -164,7 +163,7 @@ export class LeadsController {
   @ApiOperation({ summary: 'Get all leads' })
   @ApiBearerAuth()
   async findAllBySegmentId(@Param('id') id: number, @Query() query: any) {
-    return this.leadsService.findAllWithSegmentId(query,id);
+    return this.leadsService.findAllWithSegmentId(query, id);
   }
 
   @Get(':id')
@@ -209,7 +208,10 @@ export class LeadsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Upload lead picture' })
-  @ApiResponse({ status: 200, description: 'The picture has been successfully uploaded.'})
+  @ApiResponse({
+    status: 200,
+    description: 'The picture has been successfully uploaded.',
+  })
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
@@ -247,7 +249,6 @@ export class LeadsController {
 
   @Get('export/csv')
   async export(@Query() filter: any, @Res() res: Response) {
-  
     const leads = await this.leadsService.findAll(filter);
 
     const workbook = new Workbook();
@@ -290,6 +291,8 @@ export class LeadsController {
   }
 
   @Post('import/csv')
+  @UseGuards(JwtAuthGuard)
+  @Roles('Agent')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
@@ -307,45 +310,104 @@ export class LeadsController {
       },
     }),
   )
-  async import(@UploadedFile() file: Express.Multer.File, @Res() res: Response) {
+  async import(
+    @UploadedFile() file: Express.Multer.File,
+    @Res() res: Response,
+    @CurrentUser() user: User
+  ) {
+    console.log(user)
+    const agent = await this.agentService.getAgentByUserId(user.id);
+    
     const workbook = new Workbook();
 
     await workbook.csv.readFile(file.path);
+
     const worksheet = workbook.getWorksheet(1);
-    
-    const requiredHeaders = ['phone', 'email', 'name'].map(this.normalizeHeader);;
-    const optionalHeaders = ['address', 'details', 'status', 'type', 'source', 'product', 'service', 'profilepicture'].map(this.normalizeHeader);    const headers = worksheet.getRow(1).values as string[];  
-    const missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
+    const requiredHeaders = ['phone', 'email', 'name'].map(
+      this.normalizeHeader,
+    );
+    const optionalHeaders = [
+      'address',
+      'details',
+      'status',
+      'type',
+      'source',
+    ].map(this.normalizeHeader);
+    const headers = (worksheet.getRow(1).values as string[]).slice(1);
+    const missingHeaders = requiredHeaders.filter((h) => !headers.includes(h));
     if (missingHeaders.length > 0) {
-      return ({ message: `Missing required headers: ${missingHeaders.join(', ')}` });
+      throw new Error("Missing headers");
     }
-  
     const leads = [];
+  
     worksheet.eachRow((row, rowNumber) => {
       if (rowNumber === 1) return; // Skip header row
-      const lead = {
-        address: row.getCell(headers.indexOf('address') + 1).value,
-        details: row.getCell(headers.indexOf('details') + 1).value,
-        status: LeadsStatus[this.normalizeEnumValue(row.getCell(headers.indexOf('status') + 1).value, LeadsStatus)],        
-        type: LeadType[this.normalizeEnumValue(row.getCell(headers.indexOf('type') + 1).value, LeadType)],     
-        phone: row.getCell(headers.indexOf('phone') + 1).value,
-        email: row.getCell(headers.indexOf('email') + 1).value,
-        name: row.getCell(headers.indexOf('name') + 1).value,
-        source: row.getCell(headers.indexOf('source') + 1).value,
-        product: row.getCell(headers.indexOf('product') + 1).value,
-        service: row.getCell(headers.indexOf('service') + 1).value,
-      };
+
+      const lead = {};
+      [
+        'address',
+        'details',
+        'status',
+        'type',
+        'phone',
+        'email',
+        'name',
+        'source'
+      ].forEach((header) => {
+        const index = headers.indexOf(header);
+        if (index !== -1) {
+          lead[header] = row.getCell(index + 1).value;
+        }
+      });
+      if (agent) {
+        lead['agent'] = agent;
+      }
       leads.push(lead);
     });
+    try {
+      const createdLeads = await this.leadsService.createMany(leads);
+      res.status(201).json(createdLeads);
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('Error creating leads');
+    }
+
+    // worksheet.eachRow((row, rowNumber) => {
+    //   console.log("here")
+
+    //   if (rowNumber === 1) return; // Skip header row
+    //   const lead = {
+    //     address: row.getCell(headers.indexOf('address') + 1).value,
+    //     details: row.getCell(headers.indexOf('details') + 1).value,
+    //     status:
+    //       LeadsStatus[
+    //         this.normalizeEnumValue(
+    //           row.getCell(headers.indexOf('status') + 1).value,
+    //           LeadsStatus,
+    //         )
+    //       ],
+    //     type: LeadType[
+    //       this.normalizeEnumValue(
+    //         row.getCell(headers.indexOf('type') + 1).value,
+    //         LeadType,
+    //       )
+    //     ],
+    //     phone: row.getCell(headers.indexOf('phone') + 1).value,
+    //     email: row.getCell(headers.indexOf('email') + 1).value,
+    //     name: row.getCell(headers.indexOf('name') + 1).value,
+    //     source: row.getCell(headers.indexOf('source') + 1).value,
+    //     product: row.getCell(headers.indexOf('product') + 1).value,
+    //     service: row.getCell(headers.indexOf('service') + 1).value,
+    //   };
+    //   leads.push(lead);
+    // });
   
-    await this.leadsService.createMany(leads);
-    return({ message: 'Leads imported successfully' });
   }
 
   private normalizeEnumValue(value: any, enumObject: any): string {
     const normalizedValue = String(value).toUpperCase().trim();
-    const matchedEnumKey = Object.keys(enumObject).find(key => 
-      key.substring(0, 3) === normalizedValue.substring(0, 3)
+    const matchedEnumKey = Object.keys(enumObject).find(
+      (key) => key.substring(0, 3) === normalizedValue.substring(0, 3),
     );
     return matchedEnumKey ? enumObject[matchedEnumKey] : normalizedValue;
   }
@@ -353,6 +415,4 @@ export class LeadsController {
   private normalizeHeader(header: string): string {
     return header.toLowerCase().trim();
   }
-  
 }
-

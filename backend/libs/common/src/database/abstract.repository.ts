@@ -55,8 +55,10 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
   }
 
   async createMany(entities: T[]): Promise<T[]> {
-    return this.entityManager.save(entities);
+    const result = await this.entityManager.save(entities);
+    return result;
   }
+
 
   async findOne(where: FindOptionsWhere<T>): Promise<T> {
     return await this.entityRepository.findOne({ where });
