@@ -257,15 +257,22 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
             //   ? qb.where(condition, parameters)
             //   : qb.andWhere(condition, parameters);
             let val = value;
+            let condition:any;
+            let parameters:any;
             if (isoDateTimeRegex.test(val)) {
               val = new Date(val);
               val = new Date(val.getTime() - val.getTimezoneOffset() * 60000)
                 .toISOString()
                 .split('.')[0]
                 .replace('T', ' ');
+                condition = `DATE_TRUNC('millisecond', entity.${key} AT TIME ZONE 'UTC') = :${key}`;
+                parameters = { [key]: val };
             }
-            const condition = `DATE_TRUNC('millisecond', entity.${key} AT TIME ZONE 'UTC') = :${key}`;
-            const parameters = { [key]: val };
+            else{
+               condition = `entity.${key} = :${key}`;
+               parameters = { [key]: value };
+            }
+            
             index === 0
               ? qb.where(condition, parameters)
               : qb.andWhere(condition, parameters);

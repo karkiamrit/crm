@@ -300,7 +300,7 @@ export class LeadsController {
         },
       }),
       fileFilter: (req, file, callback) => {
-        if (!file.originalname.match(/\.(csv|xlsx)$/)) {
+        if (!file.originalname.match(/\.(csv|xlsx|ods)$/)) {
           return callback(new Error('Only CSV files are allowed!'), false);
         }
         callback(null, true);
