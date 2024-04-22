@@ -16,6 +16,10 @@ import { LeadTimelineRepository } from '../shared/objects/timelines/leads.timeli
 import { CustomerTimelineRepository } from '../shared/objects/timelines/customers.timelines.repository';
 import { CustomersModule } from '../customers/customers.module';
 
+import { SegmentsModule } from '../segments/segments.module';
+import { SegmentsService } from '../segments/segments.service';
+import { SegmentsRepository } from '../segments/segments.repository';
+
 @Module({
   imports: [
     forwardRef(() => AgentsModule), 
@@ -39,9 +43,10 @@ import { CustomersModule } from '../customers/customers.module';
         inject: [ConfigService],
       },
     ]),
+
   ],
   controllers: [LeadsController],
   providers: [LeadsService, LeadsRepository, LeadTimelineRepository, CustomerTimelineRepository],
-  exports: [LeadsService]
+  exports: [LeadsService, LeadsRepository]
 })
 export class LeadsModule {}

@@ -27,10 +27,6 @@ export class CreateCustomerDto {
     name: string;
 
     @IsOptional()
-    // @IsNumber()
-    priority?: number;
-
-    @IsOptional()
     @IsEnum(LeadType)
     type?: LeadType;
 
@@ -49,7 +45,10 @@ export class CreateCustomerDto {
     service: CreateServiceInputDTO;
 
     @IsOptional()
-    @IsArray()
-    @IsString({each:true})
-    documents: string[];
+    @IsString()
+    profilePicture?: string;
+    // @IsOptional()
+    // @IsArray()
+    // @IsString({each:true})
+    // documents: string[];
 }

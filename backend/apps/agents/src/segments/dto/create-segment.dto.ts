@@ -6,11 +6,21 @@ export class CreateSegmentDto {
   name: string;
 
   @IsString()
-  @IsNotEmpty()
-  description: string;
+  @IsOptional()
+  description?: string;
 
   @IsArray()
-  @IsNotEmpty()
+  @IsOptional()
   leads: number[];
 
+}
+
+export class CreateFromLeadDto{
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  leadId: number;
 }

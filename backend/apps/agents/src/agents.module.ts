@@ -13,6 +13,7 @@ import { CustomersModule } from './customers/customers.module';
 import { SegmentsModule } from './segments/segments.module';
 import { DocumentsModule } from './documents/documents.module';
 import { InvoicesModule } from './invoices/invoices.module';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   
@@ -42,7 +43,8 @@ import { InvoicesModule } from './invoices/invoices.module';
     CustomersModule,
     SegmentsModule,
     DocumentsModule,
-    InvoicesModule
+    InvoicesModule,
+    TasksModule
   ],
   controllers: [AgentsController],
   providers: [AgentsService, AgentsRepository],

@@ -10,7 +10,6 @@ import {
   Put,
   Query,
   UploadedFile,
-  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -25,9 +24,8 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
-import { Customers } from './entities/customer.entity';
 import { diskStorage } from 'multer';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { extname } from 'path';
 import { AgentsService } from '../agents.service';
 import { Agent } from '../entities/agent.entity';
@@ -46,8 +44,7 @@ export class CustomersController {
   @ApiBearerAuth()
   @ApiBody({ type: CreateCustomerDto })
   @UseInterceptors(
-    FilesInterceptor('documents', 10, {
-      // 'documents' is the name of the field that should contain the files
+    FileInterceptor('profile', {
       storage: diskStorage({
         destination: './uploads', // specify the path where the files should be saved
         filename: (req, file, callback) => {
@@ -55,21 +52,34 @@ export class CustomersController {
           callback(null, name);
         },
       }),
+      fileFilter: (req, file, callback) => {
+        // Only accept images
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif|webp)$/)) {
+          // Reject file
+          return callback(new Error('Only image files are allowed!'), false);
+        }
+        // Accept file
+        callback(null, true);
+      },
     }),
   )
   async create(
-    @UploadedFiles() files: Express.Multer.File[],
+    @UploadedFile() file: Express.Multer.File,
     @Body() createCustomersDto: CreateCustomerDto,
     @CurrentUser() user: User,
     @Body() referenceNo?: any,
   ) {
     let agent: Agent;
-    if (!referenceNo) {
+    let profilePicture: any;
+    if (file) {
+      profilePicture = file.path;
+    }
+    const createCustomersDtoWithDocuments: CreateCustomerDto = {
+      ...createCustomersDto,
+      profilePicture,
+    };
+    if (!referenceNo.referenceNo) {
       agent = await this.agentService.getOne(user.id);
-
-      if (!agent) {
-        throw new NotFoundException(`Agent with user ID ${user.id} not found`);
-      }
     } else {
       agent = await this.agentService.getOneByReferenceNo(
         referenceNo.referenceNo,
@@ -81,16 +91,10 @@ export class CustomersController {
       }
     }
 
-    let documents: any;
-    if (files) {
-      documents = files.map((file) => file.path);
-    }
-
-    const createCustomersDtoWithDocuments: CreateCustomerDto = {
-      ...createCustomersDto,
-      documents,
-    };
-    return await this.customersService.create(createCustomersDtoWithDocuments, agent);
+    return await this.customersService.create(
+      createCustomersDtoWithDocuments,
+      agent,
+    );
   }
 
   @Put(':id')
@@ -104,7 +108,10 @@ export class CustomersController {
     description: 'The id of the customer to update',
   })
   @ApiBody({ type: UpdateCustomerDto })
-  async update(@Param('id') id: number, @Body() updateCustomersDto: UpdateCustomerDto) {
+  async update(
+    @Param('id') id: number,
+    @Body() updateCustomersDto: UpdateCustomerDto,
+  ) {
     return this.customersService.update(id, updateCustomersDto);
   }
 
@@ -130,7 +137,7 @@ export class CustomersController {
   async findCustomersOfCurrentAgent(
     @Query() query: any,
     @CurrentUser() user: User,
-  ){
+  ) {
     const agent = await this.agentService.getAgentByUserId(user.id);
     if (agent) {
       query.agentId = agent.id;
@@ -152,79 +159,83 @@ export class CustomersController {
   @Roles('Admin')
   @ApiOperation({ summary: 'Get an customer by id' })
   @ApiBearerAuth()
-  @ApiParam({ name: 'id', required: true, description: 'The id of the customer' })
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'The id of the customer',
+  })
   async getOne(@Param('id') id: number) {
     return this.customersService.getOne(id);
   }
 
-  @Patch(':id/upload-documents')
-  @UseGuards(JwtAuthGuard)
-  @Roles('Customer')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Upload customer documents' })
-  @ApiResponse({
-    status: 200,
-    description: 'The documents have been successfully uploaded.',
-  })
-  @UseInterceptors(
-    FilesInterceptor('documents', 10, {
-      storage: diskStorage({
-        destination: './uploads', // specify the path where the files should be saved
-        filename: (req, file, callback) => {
-          const name = Date.now() + extname(file.originalname); // generate a unique filename
-          callback(null, name);
-        },
-      }),
-    }),
-  )
-  async addDocuments(
-    @UploadedFiles() files: Express.Multer.File[],
-    @Param('id') id: number,
-  ): Promise<Customers> {
-    const documents = files.map((file) => file.path);
-    return this.customersService.addDocuments(id, documents);
-  }
+  // @Patch(':id/upload-documents')
+  // @UseGuards(JwtAuthGuard)
+  // @Roles('Customer')
+  // @ApiBearerAuth()
+  // @ApiOperation({ summary: 'Upload customer documents' })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'The documents have been successfully uploaded.',
+  // })
+  // @UseInterceptors(
+  //   FilesInterceptor('documents', 10, {
+  //     storage: diskStorage({
+  //       destination: './uploads', // specify the path where the files should be saved
+  //       filename: (req, file, callback) => {
+  //         const name = Date.now() + extname(file.originalname); // generate a unique filename
+  //         callback(null, name);
+  //       },
+  //     }),
+  //   }),
+  // )
+  // async addDocuments(
+  //   @UploadedFiles() files: Express.Multer.File[],
+  //   @Param('id') id: number,
+  // ): Promise<Customers> {
+  //   const documents = files.map((file) => file.path);
+  //   return this.customersService.addDocuments(id, documents);
+  // }
 
-  @Patch(':id/update-document/:filename')
-  @UseGuards(JwtAuthGuard)
-  @Roles('Admin')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update a document of an customer' })
-  @ApiResponse({
-    status: 200,
-    description: 'The document has been successfully updated.',
-  })
-  @UseInterceptors(
-    FileInterceptor('document', {
-      storage: diskStorage({
-        destination: './uploads',
-        filename: (req, file, callback) => {
-          callback(null, req.params.filename); // use the existing filename
-        },
-      }),
-    }),
-  )
-  async updateDocument(
-    @UploadedFile() file: Express.Multer.File,
-    @Param('id') id: number,
-    @Param('filename') filename: string,
-  ): Promise<Customers> {
-    return this.customersService.updateDocument(id, filename, file.path);
-  }
+  // @Patch(':id/update-document/:filename')
+  // @UseGuards(JwtAuthGuard)
+  // @Roles('Admin')
+  // @ApiBearerAuth()
+  // @ApiOperation({ summary: 'Update a document of an customer' })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'The document has been successfully updated.',
+  // })
+  // @UseInterceptors(
+  //   FileInterceptor('document', {
+  //     storage: diskStorage({
+  //       destination: './uploads',
+  //       filename: (req, file, callback) => {
+  //         callback(null, req.params.filename); // use the existing filename
+  //       },
+  //     }),
+  //   }),
+  // )
+  // async updateDocument(
+  //   @UploadedFile() file: Express.Multer.File,
+  //   @Param('id') id: number,
+  //   @Param('filename') filename: string,
+  // ): Promise<Customers> {
+  //   return this.customersService.updateDocument(id, filename, file.path);
+  // }
 
-  @Delete(':id/delete-document/:filename')
-  @UseGuards(JwtAuthGuard)
-  @Roles('Admin')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Delete a document of an customer' })
-  @ApiResponse({
-    status: 200,
-    description: 'The document has been successfully deleted.',
-  })
-  async deleteDocument(
-    @Param('id') id: number,
-    @Param('filename') filename: string,
-  ): Promise<Customers> {
-    return this.customersService.deleteDocument(id, filename);
-  }
+  // @Delete(':id/delete-document/:filename')
+  // @UseGuards(JwtAuthGuard)
+  // @Roles('Admin')
+  // @ApiBearerAuth()
+  // @ApiOperation({ summary: 'Delete a document of an customer' })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'The document has been successfully deleted.',
+  // })
+  // async deleteDocument(
+  //   @Param('id') id: number,
+  //   @Param('filename') filename: string,
+  // ): Promise<Customers> {
+  //   return this.customersService.deleteDocument(id, filename);
+  // }
 }

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { SegmentsService } from './segments.service';
 import { SegmentsController } from './segments.controller';
 import { AUTH_SERVICE, DatabaseModule } from '@app/common';
@@ -7,10 +7,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { LeadsModule } from '../leads/leads.module';
 import { SegmentsRepository } from './segments.repository';
+import { LeadsRepository } from '../leads/leads.repository';
+import { LeadsService } from '../leads/leads.service';
+import { AgentsModule } from '../agents.module';
 
 @Module({
   imports:[
     DatabaseModule,
+    LeadsModule, 
     DatabaseModule.forFeature([Segment]),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -29,10 +33,10 @@ import { SegmentsRepository } from './segments.repository';
         inject: [ConfigService],
       },
     ]),
-    LeadsModule
-
+    
   ],
   controllers: [SegmentsController],
   providers: [SegmentsService, SegmentsRepository],
+  exports: [SegmentsService, SegmentsRepository]
 })
 export class SegmentsModule {}

@@ -12,7 +12,7 @@ export class Segment extends AbstractEntity<Segment>{
   @Column()
   description: string;
 
-  @ManyToMany(() => Leads, leads => leads.segments)
+  @ManyToMany(() => Leads, leads => leads.segments,{ nullable: true})
   leads: Leads[];
 
   @CreateDateColumn()

@@ -24,7 +24,7 @@ export class CustomersService {
     private readonly agentService: AgentsService,
   ) {}
 
-  async create(createCustomerDto: CreateCustomerDto, agent: Agent) {
+  async create(createCustomerDto: CreateCustomerDto, agent?: Agent) {
     // Convert CreateTimelineInputDTO[] to CustomerTimeline[]
     let product: Product, service: Service, timelines: CustomerTimeline[];
     // Convert CreateProductInputDTO to Product
@@ -40,11 +40,10 @@ export class CustomersService {
       service,
       product,
     });
-    console.log(agent);
- 
-    customer.agentId = agent.id;
+    if(agent){
+      customer.agentId = agent.id;
+    }
 
- 
     await this.customersRepository.create(customer);
 
     return customer;
@@ -130,50 +129,50 @@ export class CustomersService {
     return this.customersRepository.findOne({ id });
   }
 
-  async addDocuments(id: number, documents: string[]): Promise<Customers> {
-    const customer = await this.customersRepository.findOne({ id });
-    customer.documents = [...customer.documents, ...documents];
-    return this.customersRepository.findOneAndUpdate({ where: { id } }, customer);
-  }
+  // async addDocuments(id: number, documents: string[]): Promise<Customers> {
+  //   const customer = await this.customersRepository.findOne({ id });
+  //   customer.documents = [...customer.documents, ...documents];
+  //   return this.customersRepository.findOneAndUpdate({ where: { id } }, customer);
+  // }
 
-  async updateDocument(
-    id: number,
-    filename: string,
-    newFilePath: string,
-  ): Promise<Customers> {
-    const customer = await this.customersRepository.findOne({ id });
-    const index = customer.documents.findIndex((doc) => doc.includes(filename));
-    if (index !== -1) {
-      const unlinkAsync = promisify(unlink);
-      await unlinkAsync(customer.documents[index]); // delete the old file
-      customer.documents[index] = newFilePath; // replace with the new file
-    }
-    return this.customersRepository.findOneAndUpdate({ where: { id } }, customer);
-  }
+  // async updateDocument(
+  //   id: number,
+  //   filename: string,
+  //   newFilePath: string,
+  // ): Promise<Customers> {
+  //   const customer = await this.customersRepository.findOne({ id });
+  //   const index = customer.documents.findIndex((doc) => doc.includes(filename));
+  //   if (index !== -1) {
+  //     const unlinkAsync = promisify(unlink);
+  //     await unlinkAsync(customer.documents[index]); // delete the old file
+  //     customer.documents[index] = newFilePath; // replace with the new file
+  //   }
+  //   return this.customersRepository.findOneAndUpdate({ where: { id } }, customer);
+  // }
 
-  async deleteDocument(id: number, filename: string): Promise<Customers> {
-    const customer = await this.customersRepository.findOne({ id });
+  // async deleteDocument(id: number, filename: string): Promise<Customers> {
+  //   const customer = await this.customersRepository.findOne({ id });
 
-    if (!customer) {
-      throw new NotFoundException(`Agent with ID ${id} not found`);
-    }
+  //   if (!customer) {
+  //     throw new NotFoundException(`Agent with ID ${id} not found`);
+  //   }
 
-    const fullFilename = join('uploads', filename);
-    const index = customer.documents.findIndex((doc) => doc === fullFilename);
+  //   const fullFilename = join('uploads', filename);
+  //   const index = customer.documents.findIndex((doc) => doc === fullFilename);
 
-    if (index !== -1) {
-      const unlinkAsync = promisify(unlink);
-      try {
-        await unlinkAsync(fullFilename); // delete the file
-      } catch (error) {
-        throw new NotFoundException(`File ${filename} not found`);
-      }
+  //   if (index !== -1) {
+  //     const unlinkAsync = promisify(unlink);
+  //     try {
+  //       await unlinkAsync(fullFilename); // delete the file
+  //     } catch (error) {
+  //       throw new NotFoundException(`File ${filename} not found`);
+  //     }
 
-      customer.documents.splice(index, 1); // remove the file from the documents array
+  //     customer.documents.splice(index, 1); // remove the file from the documents array
 
-      await this.customersRepository.create(customer); // save the updated agent
-    }
+  //     await this.customersRepository.create(customer); // save the updated agent
+  //   }
 
-    return customer;
-  }
+  //   return customer;
+  // }
 }

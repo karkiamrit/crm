@@ -5,6 +5,7 @@ import { ExtendedFindOptions, User } from '@app/common';
 import { Segment } from './entities/segment.entity';
 import { SegmentsRepository } from './segments.repository';
 import { LeadsService } from '../leads/leads.service';
+import { Leads } from '../leads/entities/lead.entity';
 
 @Injectable()
 export class SegmentsService {
@@ -17,17 +18,27 @@ export class SegmentsService {
     createSegmentDto: CreateSegmentDto,
     user: User,
   ): Promise<Segment> {
-    const leads = createSegmentDto.leads
-    ? await Promise.all(createSegmentDto.leads.map((id) => this.leadsService.getOne(id)))
-    : [];
-    const segment = new Segment({
-      ...createSegmentDto,
-      leads,
-      userId: user.id,
-    });
-
+    let leads: Leads[] = []; 
+    let segment : Segment;
+    if(createSegmentDto.leads){
+      leads = createSegmentDto.leads
+      ? await Promise.all(createSegmentDto.leads.map((id) => this.leadsService.getOne(id)))
+      : [];
+      segment = new Segment({
+        ...createSegmentDto,
+        leads,
+        userId: user.id,
+      });
+    }
+    else{
+      segment = new Segment({
+        ...createSegmentDto,
+        leads,
+        userId: user.id,})
+    }
     return this.segmentsRepository.create(segment);
   }
+
 
   async findAll(
     options: ExtendedFindOptions<Segment>,

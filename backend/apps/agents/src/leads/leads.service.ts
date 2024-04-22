@@ -13,7 +13,6 @@ import {
   LeadTimeline,
 } from '../shared/objects/timelines/timelines.entity';
 import { Product } from '../shared/objects/products/products.entity';
-import { LeadTimelineRepository } from '../shared/objects/timelines/leads.timelines.repository';
 import { CustomerTimelineRepository } from '../shared/objects/timelines/customers.timelines.repository';
 import { Customers } from '../customers/entities/customer.entity';
 import { CustomersService } from '../customers/customers.service';
@@ -23,13 +22,13 @@ import { LeadsStatus } from '../shared/data';
 export class LeadsService {
   constructor(
     private readonly leadsRepository: LeadsRepository,
-    private readonly leadTimelineRepository: LeadTimelineRepository,
     private readonly agentService: AgentsService,
     private readonly customerTimelineRepository: CustomerTimelineRepository,
     private readonly customerService: CustomersService,
   ) {}
 
-  async create(createLeadDto: CreateLeadDto, agent?: Agent) {
+  async create(createLeadDto: CreateLeadDto, user: User, agent?: Agent, ) {
+    const {...rest} = createLeadDto;
     // Convert CreateTimelineInputDTO[] to LeadTimeline[]
     let product: Product, service: Service, timelines: LeadTimeline[];
     // Convert CreateProductInputDTO to Product
@@ -41,7 +40,7 @@ export class LeadsService {
     }
     // Create a new Leads entity
     const lead = new Leads({
-      ...createLeadDto,
+      ...rest,
       service,
       product,
     });
@@ -49,13 +48,12 @@ export class LeadsService {
       lead.agentId = agent.id;
     }
 
-    await this.leadsRepository.create(lead);
-
-    return lead;
+    let createdLead = await this.leadsRepository.create(lead);
+    return createdLead;
   }
 
   async createMany(createLeadDtos: CreateLeadDto[]) {
-    const leads = createLeadDtos.map(dto => {
+    const leads = createLeadDtos.map((dto) => {
       let product: Product, service: Service;
       if (dto.product) {
         product = new Product(dto.product);
@@ -70,7 +68,6 @@ export class LeadsService {
       });
     });
     return await this.leadsRepository.createMany(leads);
-  
   }
 
   // async update(id: number, updateLeadsDto: UpdateLeadDto) {
@@ -230,26 +227,25 @@ export class LeadsService {
     return updatedLead;
   }
   private async handleLeadConversion(lead: Leads) {
-    // Delete the lead
-    await this.leadsRepository.findOneAndDelete({ id: lead.id });
-
     // Create a customer from the lead information
+    await this.leadsRepository.findOneAndDelete({ id: lead.id });
     const customer = await this.createCustomerFromLead(lead);
-
     // Update related timelines
     await this.updateTimelinesForCustomerConversion(lead, customer);
-
     return customer;
   }
 
   async createCustomerFromLead(lead: Leads): Promise<Customers> {
-    const agent = await this.agentService.getOne(lead.agentId);
+    let agent: Agent | null;
+    agent = await this.agentService.getOne(lead.agentId);
 
     const { status, timelines, ...leadProperties } = lead;
     const customer = new Customers({
       ...leadProperties,
     });
-
+    if (agent) {
+      customer.agentId = agent.id;
+    }
     return await this.customerService.create(customer, agent);
   }
 
@@ -275,15 +271,17 @@ export class LeadsService {
   }
 
   async findAll(options: ExtendedFindOptions<Leads>) {
-    options.relations = ['product', 'service', 'timelines', 'segments']
+    options.relations = ['product', 'service', 'timelines', 'segments'];
     return this.leadsRepository.findAll(options);
   }
 
   async findAllWithSegmentId(options: ExtendedFindOptions<Leads>, id: number) {
     options.relations = ['product', 'service', 'timelines', 'segments'];
-    options.where = {segments: {
-      id:id
-    }}
+    options.where = {
+      segments: {
+        id: id,
+      },
+    };
     return this.leadsRepository.findAll(options);
   }
 
@@ -295,10 +293,7 @@ export class LeadsService {
     return this.leadsRepository.findOne({ id });
   }
 
-  async updateProfilePicture(
-    leadId: number,
-    filePath: string,
-  ): Promise<Leads> {
+  async updateProfilePicture(leadId: number, filePath: string): Promise<Leads> {
     // const organization = await this.organizationsRepository.findOne({id: organizationId});
     console.log('filePath', filePath);
     const organization = await this.leadsRepository.findOneAndUpdate(

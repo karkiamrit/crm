@@ -37,7 +37,6 @@ import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { extname } from 'path';
 import { AgentsService } from '../agents.service';
 import { Agent } from '../entities/agent.entity';
-import { LeadsStatus, LeadType } from '../shared/data';
 
 @Controller('leads')
 export class LeadsController {
@@ -89,7 +88,7 @@ export class LeadsController {
       profilePicture,
     };
     if (referenceNo.referenceNo === '' || null || undefined) {
-      return await this.leadsService.create(createLeadsDtoWithDocuments);
+      return await this.leadsService.create(createLeadsDtoWithDocuments, user);
     } else {
       agent = await this.agentService.getOneByReferenceNo(
         referenceNo.referenceNo,
@@ -100,7 +99,7 @@ export class LeadsController {
         );
       }
     }
-    return await this.leadsService.create(createLeadsDtoWithDocuments, agent);
+    return await this.leadsService.create(createLeadsDtoWithDocuments, user, agent);
   }
 
   @Put(':id')

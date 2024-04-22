@@ -6,7 +6,6 @@ import {
   JoinColumn,
   JoinTable,
   ManyToMany,
-  ManyToOne,
   OneToMany,
   OneToOne,
 } from 'typeorm';
@@ -16,16 +15,17 @@ import { Service } from '../../shared/objects/services/services.entity';
 import { Segment } from '../../segments/entities/segment.entity';
 import { Document } from '../../documents/entities/document.entity';
 import { LeadsStatus, LeadType } from '../../shared/data';
+import { Tasks } from '../../tasks/entities/task.entity';
 
 @Entity()
 export class Leads extends AbstractEntity<Leads> {
-  @Column({nullable:true})
+  @Column({ nullable: true })
   address: string;
 
   @Column({ default: LeadType.SOLE, type: 'enum', enum: LeadType })
   type: LeadType;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   details: string;
 
   @Column({
@@ -46,6 +46,9 @@ export class Leads extends AbstractEntity<Leads> {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @OneToMany(() => Tasks, (task) => task.lead)
+  tasks: Tasks[];
 
   @Column({ nullable: true })
   source: string; //eg: facebook, email etc
