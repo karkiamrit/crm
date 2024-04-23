@@ -17,6 +17,7 @@ import { CustomerTimelineRepository } from '../shared/objects/timelines/customer
 import { Customers } from '../customers/entities/customer.entity';
 import { CustomersService } from '../customers/customers.service';
 import { LeadsStatus } from '../shared/data';
+import { create } from 'domain';
 
 @Injectable()
 export class LeadsService {
@@ -28,7 +29,7 @@ export class LeadsService {
   ) {}
 
   async create(createLeadDto: CreateLeadDto, user: User, agent?: Agent, ) {
-    const {...rest} = createLeadDto;
+    const {revenuePotential,...rest} = createLeadDto;
     // Convert CreateTimelineInputDTO[] to LeadTimeline[]
     let product: Product, service: Service, timelines: LeadTimeline[];
     // Convert CreateProductInputDTO to Product
@@ -38,11 +39,13 @@ export class LeadsService {
     if (createLeadDto.service) {
       service = new Service(createLeadDto.service);
     }
+    let updatedRevenuePotential = Number(createLeadDto.revenuePotential)
     // Create a new Leads entity
     const lead = new Leads({
       ...rest,
       service,
       product,
+      revenuePotential: updatedRevenuePotential
     });
     if (agent) {
       lead.agentId = agent.id;
@@ -61,10 +64,13 @@ export class LeadsService {
       if (dto.service) {
         service = new Service(dto.service);
       }
+      const {revenuePotential,...rest} = dto;
+      let updatedRevenuePotential = Number(dto.revenuePotential)
       return new Leads({
-        ...dto,
+        ...rest,
         service,
         product,
+        revenuePotential: updatedRevenuePotential
       });
     });
     return await this.leadsRepository.createMany(leads);

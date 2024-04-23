@@ -36,6 +36,11 @@ export class UpdateLeadDto {
     name?: string;
 
     @IsOptional()
+    @IsNumber()
+    revenuePotential?: number;
+
+
+    @IsOptional()
     @IsString()
     source?: string;
 

@@ -17,6 +17,10 @@ export class CreateLeadDto {
     details?: string;
 
     @IsOptional()
+    @IsString()
+    revenuePotential?: string;
+
+    @IsOptional()
     @IsEnum(LeadsStatus)
     status?: LeadsStatus;
 
