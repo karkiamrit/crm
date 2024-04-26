@@ -16,6 +16,15 @@ import { InvoiceStatus } from '../../shared/data/enums/invoice.status.enum';
 
 @Entity()
 export class Invoice extends AbstractEntity<Invoice> {
+  @Column({nullable:true})
+  customerName: string;
+
+  @Column({nullable: true})
+  customerEmail: string;
+
+  @Column({nullable: true})
+  notes: string;
+
   @Column()
   subTotal: number;
 

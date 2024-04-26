@@ -3,6 +3,9 @@ import { Priority } from "../../shared/data";
 
 export class UpdateTaskDto {
   @IsOptional()
+  name: string;
+
+  @IsOptional()
   dueDate?: Date;
 
   @IsOptional()

@@ -11,6 +11,9 @@ export class Tasks extends AbstractEntity<Tasks> {
   dueDate: Date;
 
   @Column()
+  name: string;
+
+  @Column()
   taskDesc: string;
 
   @Column({

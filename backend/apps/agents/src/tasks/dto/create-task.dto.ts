@@ -3,6 +3,9 @@ import { Priority } from "../../shared/data";
 
 export class CreateTaskDto {
   @IsNotEmpty()
+  name: string;
+  
+  @IsNotEmpty()
   dueDate?: Date;
 
   @IsNotEmpty()

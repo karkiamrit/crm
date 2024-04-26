@@ -35,8 +35,14 @@ export class LeadsService {
   ) {}
 
   async create(createLeadDto: CreateLeadDto, user: User, agent?: Agent ) {
-    console.log(createLeadDto)
-    let newSegment =Number(createLeadDto.segment);
+    let newSegment: number | null;
+    if(createLeadDto.segment === '' || undefined){
+      newSegment = null
+    }
+    else{
+      newSegment =Number(createLeadDto.segment);
+    }
+    
     const {revenuePotential,...rest} = createLeadDto;
     // Convert CreateTimelineInputDTO[] to LeadTimeline[]
     let product: Product, service: Service, timelines: LeadTimeline[];
@@ -61,7 +67,7 @@ export class LeadsService {
 
     let createdLead = await this.leadsRepository.create(lead);
     console.log(newSegment)
-    if(createdLead){
+    if(createdLead && newSegment!==null){
       const segment = this.addLeadToSegment(newSegment, createdLead.id);
       if(!segment){
         throw new NotFoundException(`Lead Created But Segment couldnt be created`);

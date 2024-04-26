@@ -339,7 +339,6 @@ export class LeadsController {
     @Res() res: Response,
     @CurrentUser() user: User
   ) {
-    console.log(user)
     const agent = await this.agentService.getAgentByUserId(user.id);
     
     const workbook = new Workbook();
