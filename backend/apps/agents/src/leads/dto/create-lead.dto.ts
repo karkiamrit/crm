@@ -45,6 +45,10 @@ export class CreateLeadDto {
     source?: string;
 
     @IsOptional()
+    @IsString()
+    segment?: string;
+
+    @IsOptional()
     @ValidateNested({ each: true })
     @Type(() => CreateProductInputDTO)
     product: CreateProductInputDTO;

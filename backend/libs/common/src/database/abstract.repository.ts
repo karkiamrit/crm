@@ -59,7 +59,6 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
     return result;
   }
 
-
   async findOne(where: FindOptionsWhere<T>): Promise<T> {
     return await this.entityRepository.findOne({ where });
   }
@@ -231,12 +230,17 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
           '_value' in value
         ) {
           // New code to handle comparison operators
+          console.log(value + 'value is');
           const operator = value._operator; // could be '<', '>', '<=', '>=', etc.
           let val = value._value;
+          let condition: any;
           if (isoDateTimeRegex.test(val)) {
             val = new Date(val);
+            condition = `DATE_TRUNC('millisecond', entity.${key} AT TIME ZONE 'UTC') ${operator} :${key}`;
+          } else {
+            condition = `entity.${key} ${operator} :${key}`;
           }
-          const condition = `DATE_TRUNC('millisecond', entity.${key} AT TIME ZONE 'UTC') ${operator} :${key}`;          
+
           const parameters = { [key]: val };
           index === 0
             ? qb.where(condition, parameters)
@@ -259,22 +263,22 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
             //   ? qb.where(condition, parameters)
             //   : qb.andWhere(condition, parameters);
             let val = value;
-            let condition:any;
-            let parameters:any;
+            console.log(value);
+            let condition: any;
+            let parameters: any;
             if (isoDateTimeRegex.test(val)) {
               val = new Date(val);
               val = new Date(val.getTime() - val.getTimezoneOffset() * 60000)
                 .toISOString()
                 .split('.')[0]
                 .replace('T', ' ');
-                condition = `DATE_TRUNC('millisecond', entity.${key} AT TIME ZONE 'UTC') = :${key}`;
-                parameters = { [key]: val };
+              condition = `DATE_TRUNC('millisecond', entity.${key} AT TIME ZONE 'UTC') = :${key}`;
+              parameters = { [key]: val };
+            } else {
+              condition = `entity.${key} = :${key}`;
+              parameters = { [key]: value };
             }
-            else{
-               condition = `entity.${key} = :${key}`;
-               parameters = { [key]: value };
-            }
-            
+
             index === 0
               ? qb.where(condition, parameters)
               : qb.andWhere(condition, parameters);

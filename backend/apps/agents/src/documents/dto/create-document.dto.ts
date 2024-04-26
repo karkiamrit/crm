@@ -11,7 +11,7 @@ export class CreateDocumentDto {
   description?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString() 
   documentFile?: string;
 
   @IsNotEmpty()

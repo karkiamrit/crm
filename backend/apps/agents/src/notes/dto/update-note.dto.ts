@@ -8,6 +8,10 @@ export class UpdateNoteDto extends PartialType(CreateNoteDto) {
     leadId: number;
 
     @IsOptional()
+    @IsNumber()
+    customerId: number;
+
+    @IsOptional()
     @IsString()
     content: string;
 }

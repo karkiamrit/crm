@@ -18,6 +18,9 @@ import { Customers } from '../customers/entities/customer.entity';
 import { CustomersService } from '../customers/customers.service';
 import { LeadsStatus } from '../shared/data';
 import { create } from 'domain';
+import { LeadTimelineRepository } from '../shared/objects/timelines/leads.timelines.repository';
+import { SegmentsRepository } from '../segments/segments.repository';
+import { Segment } from '../segments/entities/segment.entity';
 
 @Injectable()
 export class LeadsService {
@@ -26,9 +29,14 @@ export class LeadsService {
     private readonly agentService: AgentsService,
     private readonly customerTimelineRepository: CustomerTimelineRepository,
     private readonly customerService: CustomersService,
+    private readonly leadsTimelineRepository: LeadTimelineRepository,
+
+    private readonly segmentsRepository: SegmentsRepository,
   ) {}
 
-  async create(createLeadDto: CreateLeadDto, user: User, agent?: Agent, ) {
+  async create(createLeadDto: CreateLeadDto, user: User, agent?: Agent ) {
+    console.log(createLeadDto)
+    let newSegment =Number(createLeadDto.segment);
     const {revenuePotential,...rest} = createLeadDto;
     // Convert CreateTimelineInputDTO[] to LeadTimeline[]
     let product: Product, service: Service, timelines: LeadTimeline[];
@@ -52,6 +60,13 @@ export class LeadsService {
     }
 
     let createdLead = await this.leadsRepository.create(lead);
+    console.log(newSegment)
+    if(createdLead){
+      const segment = this.addLeadToSegment(newSegment, createdLead.id);
+      if(!segment){
+        throw new NotFoundException(`Lead Created But Segment couldnt be created`);
+      }
+    }
     return createdLead;
   }
 
@@ -207,16 +222,17 @@ export class LeadsService {
     if (hasChanges) {
       // Apply all changes in one go to the lead
       Object.assign(lead, changes);
-      await this.leadsRepository.create(lead); // Assuming save() method can handle partial updates efficiently.
-
+      await this.leadsRepository.create(lead); // Use save() instead of create()
+    
       // Create and save timeline records
       const timelines = Object.entries(changes).map(([attribute, value]) => {
-        return {
+        const timeline = new LeadTimeline({
           lead,
           attribute,
-          value,
+          value: value as string, // Cast the value to string
           // createdAt: new Date(),
-        };
+        });
+        return this.leadsTimelineRepository.create(timeline); // Save the timeline to the database
       });
       await Promise.all(timelines);
       if ('status' in changes && changes.status === LeadsStatus.COMPLETED) {
@@ -307,6 +323,28 @@ export class LeadsService {
       { profilePicture: filePath },
     );
     return organization;
+  }
+
+  async addLeadToSegment(segmentId: number, leadId: number): Promise<Segment> {
+    const segment = await this.segmentsRepository.findOne({ id: segmentId });
+  
+    const lead = await this.getOne(leadId);
+  
+    if (!segment || !lead) {
+      throw new NotFoundException('Segment or Lead not found');
+    }
+  
+    // Check if segment.leads is defined, if not, initialize it as an empty array
+    if (!segment.leads) {
+      segment.leads = [];
+    }
+  
+    segment.leads.push(lead);
+  
+    return this.segmentsRepository.findOneAndUpdate(
+      { where: { id: segment.id } },
+      segment,
+    );
   }
 
   // async addDocuments(id: number, documents: string[]): Promise<Leads> {

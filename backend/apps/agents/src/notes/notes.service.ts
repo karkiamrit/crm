@@ -5,23 +5,33 @@ import { UpdateNoteDto } from './dto/update-note.dto';
 import { ExtendedFindOptions, User } from '@app/common';
 import { NotesRepository } from './notes.repository';
 import { LeadsService } from '../leads/leads.service';
+import { CustomersService } from '../customers/customers.service';
 
 @Injectable()
 export class NotesService {
   constructor(
     private readonly notesRepository: NotesRepository,
     private readonly leadService: LeadsService,
+    private readonly customerService: CustomersService,
     ){
   }
 
   async create(createNoteDto: CreateNoteDto, user: User) {
     try {
       const content = createNoteDto.content;
-      const leadId = createNoteDto.leadId;
-      const lead = await this.leadService.getOne(leadId);
       const note = new Note({content});
+      if(createNoteDto.leadId){
+        const leadId = createNoteDto.leadId;
+        const lead = await this.leadService.getOne(leadId);
+        note.lead = lead;
+      }
+      if(createNoteDto.customerId){
+        const customerId = createNoteDto.customerId;
+        const customer = await this.customerService.getOne(customerId);
+        note.customer = customer;
+      }
       note.userId = user.id;
-      note.lead = lead;
+     
       note.author = user.email.split('@')[0];
       return this.notesRepository.create(note);
     } catch (error) {

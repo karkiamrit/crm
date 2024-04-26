@@ -19,14 +19,12 @@ export class DocumentsController {
       storage: diskStorage({
         destination: './uploads', // specify the path where the files should be saved
         filename: (req, file, callback) => {
-          console.log(file)
           const name = Date.now() + extname(file.originalname); // generate a unique filename
           callback(null, name);
         },
       }),
       fileFilter: (req, file, callback) => {
-        
-
+        console.log(file);
         if (!file.originalname.match(/\.(pdf|docx|xlsx|csv|doc|jpeg|gif|png|svg|jpg)$/)) {
           return callback(new Error('Only document files are allowed!'), false);
         }
@@ -36,6 +34,7 @@ export class DocumentsController {
     }),
   )
   create(@UploadedFile() file: Express.Multer.File, @Body() createDocumentDto: CreateDocumentDto, @CurrentUser() user: User) {
+    console.log(file)
     createDocumentDto.documentFile = file.path;
     return this.documentsService.create(createDocumentDto, user);
   }

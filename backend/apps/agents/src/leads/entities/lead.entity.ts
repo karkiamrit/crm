@@ -44,7 +44,7 @@ export class Leads extends AbstractEntity<Leads> {
   @Column()
   name: string;
 
-  @Column({type: 'float'})
+  @Column({type: 'float', nullable:true})
   revenuePotential: number;
 
   @CreateDateColumn()

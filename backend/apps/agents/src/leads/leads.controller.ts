@@ -77,29 +77,54 @@ export class LeadsController {
     @CurrentUser() user: User,
     @Body() referenceNo?: any,
   ) {
+    // let agent: Agent;
+
+    // let profilePicture: any;
+    // if (file) {
+    //   profilePicture = file.path;
+    // }
+    // const createLeadsDtoSeperated: CreateLeadDto = {
+    //   ...createLeadsDto,
+    //   profilePicture,
+    // };
+    // const {segment,...rest} = createLeadsDtoSeperated;
+    // if (referenceNo.referenceNo === '' || null || undefined) {
+    //   return await this.leadsService.create(rest, user);
+    // } else {
+    //   agent = await this.agentService.getOneByReferenceNo(
+    //     referenceNo.referenceNo,
+    //   );
+    //   if (!agent) {
+    //     throw new NotFoundException(
+    //       `Agent with reference no ${referenceNo.referenceNo} not found`,
+    //     );
+    //   }
+    // }
+    // return await this.leadsService.create(rest, user, agent, segment);
     let agent: Agent;
 
-    let profilePicture: any;
-    if (file) {
-      profilePicture = file.path;
-    }
-    const createLeadsDtoWithDocuments: CreateLeadDto = {
-      ...createLeadsDto,
-      profilePicture,
-    };
-    if (referenceNo.referenceNo === '' || null || undefined) {
-      return await this.leadsService.create(createLeadsDtoWithDocuments, user);
-    } else {
-      agent = await this.agentService.getOneByReferenceNo(
-        referenceNo.referenceNo,
+  let profilePicture: any;
+  if (file) {
+    profilePicture = file.path;
+  }
+  const createLeadsDtoSeperated: CreateLeadDto = {
+    ...createLeadsDto,
+    profilePicture,
+  };
+  const { ...createLeadsDtoWithDocuments} = createLeadsDtoSeperated;
+  if (referenceNo.referenceNo === '' || referenceNo.referenceNo === null || referenceNo.referenceNo === undefined) {
+    return await this.leadsService.create(createLeadsDtoWithDocuments, user);
+  } else {
+    agent = await this.agentService.getOneByReferenceNo(
+      referenceNo.referenceNo,
+    );
+    if (!agent) {
+      throw new NotFoundException(
+        `Agent with reference no ${referenceNo.referenceNo} not found`,
       );
-      if (!agent) {
-        throw new NotFoundException(
-          `Agent with reference no ${referenceNo.referenceNo} not found`,
-        );
-      }
     }
-    return await this.leadsService.create(createLeadsDtoWithDocuments, user, agent);
+  }
+  return await this.leadsService.create(createLeadsDtoWithDocuments, user, agent);
   }
 
   @Put(':id')
