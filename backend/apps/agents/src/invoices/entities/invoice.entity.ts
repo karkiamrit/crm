@@ -52,11 +52,11 @@ export class Invoice extends AbstractEntity<Invoice> {
   @Column()
   remarks: string;
 
-  @ManyToOne(() => Agent, { eager: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => Agent, { eager: true, onDelete: 'CASCADE',nullable:true })
   @JoinColumn({ name: 'agentId', referencedColumnName: 'id' })
   agent: Agent;
 
-  @ManyToOne(() => Customers, { eager: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => Customers, { eager: true, onDelete: 'CASCADE', nullable:true })
   @JoinColumn({ name: 'customerId', referencedColumnName: 'id' })
   customer: Customers;
 

@@ -49,49 +49,57 @@ export class InvoicesService {
 
   async create(createInvoiceDto: CreateInvoiceDto, user: User) {
     const { customerId, products: productDtos, ...rest } = createInvoiceDto;
-    const customer = await this.customersService.getOne(customerId);
-    const agent = await this.agentsService.getAgentByUserId(user.id);
-
+    let customer = null;
+    let agent = null;
+  
+    if (customerId) {
+      customer = await this.customersService.getOne(customerId);
+    }
+  
+    if (user) {
+      agent = await this.agentsService.getAgentByUserId(user.id);
+    }
+  
     // Start a transaction
     const queryRunner = this.manager.connection.createQueryRunner();    
     await queryRunner.startTransaction();
-
+  
     try {
-        // Create a new Invoices entity without products
-        const invoice = this.createInvoice(rest, customer, agent);
-
-        // Save the invoice to get the generated id
-        const savedInvoice = await this.saveInvoice(queryRunner, invoice);
-
-        if (productDtos) {
-            // Create and save the products
-            const products = await this.createAndSaveProducts(queryRunner, productDtos, savedInvoice);
-
-            // Update the invoice with the products
-            savedInvoice.products = products;
-            await this.saveInvoice(queryRunner, savedInvoice);
-        }
-
-        // Commit the transaction
-        await queryRunner.commitTransaction();
-        return savedInvoice;
+      // Create a new Invoices entity without products
+      const invoice = this.createInvoice(rest, customer, agent);
+  
+      // Save the invoice to get the generated id
+      const savedInvoice = await this.saveInvoice(queryRunner, invoice);
+  
+      if (productDtos) {
+        // Create and save the products
+        const products = await this.createAndSaveProducts(queryRunner, productDtos, savedInvoice);
+  
+        // Update the invoice with the products
+        savedInvoice.products = products;
+        await this.saveInvoice(queryRunner, savedInvoice);
+      }
+  
+      // Commit the transaction
+      await queryRunner.commitTransaction();
+      return savedInvoice;
     } catch (err) {
-        // If any operation fails, roll back the transaction
-        await queryRunner.rollbackTransaction();
-        throw err;
+      // If any operation fails, roll back the transaction
+      await queryRunner.rollbackTransaction();
+      throw err;
     } finally {
-        // Release the query runner
-        await queryRunner.release();
+      // Release the query runner
+      await queryRunner.release();
     }
-}
-
-createInvoice(rest: Partial<Invoice>, customer: Customers, agent: Agent): Invoice {
-  return new Invoice({
+  }
+  
+  createInvoice(rest: Partial<Invoice>, customer: Customers, agent: Agent): Invoice {
+    return new Invoice({
       ...rest,
       customer,
       agent,
-  });
-}
+    });
+  }
 
 async saveInvoice(queryRunner: QueryRunner, invoice: Invoice): Promise<Invoice> {
   return await queryRunner.manager.save(invoice);

@@ -19,7 +19,6 @@ import {
 } from '@nestjs/swagger';
 
 
-import { AgentsService } from '../agents.service';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto';
 import { InvoicesService } from './invoices.service';

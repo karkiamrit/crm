@@ -46,6 +46,7 @@ export class CreateInvoiceDto {
   @Type(() => CreateProductInputDTO)
   products?: CreateProductInputDTO[];
 
-  @IsNotEmpty({ message: 'customerId is required' })
-  customerId: number;
+  @IsOptional({ message: 'customerId is required'})
+  @IsNumber()
+  customerId?: number;
 }
