@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSegmentDto } from './dto/create-segment.dto';
-import { UpdateSegmentDto } from './dto/update-segment.dto';
+import { AddLeadsToSegmentDto, UpdateSegmentDto } from './dto/update-segment.dto';
 import { ExtendedFindOptions, User } from '@app/common';
 import { Segment } from './entities/segment.entity';
 import { SegmentsRepository } from './segments.repository';
@@ -47,7 +47,7 @@ export class SegmentsService {
     const result = await this.segmentsRepository.findAll(options);
     const data = result.data;
     const total = result.total;
-    return { data, total };
+    return { data, total }; 
   }
 
   async findOne(id: number): Promise<Segment> {
@@ -96,4 +96,28 @@ export class SegmentsService {
       segment,
     );
   }
+
+  async addLeadsToSegment(segmentId: number, leadIds: number[]): Promise<Segment> {
+    const segment = await this.segmentsRepository.findOne({ id: segmentId }, ['leads']);  
+    if (!segment) {
+      throw new NotFoundException('Segment not found');
+    }
+  
+    const leads = await Promise.all(leadIds.map(id => this.leadsService.getOne(id)));
+    if (leads.some(lead => !lead)) {
+      throw new NotFoundException('One or more leads not found');
+    }
+    
+    if (!Array.isArray(segment.leads)) {
+      segment.leads = [segment.leads];
+    }
+    segment.leads.push(...leads);
+    return this.segmentsRepository.findOneAndUpdate(
+      { where: { id: segment.id } },
+      segment,
+    );
+
+  }
 }
+
+

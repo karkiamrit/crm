@@ -40,6 +40,10 @@ export class CreateInvoiceDto {
   @IsString({ message: 'remarks must be a string' })
   @IsNotEmpty({ message: 'remarks is required' })
   remarks: string;
+  
+  @IsString({ message: 'customer Name must be a string' })
+  @IsNotEmpty({ message: 'customer name is required' })
+  customerName: string;
 
   @IsOptional()
   @ValidateNested({ each: true, message: 'products must be valid' })

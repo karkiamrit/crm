@@ -9,3 +9,9 @@ export class UpdateSegmentDto {
     @IsNotEmpty()
     description: string;
   }
+
+  export class AddLeadsToSegmentDto {
+    @IsArray()
+    @IsNumber({}, { each: true })
+    leadIds: number[];
+  }

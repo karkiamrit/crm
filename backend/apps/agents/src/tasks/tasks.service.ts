@@ -42,7 +42,7 @@ export class TasksService {
   async findAll(
     options: ExtendedFindOptions<Tasks>,
   ): Promise<{ data: Tasks[]; total: number }> {
-    options.relations = ['leads'];
+    options.relations = ['lead'];
     const result = await this.tasksRepository.findAll(options);
     const data = result.data;
     const total = result.total;

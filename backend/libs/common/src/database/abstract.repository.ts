@@ -59,8 +59,11 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
     return result;
   }
 
-  async findOne(where: FindOptionsWhere<T>): Promise<T> {
-    return await this.entityRepository.findOne({ where });
+  // async findOne(where: FindOptionsWhere<T>): Promise<T> {
+  //   return await this.entityRepository.findOne({ where });
+  // }
+  async findOne(where: FindOptionsWhere<T>, relations?: string[]): Promise<T> {
+    return await this.entityRepository.findOne({ where, relations });
   }
 
   // async findOneAndUpdate(
