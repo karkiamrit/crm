@@ -1,20 +1,19 @@
-import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsString, IsNumber, IsOptional, IsInt } from 'class-validator';
 
 export class CreateDocumentDto {
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({message: 'Name is required'})
+  @IsString({message: 'Name must be string'})
   name: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({message: 'Description must be string'})
   description?: string;
 
   @IsOptional()
-  @IsString() 
+  @IsString({message: 'File must be string'}) 
   documentFile?: string;
 
   @IsNotEmpty()
-  @IsString()
+  @IsString({message: 'LeadId must be string'})
   leadId: string;
 }

@@ -14,31 +14,31 @@ import { LeadType } from '../../shared/data';
 
 export class UpdateCustomerDto {
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'Address Must be a String'})
   address?: string;
 
   @IsOptional()
-  @IsEnum(LeadType)
+  @IsEnum(LeadType, { message: 'Type must be a valid type'})
   type?: LeadType;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'Details Must be a String' })
   details?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'Phone Must be a String'})
   phone?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'Email Must be a String'})
   email?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'Name Must be a String'})
   name?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'Source Must be a String'})
   source?: string;
 
   @IsOptional()
@@ -52,7 +52,7 @@ export class UpdateCustomerDto {
   service?: UpdateServiceInputDTO;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'Profile Picture Must be a String'})
   profilePicture?: string;
   // @IsOptional()
   // @IsArray()

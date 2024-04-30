@@ -1,17 +1,17 @@
 import { IsString, IsNotEmpty, IsOptional, IsArray, IsNumber } from 'class-validator';
 
 export class UpdateSegmentDto {
-    @IsString()
+    @IsString({ message: 'Name must be a string'})
     @IsOptional()
     name: string;
 
-    @IsString()
+    @IsString({ message: 'Description must be a string'})
     @IsNotEmpty()
     description: string;
   }
 
   export class AddLeadsToSegmentDto {
-    @IsArray()
+    @IsArray({ message: 'LeadIds must be an array'})
     @IsNumber({}, { each: true })
     leadIds: number[];
   }

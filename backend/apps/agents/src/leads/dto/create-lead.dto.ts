@@ -9,43 +9,43 @@ import { LeadsStatus, LeadType } from "../../shared/data";
 
 export class CreateLeadDto {
     @IsOptional()
-    @IsString()
+    @IsString({ message: 'Name must be string'})
     address?: string;
 
     @IsOptional()
-    @IsString()
+    @IsString({ message: 'Details must be string'})
     details?: string;
 
     @IsOptional()
-    @IsString()
+    @IsString({ message: 'Revenue Potential must be string'})
     revenuePotential?: string;
 
     @IsOptional()
-    @IsEnum(LeadsStatus)
+    @IsEnum(LeadsStatus, { message: 'Status must be valid'})
     status?: LeadsStatus;
 
     @IsOptional()
-    @IsEnum(LeadType)
+    @IsEnum(LeadType, {message: 'Lead type must be valid'})
     type?: LeadType;
 
-    @IsNotEmpty()
-    @IsString()
+    @IsNotEmpty({ message: 'Phone number is required'})
+    @IsString({ message: 'Phone number must be string'})
     phone: string;
 
-    @IsNotEmpty()
-    @IsString()
+    @IsNotEmpty({ message: 'Email is required'})
+    @IsString({message: 'Email must be string'})
     email: string;
 
-    @IsNotEmpty()
-    @IsString()
+    @IsNotEmpty({ message: 'Name is required'})
+    @IsString({message: "Name shoule be string"})
     name: string;
 
     @IsOptional()
-    @IsString()
+    @IsString({ message: 'Source must be string'})
     source?: string;
 
     @IsOptional()
-    @IsString()
+    @IsString({ message: 'Segment must be string'})
     segment?: string;
 
     @IsOptional()
@@ -59,6 +59,6 @@ export class CreateLeadDto {
     service?: CreateServiceInputDTO;
 
     @IsOptional()
-    @IsString()
+    @IsString({ message: 'Profile picture must be string'})
     profilePicture?: string;
 }

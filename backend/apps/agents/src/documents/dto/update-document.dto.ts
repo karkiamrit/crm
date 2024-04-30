@@ -2,15 +2,15 @@ import { IsString, IsOptional, IsNumber } from 'class-validator';
 
 export class UpdateDocumentDto {
   @IsOptional()
-  @IsString()
+  @IsString({message : 'Name must be string'})
   name?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({message : 'Document File must be string'})
   documentFile?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({message : 'Created By must be string'})
   createdBy?: string;
 
   @IsOptional()

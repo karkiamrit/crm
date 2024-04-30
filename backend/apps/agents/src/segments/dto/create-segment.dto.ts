@@ -1,26 +1,26 @@
 import { IsString, IsNotEmpty, IsOptional, IsArray, IsNumber } from 'class-validator';
 
 export class CreateSegmentDto {
-  @IsString()
-  @IsNotEmpty()
+  @IsString({message: 'Name must be string'})
+  @IsNotEmpty({message: 'Name is required'})
   name: string;
 
-  @IsString()
+  @IsString({message: 'Description must be string'})
   @IsOptional()
   description?: string;
 
-  @IsArray()
+  @IsArray({message: 'Leads must be an array'})
   @IsOptional()
   leads: number[];
 
 }
 
 export class CreateFromLeadDto{
-  @IsString()
-  @IsNotEmpty()
+  @IsString({message: 'Name must be string'})
+  @IsNotEmpty({message: 'Name is required'})
   name: string;
 
   @IsNumber()
-  @IsNotEmpty()
+  @IsNotEmpty({message: 'LeadId is required'})
   leadId: number;
 }

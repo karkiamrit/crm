@@ -6,32 +6,32 @@ import { LeadType } from "../../shared/data";
 
 
 export class CreateCustomerDto {
-    @IsNotEmpty()
-    @IsString()
+    @IsNotEmpty({ message: 'Address is required'})
+    @IsString({ message: 'Address must be a string'})
     address: string;
 
     @IsOptional()
-    @IsString()
+    @IsString({ message: 'Details must be a string'})
     details: string;
 
-    @IsNotEmpty()
-    @IsString()
+    @IsNotEmpty({ message: 'Phone is required'})
+    @IsString({ message: 'Phone must be a string'})
     phone: string;
 
-    @IsNotEmpty()
-    @IsString()
+    @IsNotEmpty({ message: 'Email is required'})
+    @IsString({ message: 'Email must be a string'})
     email: string;
 
-    @IsNotEmpty()
-    @IsString()
+    @IsNotEmpty({ message: 'Name is required'})
+    @IsString({ message: 'Name must be a string'})
     name: string;
 
     @IsOptional()
-    @IsEnum(LeadType)
+    @IsEnum(LeadType, { message: 'Type must be a valid lead type'})
     type?: LeadType;
 
     @IsOptional()
-    @IsString()
+    @IsString({ message: 'Source must be a string'})
     source: string;
 
     @IsOptional()
@@ -45,7 +45,7 @@ export class CreateCustomerDto {
     service: CreateServiceInputDTO;
 
     @IsOptional()
-    @IsString()
+    @IsString({ message: 'Profile picture must be a string'})
     profilePicture?: string;
     // @IsOptional()
     // @IsArray()

@@ -8,31 +8,31 @@ import { LeadsStatus, LeadType } from "../../shared/data";
 
 export class UpdateLeadDto {
     @IsOptional()
-    @IsString()
+    @IsString({ message: 'Name is not valid'})
     address?: string;
 
     @IsOptional()
-    @IsString()
+    @IsString({ message: 'Details is not valid'})
     details?: string;
 
     @IsOptional()
-    @IsEnum(LeadsStatus)
+    @IsEnum(LeadsStatus,{ message: 'Status is not valid'})
     status?: LeadsStatus;
 
     @IsOptional()
-    @IsEnum(LeadType)
+    @IsEnum(LeadType, { message: 'Type is not valid'})
     type?: LeadType;
 
     @IsOptional()
-    @IsString()
+    @IsString({ message: 'Phone is not valid'})
     phone?: string;
 
     @IsOptional()
-    @IsString()
+    @IsString({message: "Email must be string"})
     email?: string;
 
     @IsOptional()
-    @IsString()
+    @IsString({ message: 'Name is not valid'})
     name?: string;
 
     @IsOptional()
@@ -40,7 +40,7 @@ export class UpdateLeadDto {
     revenuePotential?: number;
 
     @IsOptional()
-    @IsString()
+    @IsString({message: 'Source must be string'})
     source?: string;
 
     @IsOptional()
@@ -54,6 +54,6 @@ export class UpdateLeadDto {
     service?: UpdateServiceInputDTO;
 
     @IsOptional()
-    @IsString()
+    @IsString({message: "Profile picture must be string"})
     profilePicture: string;
 }

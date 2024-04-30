@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString, Validate, ValidationOptions } from 'class-validator';
 
 export class CreateProductInputDTO {
     @IsOptional()
@@ -10,15 +10,18 @@ export class CreateProductInputDTO {
     description?: string;
   
     @IsOptional()
-    @IsNumber()
+    @IsNumber({}, { message: 'Quantity must be a number' })
+    @Validate(ifNotNumber, { message: 'Quantity must be a number' })
     quantity?: number;
   
     @IsOptional()
-    @IsNumber()
+    @IsNumber({}, { message: 'Prive must be a number' })
+    @Validate(ifNotNumber, { message: '{Price} must be a number' })
     price?: number;
   
     @IsOptional()
-    @IsNumber()
+    @IsNumber({}, { message: 'Total must be a number' })
+    @Validate(ifNotNumber, { message: 'Total must be a number' })
     total?: number;
 }
 
@@ -32,14 +35,22 @@ export class UpdateProductInputDTO {
     description?: string;
   
     @IsOptional()
-    @IsNumber()
+    @IsNumber({}, { message: 'Quantity must be a number' })
+    @Validate(ifNotNumber, { message: 'Quantity must be a number' })
     quantity?: number;
   
     @IsOptional()
-    @IsNumber()
+    @IsNumber({}, { message: 'Prive must be a number' })
+    @Validate(ifNotNumber, { message: '{Price} must be a number' })
     price?: number;
   
     @IsOptional()
-    @IsNumber()
+    @IsNumber({}, { message: 'Total must be a number' })
+    @Validate(ifNotNumber, { message: 'Total must be a number' })
     total?: number;
+}
+
+
+export function ifNotNumber(value: any, validationArguments?: ValidationOptions) {
+    return typeof value === 'number' || value === undefined;
 }

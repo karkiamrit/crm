@@ -294,11 +294,18 @@ export class LeadsController {
       { header: 'Agent Id', key: 'agentId', width: 10 },
       { header: 'Product Id', key: 'productId', width: 10 },
       { header: 'Service Id', key: 'serviceId', width: 10 },
+      { header: 'Segments', key: 'segments', width: 30 },
     ];
 
     // Add rows to the worksheet
     leads.data.forEach((lead) => {
-      worksheet.addRow(lead);
+      const leadWithSegmentsString = {
+        ...lead,
+        segments: lead.segments.map(segment => segment.name).join(', '),
+      };
+      worksheet.addRow(leadWithSegmentsString);
+
+      // worksheet.addRow(lead);
     });
 
     res.setHeader(

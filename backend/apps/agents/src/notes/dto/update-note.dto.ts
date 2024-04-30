@@ -12,6 +12,6 @@ export class UpdateNoteDto extends PartialType(CreateNoteDto) {
     customerId: number;
 
     @IsOptional()
-    @IsString()
+    @IsString({message: 'Content must be string'})
     content: string;
 }

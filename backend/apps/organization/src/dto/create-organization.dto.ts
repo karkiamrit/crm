@@ -1,8 +1,9 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateOrganizationsDto {
   @ApiProperty({ description: 'The name of the organization.', example: 'Organization Name' })
+  @IsNotEmpty()
   @IsString()
   name: string;
 

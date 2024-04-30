@@ -11,6 +11,6 @@ export class CreateNoteDto {
     customerId?: number;
 
     @IsNotEmpty()
-    @IsString()
+    @IsString({message: 'Content must be a string'})
     content: string;
 }

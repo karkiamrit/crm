@@ -13,16 +13,18 @@ import { Status } from '@app/common';
 
 export class CreateUserDto {
   @ApiProperty({ example: 'john.doe@example.com', description: 'The email of the user.' })
-  @IsEmail()
+  @IsNotEmpty({ message: 'Email is required'})
+  @IsEmail({},{ message: 'Email is invalid'})
   email: string;
 
   @ApiProperty({ example: '123456789wwE#', description: 'The password of the user.' })
-  @IsStrongPassword()
+  @IsNotEmpty({ message: 'Password is required' })
+  @IsStrongPassword({},{ message: 'Password is too weak'})
   password: string;
 
   @ApiProperty({example: '1', description: 'The id of organization'})
-  @IsNotEmpty()
-  @IsNumber()
+  @IsNotEmpty({ message: 'Organization id is required'})
+  @IsNumber({},{ message: 'Organization id must be a number'})
   organizationId: number;
 
   // @ApiProperty({ 
@@ -44,7 +46,7 @@ export class CreateUserAdminDto extends CreateUserDto {
     description: 'The roles of the user.' 
   })
   @IsOptional()
-  @IsArray()
+  @IsArray({message: 'Roles must be an array'})
   roles?: RoleDto[];
 
   @ApiProperty({ description: 'The status of the user.', enum: ['Live', 'Inactive'], example: 'Live' })

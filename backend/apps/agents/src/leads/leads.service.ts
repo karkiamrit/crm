@@ -300,7 +300,10 @@ export class LeadsService {
 
   async findAll(options: ExtendedFindOptions<Leads>) {
     options.relations = ['product', 'service', 'timelines', 'segments'];
-    return this.leadsRepository.findAll(options);
+
+    const leads= await this.leadsRepository.findAll(options);
+    console.log(leads)
+    return leads;
   }
 
   async findAllWithSegmentId(options: ExtendedFindOptions<Leads>, id: number) {
@@ -314,7 +317,7 @@ export class LeadsService {
   }
 
   async findAllLeadsOfAgent(options: ExtendedFindOptions<Leads>) {
-    return this.leadsRepository.findAll(options);
+    return await this.leadsRepository.findAll(options);
   }
 
   async getOne(id: number) {
