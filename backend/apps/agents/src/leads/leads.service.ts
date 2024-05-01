@@ -302,7 +302,6 @@ export class LeadsService {
     options.relations = ['product', 'service', 'timelines', 'segments'];
 
     const leads= await this.leadsRepository.findAll(options);
-    console.log(leads)
     return leads;
   }
 

@@ -305,7 +305,7 @@ export class LeadsController {
       };
       worksheet.addRow(leadWithSegmentsString);
 
-      // worksheet.addRow(lead);
+      worksheet.addRow(lead);
     });
 
     res.setHeader(
@@ -334,7 +334,7 @@ export class LeadsController {
         },
       }),
       fileFilter: (req, file, callback) => {
-        if (!file.originalname.match(/\.(csv|xlsx|ods)$/)) {
+        if (!file.originalname.match(/\.(csv)$/)) {
           return callback(new Error('Only CSV files are allowed!'), false);
         }
         callback(null, true);
@@ -366,7 +366,7 @@ export class LeadsController {
     const headers = (worksheet.getRow(1).values as string[]).slice(1);
     const missingHeaders = requiredHeaders.filter((h) => !headers.includes(h));
     if (missingHeaders.length > 0) {
-      throw new Error("Missing headers");
+      throw new NotFoundException(`Missing required headers: ${missingHeaders.join(', ')}`);
     }
     const leads = [];
   
