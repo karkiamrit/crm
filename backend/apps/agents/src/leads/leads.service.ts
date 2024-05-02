@@ -326,11 +326,11 @@ export class LeadsService {
   async updateProfilePicture(leadId: number, filePath: string): Promise<Leads> {
     // const organization = await this.organizationsRepository.findOne({id: organizationId});
     console.log('filePath', filePath);
-    const organization = await this.leadsRepository.findOneAndUpdate(
+    const leads = await this.leadsRepository.findOneAndUpdate(
       { where: { id: leadId } },
       { profilePicture: filePath },
     );
-    return organization;
+    return leads;
   }
 
   async addLeadToSegment(segmentId: number, leadId: number): Promise<Segment> {

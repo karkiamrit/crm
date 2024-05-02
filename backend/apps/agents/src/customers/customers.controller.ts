@@ -29,6 +29,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { extname } from 'path';
 import { AgentsService } from '../agents.service';
 import { Agent } from '../entities/agent.entity';
+import { Customers } from './entities/customer.entity';
 
 @Controller('customers')
 export class CustomersController {
@@ -167,6 +168,34 @@ export class CustomersController {
   async getOne(@Param('id') id: number) {
     return this.customersService.getOne(id);
   }
+
+  @Put(':id/update-profile-picture')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Upload lead picture' })
+  @ApiResponse({
+    status: 200,
+    description: 'The picture has been successfully uploaded.',
+  })
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads', // specify the path where the files should be saved
+        filename: (req, file, callback) => {
+          const name = Date.now() + extname(file.originalname); // generate a unique filename
+          callback(null, name);
+        },
+      }),
+    }),
+  )
+  async updateProfilePicture(
+    @UploadedFile() file: Express.Multer.File,
+    @Param('id') id: number,
+    @Param('filename') filename: string,
+  ): Promise<Customers> {
+    return this.customersService.updateProfilePicture(id, file.path);
+  }
+
 
   // @Patch(':id/upload-documents')
   // @UseGuards(JwtAuthGuard)

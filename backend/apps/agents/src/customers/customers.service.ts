@@ -129,6 +129,17 @@ export class CustomersService {
     return this.customersRepository.findOne({ id });
   }
 
+  async updateProfilePicture(leadId: number, filePath: string): Promise<Customers> {
+    const customer = await this.customersRepository.findOneAndUpdate(
+      { where: { id: leadId } },
+      { profilePicture: filePath },
+    );
+    if(!customer){
+      throw new NotFoundException(`Customer with ID ${leadId} not found`);
+    }
+    return customer;
+  }
+
   // async addDocuments(id: number, documents: string[]): Promise<Customers> {
   //   const customer = await this.customersRepository.findOne({ id });
   //   customer.documents = [...customer.documents, ...documents];
