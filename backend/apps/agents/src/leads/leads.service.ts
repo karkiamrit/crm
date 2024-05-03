@@ -333,6 +333,29 @@ export class LeadsService {
     return leads;
   }
 
+  async leadsTimeline(id: number) {
+    return this.leadsTimelineRepository.findAll({
+      where: {
+        lead: {
+          id,
+        },
+      },
+      relations: ['lead']
+      ,
+    });
+  }
+
+  async customersTimeline(id: number) {
+    return this.customerTimelineRepository.findAll({
+      where: {
+        customer: {
+          id,
+        },
+      },
+      relations: ['customer']
+    });
+  }
+
   async addLeadToSegment(segmentId: number, leadId: number): Promise<Segment> {
     const segment = await this.segmentsRepository.findOne({ id: segmentId });
   

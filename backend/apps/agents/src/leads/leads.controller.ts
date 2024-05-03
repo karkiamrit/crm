@@ -255,6 +255,24 @@ export class LeadsController {
     return this.leadsService.updateProfilePicture(id, file.path);
   }
 
+  @Get('leadtimeline/:id')
+  @UseGuards(JwtAuthGuard)
+  @Roles('Agent')
+  @ApiOperation({ summary: 'Get lead timeline' })
+  @ApiBearerAuth()
+  async getLeadTimeline(@Param('id') id: number) {
+    return this.leadsService.leadsTimeline(id);
+  }
+
+  @Get('customertimeline/:id')
+  @UseGuards(JwtAuthGuard)
+  @Roles('Agent')
+  @ApiOperation({ summary: 'Get lead timeline' })
+  @ApiBearerAuth()
+  async getCustomerTimeline(@Param('id') id: number) {
+    return this.leadsService.customersTimeline(id);
+  }
+
   // @Delete(':id/delete-document/:filename')
   // @UseGuards(JwtAuthGuard)
   // @Roles('Admin')
