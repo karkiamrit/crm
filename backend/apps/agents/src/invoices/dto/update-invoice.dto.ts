@@ -15,12 +15,15 @@ export class UpdateInvoiceDto {
     @IsNumber()
     @IsOptional()
     total?: number;
+
+    @IsString({ message: 'customer Name must be a string' })
+    @IsOptional()
+    customerName: string;
   
     @IsNumber()
     @IsOptional()
     discount?: number;
   
-    @IsDate()
     @IsOptional()
     dueDate?: Date;
   

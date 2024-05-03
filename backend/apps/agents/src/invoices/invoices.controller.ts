@@ -56,6 +56,7 @@ export class InvoicesController {
   @ApiBody({ type: UpdateInvoiceDto })
   async update(@Param('id') id: number, @Body() updateInvoicesDto: UpdateInvoiceDto) {
     return this.invoicesService.update(id, updateInvoicesDto);
+    console.log(updateInvoicesDto)
   }
 
   @Delete(':id')

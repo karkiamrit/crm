@@ -139,7 +139,7 @@ async createAndSaveProducts(queryRunner: QueryRunner, productDtos: CreateProduct
     updateInvoiceDto: UpdateInvoiceDto,
   ): Promise<Invoice> {
     const invoice = await this.invoicesRepository.findOne({ id });
-
+    console.log(updateInvoiceDto)
     if (!invoice) {
       throw new NotFoundException(`Invoice #${id} not found`);
     }
@@ -152,9 +152,7 @@ async createAndSaveProducts(queryRunner: QueryRunner, productDtos: CreateProduct
         return product;
       });
     }
-
     Object.assign(invoice, updateInvoiceDto);
-
     return await this.invoicesRepository.findOneAndUpdate({where:{id:invoice.id}}, invoice);
   }
 }

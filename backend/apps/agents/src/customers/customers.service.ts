@@ -128,7 +128,7 @@ export class CustomersService {
   async getOne(id: number) {
     return this.customersRepository.findOne({ id });
   }
-
+  
   async updateProfilePicture(leadId: number, filePath: string): Promise<Customers> {
     const customer = await this.customersRepository.findOneAndUpdate(
       { where: { id: leadId } },
