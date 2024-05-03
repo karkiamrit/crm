@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Query,
+  Put,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -60,7 +61,7 @@ export class TasksController {
     return this.tasksService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   @UseGuards(JwtAuthGuard)
   @Roles('Admin')
   @ApiOperation({ summary: 'Update a task' })
