@@ -7,12 +7,14 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { LeadsModule } from '../leads/leads.module';
 import { SegmentsRepository } from './segments.repository';
 import { SegmentsService } from './segments.service';
+import { CustomersModule } from '../customers/customers.module';
 
 
 @Module({
   imports:[
     DatabaseModule,
     forwardRef(()=>LeadsModule), 
+    forwardRef(()=>CustomersModule), 
     DatabaseModule.forFeature([Segment]),
     ConfigModule.forRoot({
       isGlobal: true,

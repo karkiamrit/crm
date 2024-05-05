@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { SegmentsService } from './segments.service';
 import { CreateSegmentDto } from './dto/create-segment.dto';
-import { AddLeadsToSegmentDto, UpdateSegmentDto } from './dto/update-segment.dto';
+import { AddCustomersToSegmentDto, AddLeadsToSegmentDto, UpdateSegmentDto } from './dto/update-segment.dto';
 import { JwtAuthGuard, Roles, CurrentUser, User } from '@app/common';
 import {
   ApiOperation,
@@ -115,20 +115,24 @@ export class SegmentsController {
     return this.segmentsService.addLeadToSegment(+segmentId, +leadId);
   }
 
-  @Put(':segmentId/addLead')
+  @Post(':segmentId/addCustomer/:customerId')
+  @UseGuards(JwtAuthGuard)
+  @Roles('Admin')
+  async addCustomerToSegment(
+    @Param('segmentId') segmentId: string,
+    @Param('customerId') customerId: string,
+  ) {
+    return this.segmentsService.addCustomerToSegment(+segmentId, +customerId);
+  }
+
+
+  @Put(':segmentId/addCustomer')
   @UseGuards(JwtAuthGuard)
   @Roles('Agent')
-  @ApiOperation({ summary: 'Add leads to an existing segment' })
-  @ApiBearerAuth()
-  @ApiParam({
-    name: 'segmentId',
-    required: true,
-    description: 'The id of the segment',
-  })
   addLeadsToSegment(
     @Param('segmentId') segmentId: number,
-    @Body() addLeadsToSegmentDto: AddLeadsToSegmentDto,
+    @Body() addCustomersToSegmentDto: AddCustomersToSegmentDto,
   ) {
-    return this.segmentsService.addLeadsToSegment(segmentId, addLeadsToSegmentDto.leadIds);
+    return this.segmentsService.addCustomersToSegment(segmentId, addCustomersToSegmentDto.customerIds);
   }
 }

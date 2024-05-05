@@ -4,6 +4,8 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -15,6 +17,7 @@ import { LeadType } from '../../shared/data';
 import { Invoice } from '../../invoices/entities/invoice.entity';
 import { Document } from '../../documents/entities/document.entity';
 import { Tasks } from '../../tasks/entities/task.entity';
+import { Segment } from '../../segments/entities/segment.entity';
 
 @Entity()
 export class Customers extends AbstractEntity<Customers> {
@@ -72,4 +75,12 @@ export class Customers extends AbstractEntity<Customers> {
 
   @Column({ nullable: true })
   profilePicture: string;
+
+  @ManyToMany(() => Segment, (segment) => segment.leads, {
+    eager: true,
+    onDelete: 'CASCADE',
+    nullable: true
+  })
+  @JoinTable()
+  segments: Segment[];
 }

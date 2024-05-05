@@ -1,44 +1,69 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSegmentDto } from './dto/create-segment.dto';
-import { AddLeadsToSegmentDto, UpdateSegmentDto } from './dto/update-segment.dto';
+import {
+  AddLeadsToSegmentDto,
+  UpdateSegmentDto,
+} from './dto/update-segment.dto';
 import { ExtendedFindOptions, User } from '@app/common';
 import { Segment } from './entities/segment.entity';
 import { SegmentsRepository } from './segments.repository';
 import { LeadsService } from '../leads/leads.service';
 import { Leads } from '../leads/entities/lead.entity';
+import { Customers } from '../customers/entities/customer.entity';
+import { CustomersService } from '../customers/customers.service';
 
 @Injectable()
 export class SegmentsService {
   constructor(
     private readonly segmentsRepository: SegmentsRepository,
     private readonly leadsService: LeadsService,
+    private readonly customersService: CustomersService,
   ) {}
 
   async create(
     createSegmentDto: CreateSegmentDto,
     user: User,
   ): Promise<Segment> {
-    let leads: Leads[] = []; 
-    let segment : Segment;
-    if(createSegmentDto.leads){
+    let leads: Leads[] = [];
+    let customers: Customers[] = [];
+    let segment: Segment;
+    if (createSegmentDto.leads) {
       leads = createSegmentDto.leads
-      ? await Promise.all(createSegmentDto.leads.map((id) => this.leadsService.getOne(id)))
-      : [];
+        ? await Promise.all(
+            createSegmentDto.leads.map((id) => this.leadsService.getOne(id)),
+          )
+        : [];
       segment = new Segment({
         ...createSegmentDto,
         leads,
+        customers,
         userId: user.id,
       });
     }
-    else{
+    if (createSegmentDto.customers) {
+      customers = createSegmentDto.customers
+        ? await Promise.all(
+            createSegmentDto.customers.map((id) =>
+              this.customersService.getOne(id),
+            ),
+          )
+        : [];
       segment = new Segment({
         ...createSegmentDto,
         leads,
-        userId: user.id,})
+        customers,
+        userId: user.id,
+      });
+    } else {
+      segment = new Segment({
+        ...createSegmentDto,
+        leads,
+        customers,
+        userId: user.id,
+      });
     }
     return this.segmentsRepository.create(segment);
   }
-
 
   async findAll(
     options: ExtendedFindOptions<Segment>,
@@ -47,7 +72,7 @@ export class SegmentsService {
     const result = await this.segmentsRepository.findAll(options);
     const data = result.data;
     const total = result.total;
-    return { data, total }; 
+    return { data, total };
   }
 
   async findOne(id: number): Promise<Segment> {
@@ -97,17 +122,43 @@ export class SegmentsService {
     );
   }
 
-  async addLeadsToSegment(segmentId: number, leadIds: number[]): Promise<Segment> {
-    const segment = await this.segmentsRepository.findOne({ id: segmentId }, ['leads']);  
+  async addCustomerToSegment(
+    segmentId: number,
+    customerId: number,
+  ): Promise<Segment> {
+    const segment = await this.segmentsRepository.findOne({ id: segmentId });
+    const customer = await this.leadsService.getOne(customerId);
+
+    if (!segment || !customer) {
+      throw new NotFoundException('Segment or Lead not found');
+    }
+
+    segment.leads.push(customer);
+
+    return this.segmentsRepository.findOneAndUpdate(
+      { where: { id: segment.id } },
+      segment,
+    );
+  }
+
+  async addLeadsToSegment(
+    segmentId: number,
+    leadIds: number[],
+  ): Promise<Segment> {
+    const segment = await this.segmentsRepository.findOne({ id: segmentId }, [
+      'leads',
+    ]);
     if (!segment) {
       throw new NotFoundException('Segment not found');
     }
-  
-    const leads = await Promise.all(leadIds.map(id => this.leadsService.getOne(id)));
-    if (leads.some(lead => !lead)) {
+
+    const leads = await Promise.all(
+      leadIds.map((id) => this.leadsService.getOne(id)),
+    );
+    if (leads.some((lead) => !lead)) {
       throw new NotFoundException('One or more leads not found');
     }
-    
+
     if (!Array.isArray(segment.leads)) {
       segment.leads = [segment.leads];
     }
@@ -116,8 +167,33 @@ export class SegmentsService {
       { where: { id: segment.id } },
       segment,
     );
+  }
 
+  async addCustomersToSegment(
+    segmentId: number,
+    customerIds: number[],
+  ): Promise<Segment> {
+    const segment = await this.segmentsRepository.findOne({ id: segmentId }, [
+      'customers',
+    ]);
+    if (!segment) {
+      throw new NotFoundException('Segment not found');
+    }
+
+    const customers = await Promise.all(
+      customerIds.map((id) => this.leadsService.getOne(id)),
+    );
+    if (customers.some((lead) => !lead)) {
+      throw new NotFoundException('One or more leads not found');
+    }
+
+    if (!Array.isArray(segment.customers)) {
+      segment.customers = [segment.customers];
+    }
+    segment.leads.push(...customers);
+    return this.segmentsRepository.findOneAndUpdate(
+      { where: { id: segment.id } },
+      segment,
+    );
   }
 }
-
-

@@ -7,23 +7,37 @@ import { DocumentsRepository } from './documents.repository';
 import { ExtendedFindOptions, User } from '@app/common';
 import { readFileSync } from 'fs';
 import { AgentsService } from '../agents.service';
+import { Leads } from '../leads/entities/lead.entity';
+import { Customers } from '../customers/entities/customer.entity';
+import { CustomersService } from '../customers/customers.service';
 
 @Injectable()
 export class DocumentsService {
   constructor(
     private readonly leadsService: LeadsService,
     private readonly documentsRepository: DocumentsRepository,
+    private readonly customersService: CustomersService,
   ) {}
 
   async create(createDocumentDto: CreateDocumentDto, user: User) {
-    const { leadId, ...rest } = createDocumentDto;
-    
-    const lead = await this.leadsService.getOne(Number(leadId));
-    if (!lead) {
-      throw new NotFoundException(`Lead #${leadId} not found`);
-    }
+    const { leadId, customerId, ...rest } = createDocumentDto;
     const documents = new Document(rest);
-    documents.lead = lead;
+    let lead: Leads, customer: Customers
+    if(leadId){
+      lead = await this.leadsService.getOne(Number(leadId));
+      documents.lead = lead;
+      if (!lead) {
+        throw new NotFoundException(`Lead #${leadId} not found`);
+      }
+    }
+    
+    if(customerId){
+      customer = await this.customersService.getOne(Number(customerId));
+      documents.customer = customer;
+      if (!customer) {
+        throw new NotFoundException(`Customer #${customerId} not found`);
+      }
+    }
     documents.userId = user.id;
     documents.createdBy = user.email;
 

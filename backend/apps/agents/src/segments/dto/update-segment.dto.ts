@@ -15,3 +15,9 @@ export class UpdateSegmentDto {
     @IsNumber({}, { each: true })
     leadIds: number[];
   }
+
+  export class AddCustomersToSegmentDto {
+    @IsArray({ message: 'customers must be an array'})
+    @IsNumber({}, { each: true })
+    customerIds: number[];
+  }

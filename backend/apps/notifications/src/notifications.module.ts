@@ -7,6 +7,7 @@ import { AUTH_SERVICE, DatabaseModule, LoggerModule } from '@app/common';
 import { Notification } from './entities/notification.entity';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { NotificationsRepository } from './notifications.repository';
+import { MailchimpModule } from './mailchimp/mailchimp.module';
 @Module({
   imports: [
     DatabaseModule,
@@ -41,6 +42,7 @@ import { NotificationsRepository } from './notifications.repository';
       },
     ]),
     LoggerModule,
+    MailchimpModule,
   ],
   controllers: [NotificationsController],
   providers: [NotificationsService, NotificationsRepository],

@@ -7,6 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { DocumentsRepository } from './documents.repository';
 import { LeadsModule } from '../leads/leads.module';
+import { CustomersModule } from '../customers/customers.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { LeadsModule } from '../leads/leads.module';
       },
     ]),
     LeadsModule,
+    CustomersModule
   ],
   controllers: [DocumentsController],
   providers: [DocumentsService, DocumentsRepository],

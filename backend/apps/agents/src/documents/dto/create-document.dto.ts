@@ -13,7 +13,11 @@ export class CreateDocumentDto {
   @IsString({message: 'File must be string'}) 
   documentFile?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString({message: 'LeadId must be string'})
   leadId: string;
+
+  @IsOptional()
+  @IsString({message: 'CustomerId must be string'})
+  customerId: string;
 }

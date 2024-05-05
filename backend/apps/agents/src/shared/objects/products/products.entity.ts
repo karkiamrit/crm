@@ -19,7 +19,7 @@ export class Product extends AbstractEntity<Product> {
     @Column({nullable:true})
     total: number;
 
-    @ManyToOne(() => Invoice, invoice => invoice.products)
+    @ManyToOne(() => Invoice, invoice => invoice.products, {onDelete: 'CASCADE'})
     invoice: Invoice;
 
     toJSON() {

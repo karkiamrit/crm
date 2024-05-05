@@ -62,7 +62,6 @@ export class Invoice extends AbstractEntity<Invoice> {
 
   @OneToMany(() => Product, (product) => product.invoice, {
     eager: true,
-    onDelete: 'CASCADE',
     nullable: true,
   })
   @JoinColumn({ name: 'productId' })
