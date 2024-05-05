@@ -41,7 +41,7 @@ export class Document extends AbstractEntity<Document> {
   @JoinColumn({ name: 'leadId' })
   lead: Leads;
 
-  @ManyToOne(() => Leads, (lead) => lead.officialDocs, {
+  @ManyToOne(() => Customers, (customer) => customer.officialDocs, {
     eager: true,
     onDelete: 'CASCADE',
     nullable: true,
