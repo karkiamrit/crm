@@ -21,7 +21,7 @@ import { Workbook } from 'exceljs';
 import { Response } from 'express';
 
 import { LeadsService } from './leads.service';
-import { CreateLeadDto } from './dto/create-lead.dto';
+import { CreateLeadDto, LeadImportDto } from './dto/create-lead.dto';
 import { CurrentUser, JwtAuthGuard, Roles, User } from '@app/common';
 import {
   ApiOperation,
@@ -37,12 +37,15 @@ import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { extname } from 'path';
 import { AgentsService } from '../agents.service';
 import { Agent } from '../entities/agent.entity';
+import { SegmentsRepository } from '../segments/segments.repository';
+import { Segment } from '../segments/entities/segment.entity';
 
 @Controller('leads')
 export class LeadsController {
   constructor(
     private readonly leadsService: LeadsService,
     private readonly agentService: AgentsService,
+    private readonly segmentsRepository: SegmentsRepository,
   ) {}
 
   @Post()
@@ -103,28 +106,36 @@ export class LeadsController {
     // return await this.leadsService.create(rest, user, agent, segment);
     let agent: Agent;
 
-  let profilePicture: any;
-  if (file) {
-    profilePicture = file.path;
-  }
-  const createLeadsDtoSeperated: CreateLeadDto = {
-    ...createLeadsDto,
-    profilePicture,
-  };
-  const { ...createLeadsDtoWithDocuments} = createLeadsDtoSeperated;
-  if (referenceNo.referenceNo === '' || referenceNo.referenceNo === null || referenceNo.referenceNo === undefined) {
-    return await this.leadsService.create(createLeadsDtoWithDocuments, user);
-  } else {
-    agent = await this.agentService.getOneByReferenceNo(
-      referenceNo.referenceNo,
-    );
-    if (!agent) {
-      throw new NotFoundException(
-        `Agent with reference no ${referenceNo.referenceNo} not found`,
-      );
+    let profilePicture: any;
+    if (file) {
+      profilePicture = file.path;
     }
-  }
-  return await this.leadsService.create(createLeadsDtoWithDocuments, user, agent);
+    const createLeadsDtoSeperated: CreateLeadDto = {
+      ...createLeadsDto,
+      profilePicture,
+    };
+    const { ...createLeadsDtoWithDocuments } = createLeadsDtoSeperated;
+    if (
+      referenceNo.referenceNo === '' ||
+      referenceNo.referenceNo === null ||
+      referenceNo.referenceNo === undefined
+    ) {
+      return await this.leadsService.create(createLeadsDtoWithDocuments, user);
+    } else {
+      agent = await this.agentService.getOneByReferenceNo(
+        referenceNo.referenceNo,
+      );
+      if (!agent) {
+        throw new NotFoundException(
+          `Agent with reference no ${referenceNo.referenceNo} not found`,
+        );
+      }
+    }
+    return await this.leadsService.create(
+      createLeadsDtoWithDocuments,
+      user,
+      agent,
+    );
   }
 
   @Put(':id')
@@ -319,7 +330,7 @@ export class LeadsController {
     leads.data.forEach((lead) => {
       const leadWithSegmentsString = {
         ...lead,
-        segments: lead.segments.map(segment => segment.name).join(', '),
+        segments: lead.segments.map((segment) => segment.name).join(', '),
       };
       worksheet.addRow(leadWithSegmentsString);
 
@@ -362,10 +373,18 @@ export class LeadsController {
   async import(
     @UploadedFile() file: Express.Multer.File,
     @Res() res: Response,
-    @CurrentUser() user: User
+    @Body() leadImportDto: LeadImportDto,
+    @CurrentUser() user: User,
   ) {
     const agent = await this.agentService.getAgentByUserId(user.id);
-    
+
+    // If bucketId is provided, find the corresponding bucket
+    let segment: Segment;
+    if (leadImportDto.segmentId) {
+      segment = await this.segmentsRepository.findOne({
+        id: leadImportDto.segmentId,
+      });
+    }
     const workbook = new Workbook();
 
     await workbook.csv.readFile(file.path);
@@ -384,10 +403,12 @@ export class LeadsController {
     const headers = (worksheet.getRow(1).values as string[]).slice(1);
     const missingHeaders = requiredHeaders.filter((h) => !headers.includes(h));
     if (missingHeaders.length > 0) {
-      throw new NotFoundException(`Missing required headers: ${missingHeaders.join(', ')}`);
+      throw new NotFoundException(
+        `Missing required headers: ${missingHeaders.join(', ')}`,
+      );
     }
     const leads = [];
-  
+
     worksheet.eachRow((row, rowNumber) => {
       if (rowNumber === 1) return; // Skip header row
 
@@ -400,7 +421,7 @@ export class LeadsController {
         'phone',
         'email',
         'name',
-        'source'
+        'source',
       ].forEach((header) => {
         const index = headers.indexOf(header);
         if (index !== -1) {
@@ -409,6 +430,14 @@ export class LeadsController {
       });
       if (agent) {
         lead['agent'] = agent;
+      }
+      // If status is provided in leadImportDto, assign it to the lead
+      if (leadImportDto.status) {
+        lead['status'] = leadImportDto.status;
+      }
+      // If bucket is found, associate it with the lead
+      if (segment) {
+        lead['bucket'] = segment;
       }
       leads.push(lead);
     });
@@ -449,7 +478,6 @@ export class LeadsController {
     //   };
     //   leads.push(lead);
     // });
-  
   }
 
   private normalizeEnumValue(value: any, enumObject: any): string {

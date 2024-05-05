@@ -62,3 +62,13 @@ export class CreateLeadDto {
     @IsString({ message: 'Profile picture must be string'})
     profilePicture?: string;
 }
+
+export class LeadImportDto{
+    @IsOptional()
+    @IsNumber()
+    segmentId: number;
+
+    @IsOptional()
+    @IsEnum(LeadsStatus, { message: 'Status must be valid'})
+    status?: LeadsStatus;
+}
