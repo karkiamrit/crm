@@ -18,6 +18,10 @@ export class UpdateCustomerDto {
   address?: string;
 
   @IsOptional()
+  @IsString({ message: 'Revenue Potential must be string'})
+  revenuePotential?: string;
+
+  @IsOptional()
   @IsEnum(LeadType, { message: 'Type must be a valid type'})
   type?: LeadType;
 

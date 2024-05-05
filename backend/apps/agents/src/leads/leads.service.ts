@@ -17,7 +17,6 @@ import { CustomerTimelineRepository } from '../shared/objects/timelines/customer
 import { Customers } from '../customers/entities/customer.entity';
 import { CustomersService } from '../customers/customers.service';
 import { LeadsStatus } from '../shared/data';
-import { create } from 'domain';
 import { LeadTimelineRepository } from '../shared/objects/timelines/leads.timelines.repository';
 import { SegmentsRepository } from '../segments/segments.repository';
 import { Segment } from '../segments/entities/segment.entity';

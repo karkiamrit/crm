@@ -76,6 +76,9 @@ export class Customers extends AbstractEntity<Customers> {
   @Column({ nullable: true })
   profilePicture: string;
 
+  @Column({type: 'float', nullable:true})
+  revenuePotential: number;
+
   @ManyToMany(() => Segment, (segment) => segment.leads, {
     eager: true,
     onDelete: 'CASCADE',

@@ -35,6 +35,10 @@ export class CreateCustomerDto {
     source: string;
 
     @IsOptional()
+    @IsString({ message: 'Revenue Potential must be string'})
+    revenuePotential?: string;
+
+    @IsOptional()
     @ValidateNested({ each: true })
     @Type(() => CreateProductInputDTO)
     product: CreateProductInputDTO;
