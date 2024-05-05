@@ -7,6 +7,7 @@ import * as cookieParser from 'cookie-parser';
 import { Transport } from '@nestjs/microservices';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import {json} from 'express';
+import { BadRequestExceptionFilter, HttpExceptionFilter } from '@app/common/exception/exception.filter';
 
 
 async function bootstrap() {
@@ -21,6 +22,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document); 
 
+  app.useGlobalFilters(new HttpExceptionFilter(), new BadRequestExceptionFilter());
 
   const configService = app.get(ConfigService);
   app.connectMicroservice({

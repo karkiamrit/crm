@@ -6,7 +6,7 @@ import { LeadType } from "../../shared/data";
 
 
 export class CreateCustomerDto {
-    @IsNotEmpty({ message: 'Address is required'})
+    @IsOptional()
     @IsString({ message: 'Address must be a string'})
     address: string;
 
