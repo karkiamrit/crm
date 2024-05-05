@@ -36,7 +36,7 @@ export class CreateCustomerDto {
 
     @IsOptional()
     @IsString({ message: 'Revenue Potential must be string'})
-    revenuePotential?: string;
+    revenuePotential?: number;
 
     @IsOptional()
     @ValidateNested({ each: true })
