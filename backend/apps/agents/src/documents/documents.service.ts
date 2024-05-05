@@ -20,6 +20,7 @@ export class DocumentsService {
   ) {}
 
   async create(createDocumentDto: CreateDocumentDto, user: User) {
+    console.log('createDocumentDto', createDocumentDto);
     const { leadId, customerId, ...rest } = createDocumentDto;
     const documents = new Document(rest);
     let lead: Leads, customer: Customers
@@ -51,6 +52,12 @@ export class DocumentsService {
   async findAllByLeadId(options: ExtendedFindOptions<Document>, id: number) {
     options.relations = ['lead'];
     options.where = { lead: { id: id } };
+    return this.documentsRepository.findAll(options);
+  }
+
+  async findAllByCustomerId(options: ExtendedFindOptions<Document>, id: number) {
+    options.relations = ['customer'];
+    options.where = { customer: { id: id } };
     return this.documentsRepository.findAll(options);
   }
 

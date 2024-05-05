@@ -24,7 +24,6 @@ export class DocumentsController {
         },
       }),
       fileFilter: (req, file, callback) => {
-        console.log(file);
         if (!file.originalname.match(/\.(pdf|docx|xlsx|csv|doc|jpeg|gif|png|svg|jpg)$/)) {
           return callback(new Error('Only document files are allowed!'), false);
         }
@@ -34,7 +33,6 @@ export class DocumentsController {
     }),
   )
   create(@UploadedFile() file: Express.Multer.File, @Body() createDocumentDto: CreateDocumentDto, @CurrentUser() user: User) {
-    console.log(file)
     createDocumentDto.documentFile = file.path;
     return this.documentsService.create(createDocumentDto, user);
   }
@@ -51,6 +49,14 @@ export class DocumentsController {
   @Roles('Agent')
   findAllByLeadId(@Query() query: any, @Param('id') id: number) {
     return this.documentsService.findAllByLeadId(query, id);
+  }
+
+  
+  @Get('customer/:id')
+  @UseGuards(JwtAuthGuard)
+  @Roles('Agent')
+  findAllByCustomerId(@Query() query: any, @Param('id') id: number) {
+    return this.documentsService.findAllByCustomerId(query, id);
   }
 
   @Get(':id')

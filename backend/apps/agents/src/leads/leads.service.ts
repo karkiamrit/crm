@@ -272,7 +272,7 @@ export class LeadsService {
     });
     if (agent) {
       customer.agentId = agent.id;
-    }
+    } 
     return await this.customerService.create(customer, agent);
   }
 
