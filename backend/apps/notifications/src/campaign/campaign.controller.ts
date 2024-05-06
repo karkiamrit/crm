@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { CampaignsService } from './campaign.service';
 import { JwtAuthGuard, Roles} from '@app/common';
-import { EventPattern, Payload } from '@nestjs/microservices';
 import { ApiOperation, ApiBearerAuth, ApiParam, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { UpdateCampaignDto } from './dto/update-campaign.dto';
 import { CreateCampaignDto } from './dto/create-campaign.dto';
