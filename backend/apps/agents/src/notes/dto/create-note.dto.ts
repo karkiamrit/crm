@@ -3,11 +3,11 @@ import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 export class CreateNoteDto {
   
     @IsOptional()
-    @IsNumber()
+    @IsNumber({},{message: 'Lead Id must be a number'})
     leadId?: number;
 
     @IsOptional()
-    @IsNumber()
+    @IsNumber({},{message: 'Customer Id must be a number'})
     customerId?: number;
 
     @IsNotEmpty()
