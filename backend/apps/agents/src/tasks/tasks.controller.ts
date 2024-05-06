@@ -44,7 +44,7 @@ export class TasksController {
   @ApiOperation({ summary: 'Get all tasks' })
   @ApiBearerAuth()
   async findAll(@Query() query: any) {
-    return this.tasksService.findAll({ query });
+    return this.tasksService.findAll( query );
   }
 
   @Get(':id')

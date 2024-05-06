@@ -46,6 +46,7 @@ export class DocumentsService {
   }
 
   async findAll(options: ExtendedFindOptions<Document>) {
+    options.relations= ['lead', 'customer']
     return this.documentsRepository.findAll(options);
   }
 

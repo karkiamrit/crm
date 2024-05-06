@@ -1,5 +1,12 @@
 import { AbstractEntity } from '@app/common';
-import { Entity, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Priority } from '../../shared/data';
 import { Agent } from '../../entities/agent.entity';
 import { Customers } from '../../customers/entities/customer.entity';

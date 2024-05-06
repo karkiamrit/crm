@@ -41,12 +41,9 @@ export class TasksService {
 
   async findAll(
     options: ExtendedFindOptions<Tasks>,
-  ): Promise<{ data: Tasks[]; total: number }> {
+  ) {
     options.relations = ['lead','customer'];
-    const result = await this.tasksRepository.findAll(options);
-    const data = result.data;
-    const total = result.total;
-    return { data, total };
+    return await this.tasksRepository.findAll(options);
   }
 
   async findOne(id: number): Promise<Tasks> {
@@ -56,7 +53,6 @@ export class TasksService {
     }
     return task;
   }
-
 
   async update(id: number, updateTaskDto: UpdateTaskDto): Promise<Tasks> {
     const task = await this.findOne(id);
