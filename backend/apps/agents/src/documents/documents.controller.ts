@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -93,6 +93,20 @@ export class DocumentsController {
     return this.documentsService.remove(+id);
   }
   
+  //only for test of notification
+  @Post()
+  async handleWebhook(@Body() data: any): Promise<string> {
+    try {
+      // Process the webhook data here...
+      console.log(data);
+
+      // If everything is successful, return a success message
+      return 'Webhook received!';
+    } catch (error) {
+      console.error(`Failed to process webhook: ${error}`);
+      throw new HttpException('Failed to process webhook', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
   // @Post(':id/append')
   // @UseInterceptors(
   //   FileInterceptor('documentFile', {

@@ -58,7 +58,7 @@ export class CampaignsService {
       console.log(this.configService.get('CAMPAIGN_PASSWORD'))
       const notification = await transporter.sendMail({
         from: `sixcrm@homepapa.ca`,
-        to: 'abc@homepapa.ca',
+        to: 'sixcrm@homepapa.ca',
         subject: 'hello world',
         text: 'hi there',
       });
