@@ -76,6 +76,6 @@ export class TasksService {
     if (!task) {
       throw new NotFoundException(`Task with ID ${id} not found`);
     }
-    await this.tasksRepository.findOneAndDelete(task);
+    await this.tasksRepository.findOneAndDelete({id});
   }
 }
