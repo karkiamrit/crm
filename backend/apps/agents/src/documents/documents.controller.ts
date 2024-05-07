@@ -94,11 +94,14 @@ export class DocumentsController {
   }
   
   //only for test of notification
-  @Post()
-  async handleWebhook(@Body() data: any): Promise<string> {
+  @Post('webhook')
+  async handleWebhook(@Body('mandrill_events') mandrillEvents: any[]): Promise<string> {
     try {
       // Process the webhook data here...
-      console.log(data);
+      for (const event of mandrillEvents) {
+        console.log(event);
+        // Process each event...
+      }
 
       // If everything is successful, return a success message
       return 'Webhook received!';
