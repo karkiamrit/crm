@@ -13,10 +13,10 @@ export class Segment extends AbstractEntity<Segment>{
   @Column()
   description: string;
 
-  @ManyToMany(() => Leads, leads => leads.segments,{ nullable: true})
+  @ManyToMany(() => Leads, leads => leads.segments,{ nullable: true, onDelete: 'CASCADE'})
   leads: Leads[];
 
-  @ManyToMany(() => Leads, leads => leads.segments,{ nullable: true})
+  @ManyToMany(() => Leads, leads => leads.segments,{ nullable: true, onDelete: 'CASCADE'})
   customers: Customers[];
 
   @CreateDateColumn()
