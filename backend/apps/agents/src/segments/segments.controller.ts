@@ -126,10 +126,20 @@ export class SegmentsController {
   }
 
 
-  @Put(':segmentId/addCustomer')
+  @Put(':segmentId/addLeads')
   @UseGuards(JwtAuthGuard)
   @Roles('Agent')
   addLeadsToSegment(
+    @Param('segmentId') segmentId: number,
+    @Body() addLeadsToSegmentDto: AddLeadsToSegmentDto,
+  ) {
+    return this.segmentsService.addLeadsToSegment(segmentId, addLeadsToSegmentDto.leadIds);
+  }
+
+  @Put(':segmentId/addCustomers')
+  @UseGuards(JwtAuthGuard)
+  @Roles('Agent')
+  addCustomersToSegment(
     @Param('segmentId') segmentId: number,
     @Body() addCustomersToSegmentDto: AddCustomersToSegmentDto,
   ) {
