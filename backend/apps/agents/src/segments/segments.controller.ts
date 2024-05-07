@@ -125,7 +125,6 @@ export class SegmentsController {
     return this.segmentsService.addCustomerToSegment(+segmentId, +customerId);
   }
 
-
   @Put(':segmentId/addLeads')
   @UseGuards(JwtAuthGuard)
   @Roles('Agent')

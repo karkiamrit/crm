@@ -56,9 +56,7 @@ export class InvoicesService {
       customer = await this.customersService.getOne(customerId);
     }
   
-    if (user) {
-      agent = await this.agentsService.getAgentByUserId(user.id);
-    }
+    agent = await this.agentsService.getAgentByUserId(user.id);
   
     // Start a transaction
     const queryRunner = this.manager.connection.createQueryRunner();    
@@ -66,7 +64,7 @@ export class InvoicesService {
   
     try {
       // Create a new Invoices entity without products
-      const invoice = this.createInvoice(rest, customer, agent);
+      const invoice = this.createInvoice(rest, customer, agent, user);
   
       // Save the invoice to get the generated id
       const savedInvoice = await this.saveInvoice(queryRunner, invoice);
@@ -93,12 +91,23 @@ export class InvoicesService {
     }
   }
   
-  createInvoice(rest: Partial<Invoice>, customer: Customers, agent: Agent): Invoice {
-    return new Invoice({
-      ...rest,
-      customer,
-      agent,
-    });
+  createInvoice(rest: Partial<Invoice>, customer: Customers, agent: Agent, user: User): Invoice {
+    if(agent){
+      return new Invoice({
+        ...rest,
+        customer,
+        agent,
+        createdBy: agent.name
+      });
+    }else{
+      return new Invoice({
+        ...rest,
+        customer,
+        agent,
+        createdBy: user.email.split('@')[0]
+      });
+    }
+  
   }
 
 async saveInvoice(queryRunner: QueryRunner, invoice: Invoice): Promise<Invoice> {

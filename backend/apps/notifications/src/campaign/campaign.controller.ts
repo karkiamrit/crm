@@ -73,4 +73,9 @@ export class CampaignController {
   async getOne(@Param('id') id: number) {
     return this.campaignsService.getOne(id);
   }
+
+  @Post('/send')
+  async sendCampaign() {
+    return this.campaignsService.sendEmail('Sixdesigns');
+  }
 }

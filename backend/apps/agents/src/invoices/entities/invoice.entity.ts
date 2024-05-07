@@ -66,4 +66,7 @@ export class Invoice extends AbstractEntity<Invoice> {
   })
   @JoinColumn({ name: 'productId' })
   products: Product[];
+
+  @Column({nullable: true})
+  createdBy: string;
 }

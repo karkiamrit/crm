@@ -15,17 +15,6 @@ export class CampaignsService {
     private readonly configService: ConfigService,
     private readonly notificationService: NotificationsService,
   ) {}
-  
-  private readonly transporter = nodemailer.createTransport({
-    host: this.configService.get('SMTP_HOST'),
-    port: this.configService.get('SMTP_PORT'),
-    secure: false, // true for 465, false for other ports
-    auth: {
-      user: this.configService.get('SMTP_USER'),
-      pass: this.configService.get('SMTP_PASSWORD'),
-    },
-    connectionTimeout: 60000
-  });
 
   async create(createCampaignsDto: CreateCampaignDto, notificationId: number) {
     const notification = await this.notificationService.getOne(notificationId);
@@ -53,5 +42,30 @@ export class CampaignsService {
     return this.campaignsRepository.findOne({ id });
   }
 
-  
+  async sendEmail(username: string) {
+    try {
+      console.log(username);
+      const transporter = nodemailer.createTransport({
+        host: this.configService.get('CAMPAIGN_HOST'),
+        port: this.configService.get('CAMPAIGN_PORT'),
+        secure: false, // true for 465, false for other ports
+        auth: {
+          user: username,
+          pass: 'md-bCrwAVFpRF36B7Iz7TZLHw',
+        },
+        connectionTimeout: 60000
+      });
+      console.log(this.configService.get('CAMPAIGN_PASSWORD'))
+      const notification = await transporter.sendMail({
+        from: `sixcrm@homepapa.ca`,
+        to: 'abc@homepapa.ca',
+        subject: 'hello world',
+        text: 'hi there',
+      });
+      return notification;
+    } catch (error) {
+      console.error(`Failed to send email: ${error}`);
+      throw error;
+    }
+  }
 }
