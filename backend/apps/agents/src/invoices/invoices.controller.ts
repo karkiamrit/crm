@@ -39,7 +39,6 @@ export class InvoicesController {
     @Body() createInvoicesDto: CreateInvoiceDto,
     @CurrentUser() user: User,
   ) {
-
     return await this.invoicesService.create(createInvoicesDto, user);
   }
 
@@ -91,5 +90,4 @@ export class InvoicesController {
   async getOne(@Param('id') id: number) {
     return this.invoicesService.getOne(id);
   }
-
 }

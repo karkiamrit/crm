@@ -126,6 +126,11 @@ async createAndSaveProducts(queryRunner: QueryRunner, productDtos: CreateProduct
       // Save the product
       const savedProduct = await queryRunner.manager.save(product);
 
+      // Check if the product was saved successfully
+      if (!savedProduct) {
+        throw new Error('Failed to save product');
+      }
+
       products.push(savedProduct);
   }
   return products;
