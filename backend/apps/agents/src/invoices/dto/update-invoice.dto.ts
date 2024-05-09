@@ -46,5 +46,5 @@ export class UpdateInvoiceDto {
     @IsOptional()
     @ValidateNested({ each: true })
     @Type(() => UpdateProductInputDTO)
-    product?: UpdateProductInputDTO[];
+    products?: UpdateProductInputDTO[];
 }

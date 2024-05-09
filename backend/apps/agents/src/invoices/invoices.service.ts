@@ -154,14 +154,15 @@ async createAndSaveProducts(queryRunner: QueryRunner, productDtos: CreateProduct
     updateInvoiceDto: UpdateInvoiceDto,
   ): Promise<Invoice> {
     const invoice = await this.invoicesRepository.findOne({ id },['products'] );
-    console.log(updateInvoiceDto)
     if (!invoice) {
       throw new NotFoundException(`Invoice #${id} not found`);
     }
 
-    if (updateInvoiceDto.product) {
+    if (updateInvoiceDto.products) {
       // Map UpdateProductInputDTO[] to Product[]
-      const updatedProducts = updateInvoiceDto.product.map(async (prod) => {
+      const updatedProducts = updateInvoiceDto.products.map(async (prod) => {
+        console.log(prod);
+
         let product: Product;
         if (prod.id) {
           const id = prod.id;
@@ -178,6 +179,7 @@ async createAndSaveProducts(queryRunner: QueryRunner, productDtos: CreateProduct
           await this.productRepository.findOneAndUpdate({where:{id: product.id}}, product);
         } else {
           product = new Product(prod); // Create a new instance of the Product entity
+          product.invoice = invoice;
           await this.productRepository.create(product);
 
         }
