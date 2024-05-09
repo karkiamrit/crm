@@ -137,6 +137,7 @@ export class CustomersService {
   }
 
   async findAll(options: ExtendedFindOptions<Customers>) {
+    options.relations = ['product', 'service', 'timelines', 'segments'];
     return this.customersRepository.findAll(options);
   }
 
