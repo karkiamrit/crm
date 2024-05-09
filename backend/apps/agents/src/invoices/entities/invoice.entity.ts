@@ -25,19 +25,19 @@ export class Invoice extends AbstractEntity<Invoice> {
   @Column({nullable: true})
   notes: string;
 
-  @Column()
+  @Column({type: 'float'})
   subTotal: number;
 
-  @Column()
+  @Column({type: 'float'})
   tax: number;
 
   @Column({default: InvoiceStatus.PENDING, type: 'enum', enum: InvoiceStatus})
   status: InvoiceStatus
 
-  @Column()
+  @Column({type: 'float'})
   total: number;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'float' })
   discount: number;
 
   @CreateDateColumn()
