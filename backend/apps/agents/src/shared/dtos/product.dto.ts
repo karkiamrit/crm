@@ -26,7 +26,7 @@ export class CreateProductInputDTO {
 }
 
 export class UpdateProductInputDTO {
-    @IsNotEmpty()
+    @IsOptional()
     @IsNumber({}, { message: 'Id must be a number' })
     id: number;
 

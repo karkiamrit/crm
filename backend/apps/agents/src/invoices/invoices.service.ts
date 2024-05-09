@@ -149,12 +149,11 @@ async createAndSaveProducts(queryRunner: QueryRunner, productDtos: CreateProduct
   async getOne(id: number) {
     return this.invoicesRepository.findOne({ id });
   }
-
   async update(
     id: number,
     updateInvoiceDto: UpdateInvoiceDto,
   ): Promise<Invoice> {
-    const invoice = await this.invoicesRepository.findOne({ id }, ['products']);
+    const invoice = await this.invoicesRepository.findOne({ id },['products'] );
     console.log(updateInvoiceDto)
     if (!invoice) {
       throw new NotFoundException(`Invoice #${id} not found`);
@@ -163,19 +162,36 @@ async createAndSaveProducts(queryRunner: QueryRunner, productDtos: CreateProduct
     if (updateInvoiceDto.product) {
       // Map UpdateProductInputDTO[] to Product[]
       const updatedProducts = updateInvoiceDto.product.map(async (prod) => {
-        const id =prod.id;
-        let product = await this.productRepository.findOne({id}); // Fetch the product by its ID
-        if (!product) {
-          throw new NotFoundException(`Product #${prod.id} not found`);
+        let product: Product;
+        if (prod.id) {
+          const id = prod.id;
+          product = await this.productRepository.findOne({ id }); // Fetch the product by its ID
+          if (!product) {
+            throw new NotFoundException(`Product #${prod.id} not found`);
+          }
+          // Only update the fields that are present in the DTO
+          for (const key in prod) {
+            if (prod[key] !== undefined) {
+              product[key] = prod[key];
+            }
+          }
+          await this.productRepository.findOneAndUpdate({where:{id: product.id}}, product);
+        } else {
+          product = new Product(prod); // Create a new instance of the Product entity
+          await this.productRepository.create(product);
+
         }
-        Object.assign(product, prod);
-        await this.productRepository.findOneAndUpdate({where:{ id: product.id}},product); // Save the updated product back to the database
         return product;
       });
 
       invoice.products = await Promise.all(updatedProducts);
     }
-    Object.assign(invoice, updateInvoiceDto);
-    return await this.invoicesRepository.findOneAndUpdate({ where: {id: invoice.id}  },  invoice ); // Save the updated invoice back to the database
+    // Only update the fields that are present in the DTO
+    for (const key in updateInvoiceDto) {
+      if (updateInvoiceDto[key] !== undefined) {
+        invoice[key] = updateInvoiceDto[key];
+      }
+    }
+    return await this.invoicesRepository.findOneAndUpdate({where:{ id: invoice.id}}, invoice); // Save the updated invoice back to the database
   }
 }
