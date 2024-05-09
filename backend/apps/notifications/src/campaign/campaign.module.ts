@@ -1,6 +1,6 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AUTH_SERVICE, DatabaseModule, LoggerModule } from '@app/common';
+import { AUTH_SERVICE, DatabaseModule, LoggerModule, SEGMENT_SERVICE } from '@app/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { Campaign } from './entities/campaign.entity';
 import { CampaignController } from './campaign.controller';
@@ -25,9 +25,25 @@ import { NotificationsModule } from '../notifications.module';
             host: configService.get('AUTH_HOST'),
             port: configService.get('AUTH_PORT'),
           },
+          
+          
         }),
         inject: [ConfigService],
       },
+
+      {
+        name: SEGMENT_SERVICE,
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: configService.get('AGENTS_HOST'),
+            port: configService.get('AGENTS_PORT'),
+          },
+        }),
+        inject: [ConfigService],
+      },
+      
+      
     ]),
     LoggerModule,
   ],

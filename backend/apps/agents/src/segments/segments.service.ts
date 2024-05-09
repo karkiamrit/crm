@@ -75,8 +75,12 @@ export class SegmentsService {
     return { data, total };
   }
 
-  async findOne(id: number): Promise<Segment> {
-    const segment = await this.segmentsRepository.findOne({ id });
+  async findOne(id: number, relations?: string[]): Promise<Segment> {
+    if (!relations) {
+      relations = [];
+    }
+    const segment = await this.segmentsRepository.findOne({ id }, relations);
+  
     if (!segment) {
       throw new NotFoundException(`Segment with ID ${id} not found`);
     }

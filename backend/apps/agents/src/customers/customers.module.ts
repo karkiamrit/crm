@@ -13,10 +13,14 @@ import { CustomerTimelineRepository } from '../shared/objects/timelines/customer
 import { CustomersController } from './customers.controller';
 import { CustomersService } from './customers.service';
 import { CustomersRepository } from './customers.repository';
+import { SegmentsRepository } from '../segments/segments.repository';
+import { SegmentsModule } from '../segments/segments.module';
 
 @Module({
   imports: [
     forwardRef(() => AgentsModule), 
+    forwardRef(() => SegmentsModule),
+
     DatabaseModule,
     DatabaseModule.forFeature([Customers, CustomerTimeline, Product, Service, CustomerTimelineRepository]),
     ConfigModule.forRoot({

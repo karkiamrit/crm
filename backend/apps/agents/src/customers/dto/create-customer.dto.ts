@@ -1,4 +1,4 @@
-import { IsArray, IsEnum, IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 import { CreateProductInputDTO } from "../../shared/dtos/product.dto";
 import { CreateServiceInputDTO } from "../../shared/dtos/service.dto";
@@ -55,4 +55,10 @@ export class CreateCustomerDto {
     // @IsArray()
     // @IsString({each:true})
     // documents: string[];
+}
+
+export class CustomerImportDto{
+    @IsOptional()
+    @IsNumber()
+    segmentId: number;
 }

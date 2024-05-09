@@ -49,6 +49,27 @@ export class CustomersService {
     return customer;
   }
 
+
+  async createMany(createCustomerDtos: CreateCustomerDto[]) {
+    const customers = createCustomerDtos.map((dto) => {
+      let product: Product, service: Service;
+      if (dto.product) {
+        product = new Product(dto.product);
+      }
+      if (dto.service) {
+        service = new Service(dto.service);
+      }
+      const {revenuePotential,...rest} = dto;
+      let updatedRevenuePotential = Number(dto.revenuePotential)
+      return new Customers({
+        ...rest,
+        service,
+        product
+      });
+    });
+    return await this.customersRepository.createMany(customers);
+  }
+
   async update(id: number, updateCustomersDto: UpdateCustomerDto) {
     // Find the customer
     const customer = await this.customersRepository.findOne({ id });

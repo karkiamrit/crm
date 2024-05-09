@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CampaignsService } from './campaign.service';
-import { JwtAuthGuard, Roles} from '@app/common';
+import { CurrentUser, JwtAuthGuard, Roles, User} from '@app/common';
 import { ApiOperation, ApiBearerAuth, ApiParam, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { UpdateCampaignDto } from './dto/update-campaign.dto';
 import { CreateCampaignDto } from './dto/create-campaign.dto';
@@ -75,7 +75,11 @@ export class CampaignController {
   }
 
   @Post('/send')
-  async sendCampaign() {
-    return this.campaignsService.sendEmail('Sixdesigns');
+  @UseGuards(JwtAuthGuard)
+  async sendCampaign(
+    @Body('campaignId') campaignId: number ,
+    @CurrentUser() user: User,
+  ) {
+    return this.campaignsService.sendCampain(campaignId, user.email.split('@')[0]);
   }
 }

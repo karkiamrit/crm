@@ -20,6 +20,7 @@ import {
   ApiParam,
   ApiBody,
 } from '@nestjs/swagger';
+import { EventPattern } from '@nestjs/microservices';
 
 @Controller('segments')
 export class SegmentsController {
@@ -143,5 +144,10 @@ export class SegmentsController {
     @Body() addCustomersToSegmentDto: AddCustomersToSegmentDto,
   ) {
     return this.segmentsService.addCustomersToSegment(segmentId, addCustomersToSegmentDto.customerIds);
+  }
+
+  @EventPattern('get_segment_by_id')
+  async getSegmentById(data: { id: number }) {
+    return this.segmentsService.findOne(data.id, ['leads']);
   }
 }

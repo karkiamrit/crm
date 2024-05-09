@@ -1,15 +1,15 @@
-import { IsNumber, IsOptional, IsString } from "class-validator";
+import { IsArray, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class UpdateCampaignDto {
-    @IsString()
+    @IsString({ message: 'Title must be a string'})
     @IsOptional()
     title?: string;
   
-    @IsString()
+    @IsString({ message: 'Description must be a string'})
     @IsOptional()
     description?: string;
   
-    @IsNumber()
     @IsOptional()
+    @IsNumber({}, {message: 'SegmentId must be an array of numbers'})
     segmentId?: number;
 }

@@ -448,36 +448,9 @@ export class LeadsController {
       console.error(error);
       throw new InternalServerErrorException('Error creating leads');
     }
-
-    // worksheet.eachRow((row, rowNumber) => {
-    //   console.log("here")
-
-    //   if (rowNumber === 1) return; // Skip header row
-    //   const lead = {
-    //     address: row.getCell(headers.indexOf('address') + 1).value,
-    //     details: row.getCell(headers.indexOf('details') + 1).value,
-    //     status:
-    //       LeadsStatus[
-    //         this.normalizeEnumValue(
-    //           row.getCell(headers.indexOf('status') + 1).value,
-    //           LeadsStatus,
-    //         )
-    //       ],
-    //     type: LeadType[
-    //       this.normalizeEnumValue(
-    //         row.getCell(headers.indexOf('type') + 1).value,
-    //         LeadType,
-    //       )
-    //     ],
-    //     phone: row.getCell(headers.indexOf('phone') + 1).value,
-    //     email: row.getCell(headers.indexOf('email') + 1).value,
-    //     name: row.getCell(headers.indexOf('name') + 1).value,
-    //     source: row.getCell(headers.indexOf('source') + 1).value,
-    //     product: row.getCell(headers.indexOf('product') + 1).value,
-    //     service: row.getCell(headers.indexOf('service') + 1).value,
-    //   };
-    //   leads.push(lead);
-    // });
+  }
+  private normalizeHeader(header: string): string {
+    return header.toLowerCase().trim();
   }
 
   private normalizeEnumValue(value: any, enumObject: any): string {
@@ -488,7 +461,4 @@ export class LeadsController {
     return matchedEnumKey ? enumObject[matchedEnumKey] : normalizedValue;
   }
 
-  private normalizeHeader(header: string): string {
-    return header.toLowerCase().trim();
-  }
 }
