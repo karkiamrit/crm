@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString, Validate, ValidationOptions } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Validate, ValidationOptions } from 'class-validator';
 
 export class CreateProductInputDTO {
     @IsOptional()
@@ -26,6 +26,10 @@ export class CreateProductInputDTO {
 }
 
 export class UpdateProductInputDTO {
+    @IsNotEmpty()
+    @IsNumber({}, { message: 'Id must be a number' })
+    id: number;
+
     @IsOptional()
     @IsString({ message: 'name must be a string' })
     name?: string;
