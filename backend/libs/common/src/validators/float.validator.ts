@@ -9,7 +9,10 @@ export function IsFloat(validationOptions?: ValidationOptions) {
          options: validationOptions,
          validator: {
             validate(value: any, args: ValidationArguments) {
-               return Number(value) === value && value % 1 !== 0;
+               if (Number(value) === value && value % 1 === 0) {
+                  value = value.toFixed(4);
+               }
+               return !isNaN(parseFloat(value)) && isFinite(value);
             }
          }
       });

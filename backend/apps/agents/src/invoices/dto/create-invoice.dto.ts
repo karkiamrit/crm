@@ -14,18 +14,18 @@ import { InvoiceStatus } from '../../shared/data/enums/invoice.status.enum';
 import { IsFloat } from '@app/common/validators/float.validator';
 
 export class CreateInvoiceDto {
-  // @IsNumber()
+  @IsNumber()
   @IsFloat({ message: 'subtotal must be a float' })
 
   @IsNotEmpty({ message: 'subTotal is required' })
   subTotal: number;
 
-  // @IsNumber()
+  @IsNumber()
   @IsFloat({ message: 'discount must be a float' })
   @IsNotEmpty({ message: 'tax is required' })
   tax: number;
 
-  // @IsNumber()
+  @IsNumber()
   @IsFloat({ message: 'total must be a float' })
   @IsNotEmpty({ message: 'total is required' })
   total: number;
@@ -34,7 +34,7 @@ export class CreateInvoiceDto {
   @IsEnum(InvoiceStatus, { message: 'status must be a valid enum' })
   status?: InvoiceStatus;
 
-  // @IsNumber()
+  @IsNumber()
   @IsFloat({ message: 'discount must be a float' })
   @IsNotEmpty({ message: 'discount is required' })
   discount: number;

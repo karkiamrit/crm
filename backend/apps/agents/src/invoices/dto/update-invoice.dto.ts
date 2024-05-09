@@ -5,19 +5,19 @@ import { InvoiceStatus } from "../../shared/data/enums/invoice.status.enum";
 import { IsFloat } from "@app/common/validators/float.validator";
 
 export class UpdateInvoiceDto {
-    // @IsNumber()
+    @IsNumber()
     @IsFloat({ message: 'subtotal must be a float' })
 
     @IsOptional()
     subTotal?: number;
   
-    // @IsNumber()
+    @IsNumber()
     @IsFloat({ message: 'tax must be a float' })
 
     @IsOptional()
     tax?: number;
   
-    // @IsNumber()
+    @IsNumber()
     @IsFloat({ message: 'total must be a float' })
     @IsOptional()
     total?: number;
@@ -26,7 +26,7 @@ export class UpdateInvoiceDto {
     @IsOptional()
     customerName: string;
   
-    // @IsNumber()
+    @IsNumber()
     @IsFloat({ message: 'discount must be a float' })
 
     @IsOptional()
