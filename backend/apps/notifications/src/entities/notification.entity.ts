@@ -1,5 +1,6 @@
 import { AbstractEntity } from '@app/common';
 import { Column, Entity } from 'typeorm';
+import { templateType } from '../dto/enums/template.type';
 
 @Entity()
 export class Notification extends AbstractEntity<Notification> {
@@ -12,6 +13,15 @@ export class Notification extends AbstractEntity<Notification> {
   @Column({nullable:true})
   text_content: string;
 
+  @Column({nullable:true})
+  json_content: string;
+
   @Column()
   subject: string;
+
+  @Column({nullable:true})
+  creatorId: number;
+
+  @Column({type: 'enum', enum: templateType, default: templateType.NONDEFAULT})
+  type: templateType;
 }

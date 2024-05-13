@@ -1,4 +1,4 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsJSON, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateNotificationsDto {
@@ -21,4 +21,8 @@ export class UpdateNotificationsDto {
   @IsOptional()
   @IsString()
   subject?: string;
+
+  @IsOptional()
+  @IsString()
+  json_content?:string;
 }

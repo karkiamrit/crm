@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationsDto } from './dto/create-notification.dto';
-import { JwtAuthGuard} from '@app/common';
+import { CurrentUser, JwtAuthGuard, Roles, User} from '@app/common';
 import { EventPattern, Payload } from '@nestjs/microservices';
 import { otpEmailDto, resetPasswordEmailDto } from './dto/email.dto';
 import { ApiOperation, ApiBearerAuth, ApiParam, ApiBody, ApiResponse } from '@nestjs/swagger';
@@ -22,18 +22,19 @@ import { NotificationResponseDto } from './responses/notification.response';
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
   @Post()
-  // @UseGuards(JwtAuthGuard)
-  // @Roles('Admin')
+  @UseGuards(JwtAuthGuard)
+  @Roles('Agent')
   @ApiOperation({ summary: 'Create a new notification' })
   @ApiBearerAuth()
   @ApiBody({ type: CreateNotificationsDto })
   @ApiResponse({ status: 201, description: 'The notification has been successfully created.', type: NotificationResponseDto})
-  async create(@Body() createNotificationsDto: CreateNotificationsDto) {
-    return await this.notificationsService.create(createNotificationsDto);
+  async create(@Body() createNotificationsDto: CreateNotificationsDto, @CurrentUser() user: User) {
+    return await this.notificationsService.create(createNotificationsDto, user);
   }
 
   @Put(':id')
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
+  @Roles('Agent')
   @ApiOperation({ summary: 'Update a notification' })
   @ApiBearerAuth()
   @ApiParam({ name: 'id', required: true, description: 'The id of the notification to update' })
@@ -42,12 +43,14 @@ export class NotificationsController {
   async update(
     @Param('id') id: number,
     @Body() updateNotificationsDto: UpdateNotificationsDto,
+    @CurrentUser() user: User
   ) {
-    return this.notificationsService.update(id, updateNotificationsDto);
+    return this.notificationsService.update(id, updateNotificationsDto, user);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
+  @Roles('Agent')
   @ApiOperation({ summary: 'Delete a notification' })
   @ApiBearerAuth()
   @ApiParam({ name: 'id', required: true, description: 'The id of the notification to delete' })
@@ -57,7 +60,8 @@ export class NotificationsController {
   }
 
   @Get()
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
+  @Roles('Agent')
   @ApiOperation({ summary: 'Get all notifications' })
   @ApiBearerAuth()
   @ApiResponse({ status: 200, description: 'Return all notifications.', type: [NotificationResponseDto]})
@@ -68,6 +72,7 @@ export class NotificationsController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
+  @Roles('Agent')
   @ApiOperation({ summary: 'Get a notification by id' })
   @ApiBearerAuth()
   @ApiParam({ name: 'id', required: true, description: 'The id of the notification' })

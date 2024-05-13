@@ -36,7 +36,7 @@ export class UpdateLeadDto {
     name?: string;
 
     @IsOptional()
-    @IsNumber()
+    @IsNumber({},{message: 'Revenue Potential must be number'})
     revenuePotential?: number;
 
     @IsOptional()

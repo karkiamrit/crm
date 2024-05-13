@@ -7,8 +7,9 @@ import * as nodemailer from 'nodemailer';
 import { NotifyEmailDto } from './dto/notify-email.dto';
 import { otpEmailDto, resetPasswordEmailDto } from './dto/email.dto';
 import { UpdateNotificationsDto } from './dto/update-notification.dto';
-import { ExtendedFindOptions } from '@app/common';
+import { ExtendedFindOptions, User } from '@app/common';
 import { template } from 'lodash';
+import { templateType } from './dto/enums/template.type';
 
 @Injectable()
 export class NotificationsService {
@@ -39,16 +40,24 @@ export class NotificationsService {
     connectionTimeout: 60000
   });
 
-  async create(createNotificationsDto: CreateNotificationsDto) {
+  async create(createNotificationsDto: CreateNotificationsDto, user: User) {
     const notification = new Notification(createNotificationsDto);
+    notification.creatorId= user.id;
     return await this.notificationsRepository.create(notification);
   }
 
-  async update(id: number, updateNotificationsDto: UpdateNotificationsDto) {
-    return this.notificationsRepository.findOneAndUpdate(
-      { where: { id: id } },
-      updateNotificationsDto,
-    );
+  async update(id: number, updateNotificationsDto: UpdateNotificationsDto, user: User) {
+    const notification = await this.getOne(+id);
+    if(notification.creatorId === user.id || notification.type=== templateType.NONDEFAULT){
+      return this.notificationsRepository.findOneAndUpdate(
+        { where: { id: id } },
+        updateNotificationsDto,
+      );
+    }
+    else{
+      throw new Error('You are not permitted to update this template');
+    }
+
   }
 
   async delete(id: number) {
