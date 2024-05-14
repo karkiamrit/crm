@@ -212,6 +212,7 @@ export class LeadsService {
       'priority',
       'source',
       'profilePicture',
+      'revenuePotential'
     ];
 
     attributes.forEach((attribute) => {
