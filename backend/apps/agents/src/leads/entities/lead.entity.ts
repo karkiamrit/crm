@@ -38,7 +38,7 @@ export class Leads extends AbstractEntity<Leads> {
   @Column()
   phone: string;
 
-  @Column()
+  @Column({unique: true})
   email: string;
 
   @Column()

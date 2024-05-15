@@ -80,6 +80,25 @@ export class SegmentsController {
     return this.segmentsService.update(+id, updateSegmentDto);
   }
 
+  @Put(':id')
+  @UseGuards(JwtAuthGuard)
+  @Roles('Admin')
+  @ApiOperation({ summary: 'Update a segment' })
+  @ApiBearerAuth()
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'The id of the segment to update',
+  })
+  @ApiBody({ type: UpdateSegmentDto })
+  async updatePut(
+    @Param('id') id: string,
+    @Body() updateSegmentDto: UpdateSegmentDto,
+  ) {
+    return this.segmentsService.update(+id, updateSegmentDto);
+  }
+
+
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @Roles('Admin')

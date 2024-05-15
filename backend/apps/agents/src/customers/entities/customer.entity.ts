@@ -33,7 +33,7 @@ export class Customers extends AbstractEntity<Customers> {
   @Column()
   phone: string;
 
-  @Column()
+  @Column({unique: true})
   email: string;
 
   @Column()
