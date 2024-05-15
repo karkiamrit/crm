@@ -115,7 +115,8 @@ export class LeadsController {
       ...createLeadsDto,
       profilePicture,
     };
-    if(this.leadsService.findOne(createLeadsDto.email)){
+
+    if(await this.leadsService.findOne(createLeadsDto.email)){
       throw new InternalServerErrorException('Lead with email already exists');
     }
     const { ...createLeadsDtoWithDocuments } = createLeadsDtoSeperated;

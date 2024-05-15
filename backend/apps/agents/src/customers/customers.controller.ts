@@ -86,7 +86,7 @@ export class CustomersController {
       ...createCustomersDto,
       profilePicture,
     };
-    if(this.customersService.findOne(createCustomersDto.email)){
+    if(await this.customersService.findOne(createCustomersDto.email)){
       throw new InternalServerErrorException('Lead with email already exists');
     }
     if (!referenceNo.referenceNo) {
