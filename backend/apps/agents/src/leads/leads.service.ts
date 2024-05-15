@@ -323,6 +323,11 @@ export class LeadsService {
     return this.leadsRepository.findOne({ id });
   }
 
+  async findOne(email: string) {
+    return this.leadsRepository.findOne({ email: email });
+  }
+
+
   async updateProfilePicture(leadId: number, filePath: string): Promise<Leads> {
     // const organization = await this.organizationsRepository.findOne({id: organizationId});
     console.log('filePath', filePath);

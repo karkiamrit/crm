@@ -39,6 +39,7 @@ import { AgentsService } from '../agents.service';
 import { Agent } from '../entities/agent.entity';
 import { SegmentsRepository } from '../segments/segments.repository';
 import { Segment } from '../segments/entities/segment.entity';
+import { iif } from 'rxjs';
 
 @Controller('leads')
 export class LeadsController {
@@ -114,6 +115,9 @@ export class LeadsController {
       ...createLeadsDto,
       profilePicture,
     };
+    if(this.leadsService.findOne(createLeadsDto.email)){
+      throw new InternalServerErrorException('Lead with email already exists');
+    }
     const { ...createLeadsDtoWithDocuments } = createLeadsDtoSeperated;
     if (
       referenceNo.referenceNo === '' ||
