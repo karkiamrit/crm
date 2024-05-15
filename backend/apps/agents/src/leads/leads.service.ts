@@ -33,7 +33,7 @@ export class LeadsService {
     private readonly segmentsRepository: SegmentsRepository,
   ) {}
 
-  async create(createLeadDto: CreateLeadDto, user: User, agent?: Agent ) {
+  async create(createLeadDto: CreateLeadDto, user?: User, agent?: Agent ) {
     let newSegment: number | null;
     if(createLeadDto.segment === '' || undefined){
       newSegment = null

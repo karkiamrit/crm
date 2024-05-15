@@ -172,6 +172,18 @@ export class SegmentsService {
       segment,
     );
   }
+  
+  async removeLeadFromSegment(segmentId: number, leadId: number): Promise<void> {
+    const segment = await this.segmentsRepository.findOne( { id: segmentId } , ['leads'] );
+    segment.leads = segment.leads.filter(lead => lead.id !== Number(leadId));    
+    await this.segmentsRepository.findOneAndUpdate({ where: { id: segment.id } }, segment);
+  }
+
+  async removeCustomerFromSegment(segmentId: number, customerId: number): Promise<void> {
+    const segment = await this.segmentsRepository.findOne( { id: segmentId } , ['customers'] );
+    segment.customers = segment.customers.filter(customer => customer.id !== Number(customerId));    
+    await this.segmentsRepository.findOneAndUpdate({ where: { id: segment.id } }, segment);
+  }
 
   async addCustomersToSegment(
     segmentId: number,

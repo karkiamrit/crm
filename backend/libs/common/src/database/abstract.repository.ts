@@ -191,6 +191,19 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
         }
       }
     }
+
+    // if (options.order) {
+    //   for (const [key, value] of Object.entries(options.order)) {
+    //     if (validProperties.includes(key)) {
+    //       let orderValue = value;
+    //       if (value instanceof Date) {
+    //         orderValue = value.toISOString(); // Convert date to ISO string
+    //       }
+    //       queryBuilder.addOrderBy(`entity.${key}`, orderValue);
+    //     }
+    //   }
+    // }
+
     let isFirstCondition = true;
 
     Object.entries(where).forEach(([key, value], index) => {
@@ -266,7 +279,6 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
             //   ? qb.where(condition, parameters)
             //   : qb.andWhere(condition, parameters);
             let val = value;
-            console.log(value);
             let condition: any;
             let parameters: any;
             if (isoDateTimeRegex.test(val)) {
@@ -316,7 +328,7 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
       if (!Array.isArray(range)) {
         throw new Error('Range must be an array');
       }
-      console.log(options);
+
       range.forEach((rangeCondition, index) => {
         if (validProperties.includes(rangeCondition.property)) {
           const lower = rangeCondition.lower;

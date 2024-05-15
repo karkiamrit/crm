@@ -165,6 +165,23 @@ export class SegmentsController {
     return this.segmentsService.addCustomersToSegment(segmentId, addCustomersToSegmentDto.customerIds);
   }
 
+  @Delete(':segmentId/leads/:leadId')
+  removeLeadFromSegment(
+    @Param('segmentId') segmentId: number,
+    @Param('leadId') leadId: number,
+  ) {
+
+    return this.segmentsService.removeLeadFromSegment(segmentId, leadId);
+  }
+
+  @Delete(':segmentId/customers/:customerId')
+  removeCustomerFromSegment(
+    @Param('segmentId') segmentId: number,
+    @Param('customerId') customerId: number,
+  ) {
+    return this.segmentsService.removeLeadFromSegment(segmentId, customerId);
+  }
+
   @EventPattern('get_segment_by_id')
   async getSegmentById(data: { id: number }) {
     return this.segmentsService.findOne(data.id, ['leads']);
