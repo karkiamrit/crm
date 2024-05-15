@@ -10,6 +10,9 @@ export class Organization extends AbstractEntity<Organization>{
     name: string;
 
     @Column({nullable:true})
+    description: string;
+
+    @Column({nullable:true})
     logo: string;
 
     @Column()

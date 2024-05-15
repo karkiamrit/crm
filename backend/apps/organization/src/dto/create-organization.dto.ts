@@ -7,6 +7,11 @@ export class CreateOrganizationsDto {
   @IsString()
   name: string;
 
+  @ApiProperty({ description: 'The description of the organization.', example: 'Organization Desc' })
+  @IsNotEmpty()
+  @IsString()
+  description: string;
+
   @ApiProperty({ description: 'The email of the organization.', example: 'Organization Email' })
   @IsString()
   email: string;

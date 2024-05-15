@@ -7,6 +7,11 @@ export class UpdateOrganizationsDto extends PartialType(CreateOrganizationsDto) 
     @IsOptional()
     @IsString({ message: 'Name must be a string.'})
     name: string;
+
+    @ApiProperty({ description: 'The desc of the organization.', example: 'Organization Desc' })
+    @IsOptional()
+    @IsString({ message: 'Name must be a string.'})
+    description: string;
   
     @ApiProperty({ description: 'The email of the organization.', example: 'organization@gmail.com' })
     @IsOptional()
