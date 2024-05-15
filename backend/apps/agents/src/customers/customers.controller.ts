@@ -86,6 +86,9 @@ export class CustomersController {
       ...createCustomersDto,
       profilePicture,
     };
+    if(this.customersService.findOne(createCustomersDto.email)){
+      throw new InternalServerErrorException('Lead with email already exists');
+    }
     if (!referenceNo.referenceNo) {
       agent = await this.agentService.getOne(user.id);
     } else {

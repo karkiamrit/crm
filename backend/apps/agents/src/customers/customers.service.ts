@@ -136,6 +136,10 @@ export class CustomersService {
     return this.customersRepository.findOneAndDelete({ id });
   }
 
+  async findOne(email: string) {
+    return this.customersRepository.findOne({ email: email });
+  }
+
   async findAll(options: ExtendedFindOptions<Customers>) {
     options.relations = ['product', 'service', 'timelines', 'segments'];
     return this.customersRepository.findAll(options);
