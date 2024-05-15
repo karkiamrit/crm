@@ -6,18 +6,20 @@ export class UpdateSegmentDto {
     name: string;
 
     @IsString({ message: 'Description must be a string'})
-    @IsNotEmpty()
+    @IsOptional()
     description: string;
   }
 
   export class AddLeadsToSegmentDto {
     @IsArray({ message: 'LeadIds must be an array'})
     @IsNumber({}, { each: true })
+    @IsOptional()
     leadIds: number[];
   }
 
   export class AddCustomersToSegmentDto {
     @IsArray({ message: 'customers must be an array'})
     @IsNumber({}, { each: true })
+    @IsOptional()
     customerIds: number[];
   }

@@ -221,18 +221,18 @@ export class CustomersController {
       { header: 'Priority', key: 'priority', width: 10 },
       { header: 'Created At', key: 'createdAt', width: 20 },
       { header: 'Source', key: 'source', width: 15 },
-      { header: 'Documents', key: 'documents', width: 15 },
-      { header: 'Agent Id', key: 'agentId', width: 10 },
-      { header: 'Product Id', key: 'productId', width: 10 },
-      { header: 'Service Id', key: 'serviceId', width: 10 },
-      { header: 'Segments', key: 'segments', width: 30 },
+      // { header: 'Documents', key: 'documents', width: 15 },
+      // { header: 'Agent Id', key: 'agentId', width: 10 },
+      // { header: 'Product Id', key: 'productId', width: 10 },
+      // { header: 'Service Id', key: 'serviceId', width: 10 },
+      // { header: 'Segments', key: 'segments', width: 30 },
     ];
 
     // Add rows to the worksheet
     customers.data.forEach((customer: Customers) => {
       const customerWithSegmentsString = {
         ...customer,
-        segments: customer.segments.map((segment) => segment.name).join(', '),
+        // segments: customer.segments.map((segment) => segment.name).join(', '),
       };
       worksheet.addRow(customerWithSegmentsString);
 

@@ -306,31 +306,31 @@ export class LeadsController {
 
     const workbook = new Workbook();
     const worksheet = workbook.addWorksheet('Leads');
-
+    console.log(filter)
     // Define columns in the worksheet
     worksheet.columns = [
       { header: 'Id', key: 'id', width: 10 },
       { header: 'Address', key: 'address', width: 32 },
       { header: 'Details', key: 'details', width: 32 },
-      { header: 'Status', key: 'status', width: 10 },
+      { header: 'Status', key: 'status', width: 35 },
       { header: 'Phone', key: 'phone', width: 15 },
       { header: 'Email', key: 'email', width: 25 },
       { header: 'Name', key: 'name', width: 25 },
-      { header: 'Priority', key: 'priority', width: 10 },
+      { header: 'Revenue Potential', key: 'revenuePotential', width: 15 },
       { header: 'Created At', key: 'createdAt', width: 20 },
       { header: 'Source', key: 'source', width: 15 },
-      { header: 'Documents', key: 'documents', width: 15 },
-      { header: 'Agent Id', key: 'agentId', width: 10 },
-      { header: 'Product Id', key: 'productId', width: 10 },
-      { header: 'Service Id', key: 'serviceId', width: 10 },
-      { header: 'Segments', key: 'segments', width: 30 },
+      // { header: 'Documents', key: 'documents', width: 15 },
+      // { header: 'Agent Id', key: 'agentId', width: 10 },
+      // { header: 'Product Id', key: 'productId', width: 10 },
+      // { header: 'Service Id', key: 'serviceId', width: 10 },
+      // { header: 'Segments', key: 'segments', width: 30 },
     ];
 
     // Add rows to the worksheet
     leads.data.forEach((lead) => {
       const leadWithSegmentsString = {
         ...lead,
-        segments: lead.segments.map((segment) => segment.name).join(', '),
+        // segments: lead.segments.map((segment) => segment.name).join(', '),
       };
       worksheet.addRow(leadWithSegmentsString);
 
