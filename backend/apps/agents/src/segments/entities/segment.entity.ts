@@ -7,7 +7,7 @@ import { Customers } from '../../customers/entities/customer.entity';
 @Entity()
 export class Segment extends AbstractEntity<Segment>{
 
-  @Column()
+  @Column({unique: true})
   name: string;
 
   @Column()

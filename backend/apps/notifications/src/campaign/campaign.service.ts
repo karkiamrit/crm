@@ -9,7 +9,6 @@ import { UpdateCampaignDto } from './dto/update-campaign.dto';
 import { NotificationsService } from '../notifications.service';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { Segment } from 'apps/agents/src/segments/entities/segment.entity';
 import { Notification } from '../entities/notification.entity';
 import * as _ from 'lodash';
 
@@ -107,7 +106,7 @@ export class CampaignsService {
       }
       const segmentId = campaign.segmentId;
       const segment = await firstValueFrom(
-        this.segmentsService.send<Segment>('get_segment_by_id', { id: segmentId }),
+        this.segmentsService.send<any>('get_segment_by_id', { id: segmentId }),
       );
       if (!segment) {
         return { status: 'error', message: 'Segment not found' };
