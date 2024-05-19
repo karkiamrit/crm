@@ -7,13 +7,19 @@ export class Listing extends AbstractEntity<Listing>{
     name: string;
 
     @Column()
-    price: string;
+    price: number;
 
     @Column()
     propertyType: string;
 
     @Column()
     offerType: string;
+
+    @Column()
+    listingAddress: string;
+
+    @Column()
+    listingCity: string;
 
     @Column()
     floor: number;

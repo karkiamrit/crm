@@ -1,22 +1,21 @@
 import { Module } from '@nestjs/common';
-import { TransactionTaskService } from './transaction-task.service';
-import { TransactionTaskController } from './transaction-task.controller';
-import { TransactionTasksRepository } from './transaction-task.repository';
+import { DocumentsService } from './documents.service';
+import { DocumentsController } from './documents.controller';
 import { AUTH_SERVICE, DatabaseModule } from '@app/common';
+import { Document } from './entities/document.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { LoggerModule } from '@app/common';
-import { TransactionTask } from './entities/transaction-task.entity';
-import { TransactionService } from '../transaction.service';
+import { DocumentsRepository } from './documents.repository';
+import { TransactionTaskModule } from '../transaction-task/transaction-task.module';
 
 
 @Module({
   imports: [
     DatabaseModule,
-    DatabaseModule.forFeature([TransactionTask]),
+    DatabaseModule.forFeature([Document]),
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: 'apps/transaction-task/.env',
+      envFilePath: 'apps/agent/.env',
     }),
     ClientsModule.registerAsync([
       {
@@ -31,9 +30,10 @@ import { TransactionService } from '../transaction.service';
         inject: [ConfigService],
       },
     ]),
-    LoggerModule,
+    TransactionTaskModule,
   ],
-  controllers: [TransactionTaskController],
-  providers: [TransactionTaskService, TransactionTasksRepository, TransactionService],
+  controllers: [DocumentsController],
+  providers: [DocumentsService, DocumentsRepository],
+  exports: [DocumentsService]
 })
-export class TransactionTaskModule {}
+export class DocumentsModule {}

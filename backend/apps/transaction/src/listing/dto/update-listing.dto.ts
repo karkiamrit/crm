@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsFloat } from '@app/common/validators/float.validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 /**
  * DTO for updating a Listing
@@ -8,9 +9,9 @@ export class UpdateListingsDto {
     @IsOptional()
     name?: string;
   
-    @IsString({ message: 'Price must be string' })
+    @IsNumber({},{ message: 'Price must be string' })
     @IsOptional()
-    price?: string;
+    price?: number;
   
     @IsString({ message: 'Property Type must be string' })
     @IsOptional()
@@ -20,19 +21,27 @@ export class UpdateListingsDto {
     @IsOptional()
     offerType?: string;
   
-    @IsString({ message: 'Floor must be string' })
+    @IsNumber({},{ message: 'Floor must be string' })
     @IsOptional()
-    floor?: string;
+    floor?: number;
   
-    @IsString({ message: 'Building Area must be string' })
+    @IsFloat({ message: 'Building Area must be float' })
     @IsOptional()
-    buildingArea?: string;
+    buildingArea?: number;
   
-    @IsString({ message: 'Surface Area must be string' })
+    @IsFloat({ message: 'Surface Area must be float' })
     @IsOptional()
-    surfaceArea?: string;
+    surfaceArea?: number;
   
     @IsString({ message: 'Status must be string' })
     @IsOptional()
     status?: string;
+
+    @IsString({message: "Listing Address must be string"})
+    @IsOptional()
+    listingAddress?: string;
+  
+    @IsString({message: "Listing City must be string"})
+    @IsOptional()
+    listingCity?: string;
   }

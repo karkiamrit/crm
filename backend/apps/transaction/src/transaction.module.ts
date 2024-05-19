@@ -9,7 +9,7 @@ import { LoggerModule } from '@app/common';
 import { Transaction } from './entities/transaction.entity';
 import { TransactionTaskModule } from './transaction-task/transaction-task.module';
 import { ListingModule } from './listing/listing.module';
-import { TransactionTaskModule } from './transaction-task/transaction-task.module';
+import { DocumentsModule } from 'apps/agents/src/documents/documents.module';
 
 @Module({
   imports: [
@@ -34,7 +34,8 @@ import { TransactionTaskModule } from './transaction-task/transaction-task.modul
     ]),
     LoggerModule,
     TransactionTaskModule,
-    ListingModule
+    ListingModule,
+    DocumentsModule
   ],
   controllers: [TransactionController],
   providers: [TransactionService, TransactionsRepository],

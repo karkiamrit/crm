@@ -4,13 +4,23 @@ import { UpdateTransactionTaskDto } from './dto/update-transaction-task.dto';
 import { TransactionTask } from './entities/transaction-task.entity';
 import { TransactionTasksRepository } from './transaction-task.repository';
 import { ExtendedFindOptions } from '@app/common';
+import { TransactionService } from '../transaction.service';
 
 @Injectable()
 export class TransactionTaskService {
-  constructor(private readonly transactionTasksRepository: TransactionTasksRepository) {}
+  constructor(
+    private readonly transactionTasksRepository: TransactionTasksRepository,
+    private readonly transactionService: TransactionService,
+  ) {}
 
   async create(createTransactionTasksDto: CreateTransactionTaskDto) {
-    const transactionTask = new TransactionTask(createTransactionTasksDto);
+    const {transactionId, ...rest} = createTransactionTasksDto;
+    const transactionTask = new TransactionTask(rest);
+    const transaction = await this.transactionService.getOne(transactionId);
+    if(!transaction){
+      throw new Error('Transaction not found');
+    }
+    transactionTask.transaction = transaction;
     return await this.transactionTasksRepository.create(transactionTask);
   }
 

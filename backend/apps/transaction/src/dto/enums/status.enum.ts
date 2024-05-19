@@ -1,6 +1,11 @@
+// export enum transactionStatus{
+//     LISTED =  "INITIAL",
+//     ACCEPTED = "SECOND",
+//     CLOSED = "CLOSED",
+//     EXPIRED = "ExPIRED"
+// }
+
 export enum transactionStatus{
-    LISTED =  "INITIAL",
-    ACCEPTED = "SECOND",
-    CLOSED = "CLOSED",
-    EXPIRED = "ExPIRED"
+    UNDER_CONTRACT =  "UNDER CONTRACT",
+    EXPIRED = "EXPIRED"
 }

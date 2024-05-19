@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { transactionTaskType } from '../dto/enum';
 
 /**
@@ -8,6 +8,10 @@ export class UpdateTransactionTaskDto {
     @IsString({message: "Name must be string"})
     @IsOptional()
     name?: string;
+
+    @IsString({ message: 'Note must be string' })
+    @IsOptional()
+    note?: string;
 
     @IsEnum(transactionTaskType, {message: "Invalid type"})
     @IsOptional()

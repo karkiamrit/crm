@@ -21,14 +21,6 @@ export class UpdateTransactionsDto {
     @IsOptional()
     toBuyer?: boolean;
 
-    @IsString({message: "Listing Address must be string"})
-    @IsOptional()
-    listingAddress?: string;
-
-    @IsString({message: "Listing City must be string"})
-    @IsOptional()
-    listingCity?: string;
-
     @IsString({message: "Customer Name must be string"})
     @IsOptional()
     customerName?: string;

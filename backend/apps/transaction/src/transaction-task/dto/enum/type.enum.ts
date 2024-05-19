@@ -1,4 +1,5 @@
 export enum transactionTaskType{
-    LOAN =  "LOAN",
-    DOCUMENT = "DOCUMENT"
+    TEMPLATE =  "TEMPLATE",
+    DOCUMENT = "DOCUMENT",
+    BOTH = "BOTH"
 }

@@ -22,14 +22,6 @@ export class CreateTransactionsDto {
     @IsNotEmpty()
     toBuyer: boolean;
 
-    @IsString({message: "Listing Address must be string"})
-    @IsNotEmpty()
-    listingAddress: string;
-
-    @IsString({message: "Listing City must be string"})
-    @IsNotEmpty()
-    listingCity: string;
-
     @IsString({message: "Customer Name must be string"})
     @IsOptional()
     customerName: string;

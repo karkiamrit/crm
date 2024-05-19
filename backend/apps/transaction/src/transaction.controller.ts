@@ -4,6 +4,7 @@ import { CreateTransactionsDto } from './dto/create-transaction.dto';
 import { UpdateTransactionsDto } from './dto/update-transaction.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { CurrentUser, JwtAuthGuard, Roles, User } from '@app/common';
+import { CreateListingsDto } from './listing/dto/create-listing.dto';
 
 @Controller('transaction')
 export class TransactionController {
@@ -16,8 +17,11 @@ export class TransactionController {
   @ApiBearerAuth()
   @ApiBody({ type: CreateTransactionsDto })
   @ApiResponse({ status: 201, description: 'The transaction has been successfully created.'})
-  async create(@Body() createTransactionsDto: CreateTransactionsDto, @CurrentUser() user: User) {
-    return await this.transactionsService.create(createTransactionsDto, user);
+  async create(
+    @Body() createDto: { transaction: CreateTransactionsDto, listing: CreateListingsDto },
+    @CurrentUser() user: User
+  ) {
+    return await this.transactionsService.create(createDto.listing, createDto.transaction, user);
   }
 
   @Put(':id')
