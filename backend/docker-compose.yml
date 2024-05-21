@@ -57,6 +57,20 @@ services:
       - .:/usr/src/app
       - ./uploads:/usr/src/app/uploads
 
+  transaction:
+    build:
+      context: .
+      dockerfile: ./apps/transaction/Dockerfile
+      target: development
+    command: yarn start:dev transaction
+    env_file:
+      - ./apps/transaction/.env
+    ports:
+      - '8010:8010'
+    volumes:
+      - .:/usr/src/app
+      - ./uploads:/usr/src/app/uploads
+
 
   postgres:
     image: postgres

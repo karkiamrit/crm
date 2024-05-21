@@ -11,27 +11,27 @@ export class Listing extends AbstractEntity<Listing>{
 
     @Column()
     propertyType: string;
-
-    @Column()
-    offerType: string;
-
+    
     @Column()
     listingAddress: string;
-
-    @Column()
-    listingCity: string;
-
-    @Column()
-    floor: number;
-
-    @Column({type: "float"})
-    buildingArea: number;
-
-    @Column({type: "float"})
-    surfaceArea: number;
-
+    
     @Column()
     propertyStatus: string;
+    // @Column()
+    // offerType: string;
+
+
+    // @Column()
+    // listingCity: string;
+
+    // @Column()
+    // floor: number;
+
+    // @Column({type: "float"})
+    // buildingArea: number;
+
+    // @Column({type: "float"})
+    // surfaceArea: number;
 
     @CreateDateColumn()
     createdAt: Date;

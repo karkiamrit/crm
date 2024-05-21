@@ -44,6 +44,4 @@ export class CreateListingsDto {
   @IsString({ message: 'Status must be string' })
   @IsNotEmpty({message: 'Status Must Be String'})
   status: string;
-
-
 }

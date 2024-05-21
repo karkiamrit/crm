@@ -5,13 +5,14 @@ import { Repository, EntityManager } from 'typeorm';
 import { TransactionTask } from './entities/transaction-task.entity';
 
 @Injectable()
-export class TransactionTasksRepository extends AbstractRepository<TransactionTask> {
-  protected readonly logger = new Logger(TransactionTasksRepository.name);
+export class TransactionTaskRepository extends AbstractRepository<TransactionTask> {
+  protected readonly logger = new Logger(TransactionTaskRepository.name);
   constructor(
     @InjectRepository(TransactionTask)
-    transactionsRepository: Repository<TransactionTask>,
+    transactionTasksRepository: Repository<TransactionTask>,
     entityManager: EntityManager,
   ) {
-    super(transactionsRepository, entityManager);
+    super(transactionTasksRepository, entityManager);
   }
 }
+

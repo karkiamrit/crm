@@ -1,18 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { UpdateDocumentDto } from './dto/update-document.dto';
-import { TransactionTaskService } from '../transaction-task/transaction-task.service';
 import { Document } from './entities/document.entity';
 import { DocumentsRepository } from './documents.repository';
 import { ExtendedFindOptions, User } from '@app/common';
 import { TransactionTask } from '../transaction-task/entities/transaction-task.entity';
 import { sign } from 'jsonwebtoken';
+import { TransactionTaskRepository } from '../transaction-task/transaction-task.repository';
 
 
 @Injectable()
 export class DocumentsService {
   constructor(
-    private readonly taskService: TransactionTaskService,
+    private readonly taskService: TransactionTaskRepository,
     private readonly documentsRepository: DocumentsRepository,
 
   ) {}
@@ -21,7 +21,7 @@ export class DocumentsService {
     const documents = new Document(createDocumentDto);
     let task: TransactionTask;
     if(taskId){
-      task = await this.taskService.getOne(Number(taskId));
+      task = await this.taskService.findOne({id:Number(taskId)});
       documents.task = task;
       if (!task) {
         throw new NotFoundException(`Task #${taskId} not found`);

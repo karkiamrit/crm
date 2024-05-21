@@ -11,7 +11,6 @@ import * as express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(TransactionModule);
-
   app.use(json());
   const config = new DocumentBuilder()
     .setTitle('Transaction')

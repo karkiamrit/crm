@@ -20,6 +20,10 @@ export class CreateTransactionTaskDto {
   @IsOptional()
   note: string;
 
+  @IsString({ message: 'AssignedTo must be string' })
+  @IsOptional()
+  assignedTo: string;
+
   @IsEnum(transactionTaskType, { message: 'Invalid type' })
   @IsOptional()
   type?: transactionTaskType;

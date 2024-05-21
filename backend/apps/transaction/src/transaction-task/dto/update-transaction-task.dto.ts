@@ -23,4 +23,8 @@ export class UpdateTransactionTaskDto {
   
     @IsOptional({message: "Due Date must be date"})
     dueDate: Date;
+
+    @IsString({ message: 'AssignedTo must be string' })
+    @IsOptional()
+    assignedTo: string;
 }

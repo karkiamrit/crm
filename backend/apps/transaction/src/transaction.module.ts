@@ -1,15 +1,14 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { TransactionController } from './transaction.controller';
-import { TransactionsRepository } from './transaction.repository';
+import { TransactionRepository } from './transaction.repository';
 import { AUTH_SERVICE, DatabaseModule } from '@app/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { LoggerModule } from '@app/common';
 import { Transaction } from './entities/transaction.entity';
 import { TransactionTaskModule } from './transaction-task/transaction-task.module';
-import { ListingModule } from './listing/listing.module';
-import { DocumentsModule } from 'apps/agents/src/documents/documents.module';
+import { DocumentsModule } from './documents/documents.module';
 
 @Module({
   imports: [
@@ -33,11 +32,11 @@ import { DocumentsModule } from 'apps/agents/src/documents/documents.module';
       },
     ]),
     LoggerModule,
-    TransactionTaskModule,
-    ListingModule,
-    DocumentsModule
+    DocumentsModule,
+    TransactionTaskModule
   ],
   controllers: [TransactionController],
-  providers: [TransactionService, TransactionsRepository],
+  providers: [TransactionService, TransactionRepository],
+  exports: [TransactionService, TransactionRepository]
 })
 export class TransactionModule {}

@@ -2,21 +2,22 @@ import { Injectable } from '@nestjs/common';
 import { CreateTransactionTaskDto } from './dto/create-transaction-task.dto';
 import { UpdateTransactionTaskDto } from './dto/update-transaction-task.dto';
 import { TransactionTask } from './entities/transaction-task.entity';
-import { TransactionTasksRepository } from './transaction-task.repository';
+import { TransactionTaskRepository } from './transaction-task.repository';
 import { ExtendedFindOptions } from '@app/common';
 import { TransactionService } from '../transaction.service';
+import { TransactionRepository } from '../transaction.repository';
 
 @Injectable()
 export class TransactionTaskService {
   constructor(
-    private readonly transactionTasksRepository: TransactionTasksRepository,
-    private readonly transactionService: TransactionService,
+    private readonly transactionTasksRepository: TransactionTaskRepository,
+    private readonly transactionsRepository: TransactionRepository,
   ) {}
 
   async create(createTransactionTasksDto: CreateTransactionTaskDto) {
     const {transactionId, ...rest} = createTransactionTasksDto;
     const transactionTask = new TransactionTask(rest);
-    const transaction = await this.transactionService.getOne(transactionId);
+    const transaction = await this.transactionsRepository.findOne({id: transactionId});
     if(!transaction){
       throw new Error('Transaction not found');
     }

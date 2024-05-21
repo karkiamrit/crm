@@ -2,41 +2,23 @@ import { Injectable } from '@nestjs/common';
 import { CreateTransactionsDto } from './dto/create-transaction.dto';
 import { UpdateTransactionsDto } from './dto/update-transaction.dto';
 import { Transaction } from './entities/transaction.entity';
-import { TransactionsRepository } from './transaction.repository';
+import { TransactionRepository } from './transaction.repository';
 import { ExtendedFindOptions, User } from '@app/common';
-import { CreateListingsDto } from './listing/dto/create-listing.dto';
-import { InjectEntityManager } from '@nestjs/typeorm';
-import { EntityManager } from 'typeorm';
-import { Listing } from './listing/entities/listing.entity';
 
 @Injectable()
 export class TransactionService {
   constructor(
-    @InjectEntityManager() private readonly manager: EntityManager,
-    private readonly transactionsRepository: TransactionsRepository
+    private readonly transactionsRepository: TransactionRepository
   ) {}
 
-  async create(createListingsDto: CreateListingsDto, createTransactionDto: CreateTransactionsDto, user: User) {
-    const queryRunner = this.manager.connection.createQueryRunner();
-
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
+  async create( createTransactionDto: CreateTransactionsDto, user: User, logo: string) {
     try {
-      const listing = new Listing(createListingsDto);
-      const createdListing = await queryRunner.manager.save(listing);
-
       const transaction = new Transaction(createTransactionDto);
       transaction.userId = user.id;
-      transaction.listing = createdListing;
-      await queryRunner.manager.save(transaction);
-
-      await queryRunner.commitTransaction();
+      transaction.logo = logo;
+      return await this.transactionsRepository.create(transaction);
     } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
+      throw new Error(error);
     }
   }
 
@@ -57,6 +39,15 @@ export class TransactionService {
 
   async getOne(id: number) {
     return this.transactionsRepository.findOne({ id });
+  }
+
+  async updateProfilePicture(leadId: number, filePath: string): Promise<Transaction> {
+    // const organization = await this.organizationsRepository.findOne({id: organizationId});
+    const leads = await this.transactionsRepository.findOneAndUpdate(
+      { where: { id: leadId } },
+      { logo: filePath },
+    );
+    return leads;
   }
 
   }

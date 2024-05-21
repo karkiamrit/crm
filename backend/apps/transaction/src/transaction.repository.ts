@@ -5,8 +5,8 @@ import { Repository, EntityManager } from 'typeorm';
 import { Transaction } from './entities/transaction.entity';
 
 @Injectable()
-export class TransactionsRepository extends AbstractRepository<Transaction> {
-  protected readonly logger = new Logger(TransactionsRepository.name);
+export class TransactionRepository extends AbstractRepository<Transaction> {
+  protected readonly logger = new Logger(TransactionRepository.name);
   constructor(
     @InjectRepository(Transaction)
     transactionsRepository: Repository<Transaction>,

@@ -1,5 +1,6 @@
 import { IsBoolean, IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { transactionStatus, transactionType } from '../dto/enums';
+import { listingStatus, transactionStatus, transactionType } from '../dto/enums';
+import { IsFloat } from '@app/common/validators/float.validator';
 
 /**
  * DTO for creating a Transaction
@@ -10,32 +11,42 @@ export class CreateTransactionsDto {
     @IsOptional()
     status?: transactionStatus;
 
-    @IsString({message: "Listing Price must be string"})
-    @IsNotEmpty()
-    listingPrice: string;
+    @IsEnum(listingStatus, {message: "Invalid listing status"})
+    @IsOptional()
+    listingStatus: listingStatus;
+
+    @IsFloat({message: "Listing Price must be number"})
+    @IsNotEmpty({message: "Listing Price must not be empty"})
+    listingPrice: number;
+
+    @IsString({ message: 'Assigned to must be string'})
+    assignedTo: string;
 
     @IsEnum(transactionType,{message: "Invalid type"})
     @IsOptional()
     type?: transactionType;
 
-    @IsBoolean({message: "Invalid toBuyer"})
-    @IsNotEmpty()
+    @IsNotEmpty({message: "To Buyer must not be empty"})
     toBuyer: boolean;
-
-    @IsString({message: "Customer Name must be string"})
-    @IsOptional()
-    customerName: string;
-
-    @IsString({message: "Customer Phone must be string"})
-    @IsOptional()
-    customerPhone: string;
-
-    @IsEmail({}, {message: "Invalid email"})
-    @IsOptional()
-    customerEmail: string;
 
     @IsOptional({message: "Closing Date must be date"})
     @IsNotEmpty()
     closingDate: Date;
+  
+    @IsString({message: "Property Type must be string"})
+    @IsOptional()
+    propertyType: string;
+  
+    @IsString({message: "Listing Address must be string"})
+    @IsOptional()
+    listingAddress: string;
+
+    @IsString({message: "Property Status must be string"})
+    @IsOptional()
+    propertyStatus: string;
+
+    @IsOptional()
+    @IsString({ message: 'Logo must be string'})
+    logo?: string;
 
 }

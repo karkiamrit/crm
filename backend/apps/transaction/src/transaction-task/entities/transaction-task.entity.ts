@@ -24,9 +24,7 @@ export class TransactionTask extends AbstractEntity<TransactionTask>{
     @Column()
     dueDate: Date;
 
-    @ManyToOne(() => Transaction, transaction => transaction.tasks, {
-        eager: true
-    })
+    @ManyToOne(() => Transaction, transaction => transaction.tasks)
     @JoinColumn({ name: 'transactionId' }) // The foreign key column in the TransactionTask table
     transaction: Transaction
 

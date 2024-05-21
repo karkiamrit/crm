@@ -1,10 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Put, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { CreateTransactionsDto } from './dto/create-transaction.dto';
 import { UpdateTransactionsDto } from './dto/update-transaction.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { CurrentUser, JwtAuthGuard, Roles, User } from '@app/common';
-import { CreateListingsDto } from './listing/dto/create-listing.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import { Transaction } from './entities/transaction.entity';
 
 @Controller('transaction')
 export class TransactionController {
@@ -17,11 +20,36 @@ export class TransactionController {
   @ApiBearerAuth()
   @ApiBody({ type: CreateTransactionsDto })
   @ApiResponse({ status: 201, description: 'The transaction has been successfully created.'})
+  @UseInterceptors(
+    FileInterceptor('logo', {
+      storage: diskStorage({
+        destination: './uploads', // specify the path where the files should be saved
+        filename: (req, file, callback) => {
+          const name = Date.now() + extname(file.originalname); // generate a unique filename
+          callback(null, name);
+        },
+      }),
+      fileFilter: (req, file, callback) => {
+        // Only accept images
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif|webp)$/)) {
+          // Reject file
+          return callback(new Error('Only image files are allowed!'), false);
+        }
+        // Accept file
+        callback(null, true);
+      },
+    }),
+  )
   async create(
-    @Body() createDto: { transaction: CreateTransactionsDto, listing: CreateListingsDto },
+    @UploadedFile() file: Express.Multer.File,
+    @Body() createDto: CreateTransactionsDto,
     @CurrentUser() user: User
   ) {
-    return await this.transactionsService.create(createDto.listing, createDto.transaction, user);
+    let logo: any;
+    if (file) {
+      logo = file.path;
+    }
+    return await this.transactionsService.create(createDto, user, logo);
   }
 
   @Put(':id')
@@ -59,6 +87,33 @@ export class TransactionController {
   async findAll(@Query() query: any){
     console.log("reached here")
     return this.transactionsService.findAll(query);
+  }
+
+  @Put(':id/update-profile-picture')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Upload lead picture' })
+  @ApiResponse({
+    status: 200,
+    description: 'The picture has been successfully uploaded.',
+  })
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads', // specify the path where the files should be saved
+        filename: (req, file, callback) => {
+          const name = Date.now() + extname(file.originalname); // generate a unique filename
+          callback(null, name);
+        },
+      }),
+    }),
+  )
+  async updateProfilePicture(
+    @UploadedFile() file: Express.Multer.File,
+    @Param('id') id: number,
+    @Param('filename') filename: string,
+  ): Promise<Transaction> {
+    return this.transactionsService.updateProfilePicture(id, file.path);
   }
 
   @Get(':id')
