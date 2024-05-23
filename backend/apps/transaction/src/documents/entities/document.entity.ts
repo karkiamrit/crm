@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { TransactionTask } from '../../transaction-task/entities/transaction-task.entity';
 
-@Entity()
+@Entity('transaction_document')
 export class Document extends AbstractEntity<Document> {
 
   @Column({ nullable: true })
