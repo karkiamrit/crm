@@ -24,4 +24,6 @@ export class CreateTaskDto {
   @IsOptional()
   @IsNumber({},{ message: 'Lead ID must be a number'})
   leadId?: number;
+
+  
 }

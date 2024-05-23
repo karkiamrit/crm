@@ -41,7 +41,7 @@ export class TransactionService {
     return this.transactionsRepository.findOne({ id });
   }
 
-  async updateProfilePicture(leadId: number, filePath: string): Promise<Transaction> {
+  async updateLogo(leadId: number, filePath: string): Promise<Transaction> {
     // const organization = await this.organizationsRepository.findOne({id: organizationId});
     const leads = await this.transactionsRepository.findOneAndUpdate(
       { where: { id: leadId } },

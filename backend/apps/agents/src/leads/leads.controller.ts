@@ -39,7 +39,6 @@ import { AgentsService } from '../agents.service';
 import { Agent } from '../entities/agent.entity';
 import { SegmentsRepository } from '../segments/segments.repository';
 import { Segment } from '../segments/entities/segment.entity';
-import { iif } from 'rxjs';
 
 @Controller('leads')
 export class LeadsController {
@@ -81,30 +80,7 @@ export class LeadsController {
     @CurrentUser() user: User,
     @Body() referenceNo?: any,
   ) {
-    // let agent: Agent;
 
-    // let profilePicture: any;
-    // if (file) {
-    //   profilePicture = file.path;
-    // }
-    // const createLeadsDtoSeperated: CreateLeadDto = {
-    //   ...createLeadsDto,
-    //   profilePicture,
-    // };
-    // const {segment,...rest} = createLeadsDtoSeperated;
-    // if (referenceNo.referenceNo === '' || null || undefined) {
-    //   return await this.leadsService.create(rest, user);
-    // } else {
-    //   agent = await this.agentService.getOneByReferenceNo(
-    //     referenceNo.referenceNo,
-    //   );
-    //   if (!agent) {
-    //     throw new NotFoundException(
-    //       `Agent with reference no ${referenceNo.referenceNo} not found`,
-    //     );
-    //   }
-    // }
-    // return await this.leadsService.create(rest, user, agent, segment);
     let agent: Agent;
 
     let profilePicture: any;

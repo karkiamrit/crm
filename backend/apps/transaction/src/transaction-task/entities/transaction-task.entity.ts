@@ -24,9 +24,12 @@ export class TransactionTask extends AbstractEntity<TransactionTask>{
     @Column()
     dueDate: Date;
 
+    @Column({ nullable: true })
+    templateDocument: string;
+
     @ManyToOne(() => Transaction, transaction => transaction.tasks)
     @JoinColumn({ name: 'transactionId' }) // The foreign key column in the TransactionTask table
-    transaction: Transaction
+    transaction: Transaction;
 
     @OneToMany(() => Document, (document) => document.task, { nullable: true })
     officialDocs?: Document[];

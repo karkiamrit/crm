@@ -19,9 +19,6 @@ export class CreateTransactionsDto {
     @IsNotEmpty({message: "Listing Price must not be empty"})
     listingPrice: number;
 
-    @IsString({ message: 'Assigned to must be string'})
-    assignedTo: string;
-
     @IsEnum(transactionType,{message: "Invalid type"})
     @IsOptional()
     type?: transactionType;

@@ -33,7 +33,7 @@ export class DocumentsService {
   async generateUploadUrl(taskId: number): Promise<string> {
     const payload = { taskId };
     const token = sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }); // The token expires in 1 hour
-    const url = `https://yourwebsite.com/upload?token=${token}`;
+    const url = `${process.env.FRONTEND_URL}/upload?token=${token}`;
     return url;
   }
 

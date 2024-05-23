@@ -20,15 +20,11 @@ export class CreateTransactionTaskDto {
   @IsOptional()
   note: string;
 
-  @IsString({ message: 'AssignedTo must be string' })
-  @IsOptional()
-  assignedTo: string;
-
   @IsEnum(transactionTaskType, { message: 'Invalid type' })
   @IsOptional()
   type?: transactionTaskType;
 
-  @IsNumber({},{ message: 'Customer Id must be number' })
+  // @IsNumber({},{ message: 'Customer Id must be number' })
   @IsNotEmpty({ message: 'Customer Id is required'})
   customerId: number;
 
@@ -36,7 +32,11 @@ export class CreateTransactionTaskDto {
   @IsNotEmpty({ message: 'Due Date must be date' })
   dueDate: Date;
 
-  @IsNumber()
-  @IsNotEmpty({ message: 'Due Date must be date' })
+  // @IsNumber({},{ message: 'Transaction Id must be number' })
+  @IsNotEmpty({ message: 'Transaction Id must be number' })
   transactionId: number;
+
+  @IsOptional()
+  @IsString({ message: 'Template Document must be string'})
+  templateDocument?: string;
 }

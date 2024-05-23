@@ -108,12 +108,12 @@ export class TransactionController {
       }),
     }),
   )
-  async updateProfilePicture(
+  async updateLogo(
     @UploadedFile() file: Express.Multer.File,
     @Param('id') id: number,
     @Param('filename') filename: string,
   ): Promise<Transaction> {
-    return this.transactionsService.updateProfilePicture(id, file.path);
+    return this.transactionsService.updateLogo(id, file.path);
   }
 
   @Get(':id')
