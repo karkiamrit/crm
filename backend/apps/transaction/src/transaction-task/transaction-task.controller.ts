@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Put, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Put, UseInterceptors, UploadedFile, HttpException, HttpStatus } from '@nestjs/common';
 import { TransactionTaskService } from './transaction-task.service';
 import { CreateTransactionTaskDto } from './dto/create-transaction-task.dto';
 import { UpdateTransactionTaskDto } from './dto/update-transaction-task.dto';
@@ -23,7 +23,7 @@ export class TransactionTaskController {
   //   return await this.transactionTasksService.create(createTransactionTasksDto);
   // }
 
-  @Post()
+@Post()
 @UseGuards(JwtAuthGuard)
 @Roles('Agent')
 @ApiOperation({ summary: 'Create a new transactionTask' })
@@ -43,7 +43,8 @@ export class TransactionTaskController {
       // Only accept documents
       if (!file.originalname.match(/\.(doc|docx|pdf|csv|xlxs|jpeg)$/)) {
         // Reject file
-        return callback(new Error('Only document files are allowed!'), false);
+        const error = new HttpException('Only document files are allowed!', HttpStatus.BAD_REQUEST);
+        return callback(error, false);
       }
       // Accept file
       callback(null, true);
