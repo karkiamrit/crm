@@ -1,9 +1,10 @@
-import { IsString, IsOptional, IsNumber } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsEnum } from 'class-validator';
+import { DocumentStatus } from './enums/status.enum';
 
 export class UpdateDocumentDto {
   @IsOptional()
-  @IsString({message : 'Name must be string'})
-  name?: string;
+  @IsString({message : 'Description must be string'})
+  description?: string;
 
   @IsOptional()
   @IsString({message : 'Document File must be string'})
@@ -16,4 +17,12 @@ export class UpdateDocumentDto {
   @IsOptional()
   @IsNumber()
   userId?: number;
+
+  @IsEnum(DocumentStatus, {message: "Invalid status"})
+  @IsOptional()
+  status?: DocumentStatus;
+
+  @IsOptional()
+  @IsString({message: 'Remarks must be string'})
+  remarks?: string;
 }

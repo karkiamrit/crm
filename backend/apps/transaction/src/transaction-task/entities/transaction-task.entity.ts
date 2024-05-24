@@ -1,5 +1,5 @@
 import { AbstractEntity } from "@app/common";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from "typeorm";
 import { transactionTaskType } from "../dto/enum";
 import { Transaction } from "../../entities/transaction.entity";
 import { Document } from "../../documents/entities/document.entity";
@@ -31,6 +31,6 @@ export class TransactionTask extends AbstractEntity<TransactionTask>{
     @JoinColumn({ name: 'transactionId' }) // The foreign key column in the TransactionTask table
     transaction: Transaction;
 
-    @OneToMany(() => Document, (document) => document.task, { nullable: true })
-    officialDocs?: Document[];
+    @OneToOne(() => Document, (document) => document.task, { nullable: true })
+    officialDocs?: Document;
 }

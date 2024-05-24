@@ -7,6 +7,10 @@ export class CreateDocumentDto {
   description?: string;
 
   @IsOptional()
+  @IsString({message: 'Remarks must be string'})
+  remarks?: string;
+
+  @IsOptional()
   @IsString({message: 'File must be string'}) 
   documentFile?: string;
 

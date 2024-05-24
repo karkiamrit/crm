@@ -32,7 +32,7 @@ declare global {
   }
 }
 
-@Controller('documents')
+@Controller('transactionDocuments')
 export class DocumentsController {
   constructor(private readonly documentsService: DocumentsService) {}
 

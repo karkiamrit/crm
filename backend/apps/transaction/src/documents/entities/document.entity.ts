@@ -5,13 +5,14 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   UpdateDateColumn,
 } from 'typeorm';
 import { TransactionTask } from '../../transaction-task/entities/transaction-task.entity';
+import { DocumentStatus } from '../dto/enums/status.enum';
 
 @Entity('transaction_document')
 export class Document extends AbstractEntity<Document> {
-
   @Column({ nullable: true })
   description: string;
 
@@ -24,7 +25,18 @@ export class Document extends AbstractEntity<Document> {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => TransactionTask, (lead) => lead.officialDocs, {
+  @Column({ nullable: true })
+  remarks: string;
+
+  // @ManyToOne(() => TransactionTask, (lead) => lead.officialDocs, {
+  //   eager: true,
+  //   onDelete: 'CASCADE',
+  //   nullable: true,
+  // })
+  // @JoinColumn({ name: 'taskId' })
+  // task: TransactionTask;
+
+  @OneToOne(() => TransactionTask, (task) => task.officialDocs, {
     eager: true,
     onDelete: 'CASCADE',
     nullable: true,
@@ -32,4 +44,9 @@ export class Document extends AbstractEntity<Document> {
   @JoinColumn({ name: 'taskId' })
   task: TransactionTask;
 
+  @Column('enum', {
+    enum: DocumentStatus,
+    default: DocumentStatus.INCOMPLETE,
+  })
+  status: DocumentStatus;
 }

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { UpdateDocumentDto } from './dto/update-document.dto';
 import { Document } from './entities/document.entity';
@@ -7,21 +11,33 @@ import { ExtendedFindOptions, User } from '@app/common';
 import { TransactionTask } from '../transaction-task/entities/transaction-task.entity';
 import { sign } from 'jsonwebtoken';
 import { TransactionTaskRepository } from '../transaction-task/transaction-task.repository';
-
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class DocumentsService {
   constructor(
     private readonly taskService: TransactionTaskRepository,
     private readonly documentsRepository: DocumentsRepository,
-
+    private readonly configService: ConfigService,
   ) {}
 
-  async create(createDocumentDto: CreateDocumentDto, user: User, taskId: number) {
+  async create(
+    createDocumentDto: CreateDocumentDto,
+    user: User,
+    taskId: number,
+  ) {
     const documents = new Document(createDocumentDto);
     let task: TransactionTask;
-    if(taskId){
-      task = await this.taskService.findOne({id:Number(taskId)});
+    if (taskId) {
+      task = await this.taskService.findOne({ id: Number(taskId) });
+      const existingDocument = await this.documentsRepository.findOne({
+        task: { id: Number(taskId) },
+      });
+      if (existingDocument) {
+        throw new BadRequestException(
+          'A document has already been uploaded for this task',
+        );
+      }
       documents.task = task;
       if (!task) {
         throw new NotFoundException(`Task #${taskId} not found`);
@@ -32,13 +48,15 @@ export class DocumentsService {
 
   async generateUploadUrl(taskId: number): Promise<string> {
     const payload = { taskId };
-    const token = sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }); // The token expires in 1 hour
+    const token = sign(payload, this.configService.get('JWT_SECRET'), {
+      expiresIn: '1h',
+    }); // The token expires in 1 hour
     const url = `${process.env.FRONTEND_URL}/upload?token=${token}`;
     return url;
   }
 
   async findAll(options: ExtendedFindOptions<Document>) {
-    options.relations= ['task']
+    options.relations = ['task'];
     return this.documentsRepository.findAll(options);
   }
 
@@ -74,16 +92,16 @@ export class DocumentsService {
       ...updateDocumentDto,
       documentFile: updateDocumentDto.documentFile,
     };
-  
+
     const updatedDocument = await this.documentsRepository.findOneAndUpdate(
       { where: { id: id } },
       updatedDocumentDto,
     );
-  
+
     if (!updatedDocument) {
       throw new NotFoundException(`Document #${id} not found`);
     }
-  
+
     return `Document #${id} has been updated`;
   }
 
