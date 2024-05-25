@@ -39,6 +39,7 @@ export class DocumentsService {
         );
       }
       documents.task = task;
+      documents.description = task.name;
       if (!task) {
         throw new NotFoundException(`Task #${taskId} not found`);
       }

@@ -46,7 +46,7 @@ export class Document extends AbstractEntity<Document> {
 
   @Column('enum', {
     enum: DocumentStatus,
-    default: DocumentStatus.INCOMPLETE,
+    default: DocumentStatus.PENDING,
   })
   status: DocumentStatus;
 }

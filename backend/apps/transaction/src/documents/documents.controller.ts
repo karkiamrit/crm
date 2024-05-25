@@ -127,7 +127,7 @@ export class DocumentsController {
   @UseGuards(JwtAuthGuard)
   @Roles('Agent')
   remove(@Param('id') id: string) {
-    return this.documentsService.remove(+id);
+    return this.documentsService.remove(+id); 
   }
 
 }
