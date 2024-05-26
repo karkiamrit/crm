@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Query,
   Req,
   UploadedFile,
@@ -23,6 +24,8 @@ import { UpdateDocumentDto } from './dto/update-document.dto';
 import { CurrentUser, JwtAuthGuard, Roles, User } from '@app/common';
 import { UploadGuard } from './guards/upload.guard';
 import { Request } from 'express';
+import { UpdateTransactionTaskDto } from '../transaction-task/dto/update-transaction-task.dto';
+import { TransactionTaskService } from '../transaction-task/transaction-task.service';
 
 declare global {
   namespace Express {
@@ -34,7 +37,10 @@ declare global {
 
 @Controller('transactionDocuments')
 export class DocumentsController {
-  constructor(private readonly documentsService: DocumentsService) {}
+  constructor(
+    private readonly documentsService: DocumentsService,
+    private readonly transactionTasksService : TransactionTaskService,
+  ) {}
 
   @Post()
   @UseGuards(UploadGuard)
@@ -77,6 +83,7 @@ export class DocumentsController {
   async generateUploadUrl(@Param('taskId') taskId: number) {
     return await this.documentsService.generateUploadUrl(taskId);
   }
+
 
   @Get()
   @UseGuards(JwtAuthGuard)
@@ -128,6 +135,51 @@ export class DocumentsController {
   @Roles('Agent')
   remove(@Param('id') id: string) {
     return this.documentsService.remove(+id); 
+  }
+
+  @Put('/transactionTask/:id')
+  @UseGuards(JwtAuthGuard)
+  @Roles('Agent')
+  @UseInterceptors(
+    FileInterceptor('templateDocument', {
+      storage: diskStorage({
+        destination: './uploads', // specify the path where the files should be saved
+        filename: (req, file, callback) => {
+          const name = Date.now() + extname(file.originalname); // generate a unique filename
+          callback(null, name);
+        },
+      }),
+      fileFilter: (req, file, callback) => {
+        // Only accept documents
+        if (!file.originalname.match(/\.(doc|docx|pdf|csv|xlxs|jpeg)$/)) {
+          // Reject file
+          const error = new HttpException('Only document files are allowed!', HttpStatus.BAD_REQUEST);
+          return callback(error, false);
+        }
+        // Accept file
+        callback(null, true);
+      },
+    }),
+  )
+  async updateTaskAndDocumentName(
+    @Param('id') id: number,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() updateTransactionTasksDto: UpdateTransactionTaskDto,
+  ) {
+    let templateDocument: any;
+    if (file) {
+      templateDocument = file.path;
+    }
+    const task = await this.transactionTasksService.getOne(id);
+    const document = task.officialDocs;
+    if(document){
+      await this.documentsService.update(document.id, {description: updateTransactionTasksDto.name});
+    }
+    const updateTransactionTasksDtoSeperated: UpdateTransactionTaskDto = {
+      ...updateTransactionTasksDto,
+      templateDocument,
+    };
+    return await this.transactionTasksService.update(id, updateTransactionTasksDtoSeperated);
   }
 
 }

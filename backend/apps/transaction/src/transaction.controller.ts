@@ -8,6 +8,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { Transaction } from './entities/transaction.entity';
+import { TransactionGuard } from './guards/transaction.guard';
 
 @Controller('transaction')
 export class TransactionController {
@@ -125,6 +126,22 @@ export class TransactionController {
   @ApiResponse({ status: 200, description: 'Return the transaction.'})
   async getOne(@Param('id') id: number) {
     return this.transactionsService.getOne(id);
+  }
+
+  @Get('/user/:id')
+  @UseGuards(TransactionGuard)
+  @Roles('Agent')
+  @ApiOperation({ summary: 'Get a transaction by id' })
+  @ApiBearerAuth()
+  @ApiParam({ name: 'id', required: true, description: 'The id of the transaction' })
+  @ApiResponse({ status: 200, description: 'Return the transaction.'})
+  async getOneByUser(@Param('id') id: number) {
+    return this.transactionsService.getOne(id);
+  }
+
+  @Get('generate-transaction-url/:transactionId')
+  async generateTransactionUrl(@Param('transactionId') transactionId: number) {
+    return await this.transactionsService.generateUploadUrl(transactionId);
   }
 
 }

@@ -7,10 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { LoggerModule } from '@app/common';
 import { TransactionTask } from './entities/transaction-task.entity';
-import { TransactionService } from '../transaction.service';
 import { TransactionModule } from '../transaction.module';
-import { TransactionRepository } from '../transaction.repository';
-
 
 @Module({
   imports: [

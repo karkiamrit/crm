@@ -4,11 +4,14 @@ import { UpdateTransactionsDto } from './dto/update-transaction.dto';
 import { Transaction } from './entities/transaction.entity';
 import { TransactionRepository } from './transaction.repository';
 import { ExtendedFindOptions, User } from '@app/common';
+import { ConfigService } from '@nestjs/config';
+import { sign } from 'jsonwebtoken';
 
 @Injectable()
 export class TransactionService {
   constructor(
-    private readonly transactionsRepository: TransactionRepository
+    private readonly transactionsRepository: TransactionRepository,
+    private readonly configService: ConfigService,
   ) {}
 
   async create( createTransactionDto: CreateTransactionsDto, user: User, logo: string) {
@@ -50,5 +53,13 @@ export class TransactionService {
     return leads;
   }
 
+  async generateUploadUrl(transactionId: number): Promise<string> {
+    const payload = { transactionId };
+    const token = sign(payload, this.configService.get('JWT_SECRET'), {
+      expiresIn: '1h',
+    }); // The token expires in 1 hour
+    const url = `${process.env.FRONTEND_URL}/transaction?token=${token}`;
+    return url;
+  }
   }
 

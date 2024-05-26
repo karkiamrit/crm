@@ -1,6 +1,6 @@
 import { AbstractEntity } from "@app/common";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from "typeorm";
-import { transactionTaskType } from "../dto/enum";
+import { transactionTaskStatus, transactionTaskType } from "../dto/enum";
 import { Transaction } from "../../entities/transaction.entity";
 import { Document } from "../../documents/entities/document.entity";
 
@@ -14,6 +14,9 @@ export class TransactionTask extends AbstractEntity<TransactionTask>{
 
     @Column({type: "enum", enum: transactionTaskType, default: transactionTaskType.DOCUMENT})
     type: transactionTaskType;
+
+    @Column({type: "enum", enum: transactionTaskStatus, default: transactionTaskStatus.INCOMPLETE})
+    status: transactionTaskStatus;
 
     @Column()
     customerId: number;

@@ -33,13 +33,17 @@ export class DocumentsService {
       const existingDocument = await this.documentsRepository.findOne({
         task: { id: Number(taskId) },
       });
-      if (existingDocument) {
-        throw new BadRequestException(
-          'A document has already been uploaded for this task',
-        );
-      }
+
       documents.task = task;
       documents.description = task.name;
+      if (existingDocument) {
+        const docId = existingDocument.id;
+
+        return await this.documentsRepository.findOneAndUpdate(
+          { where: { id: docId } },
+          documents,
+        );
+      }
       if (!task) {
         throw new NotFoundException(`Task #${taskId} not found`);
       }

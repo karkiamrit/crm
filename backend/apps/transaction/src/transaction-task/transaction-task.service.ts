@@ -4,7 +4,6 @@ import { UpdateTransactionTaskDto } from './dto/update-transaction-task.dto';
 import { TransactionTask } from './entities/transaction-task.entity';
 import { TransactionTaskRepository } from './transaction-task.repository';
 import { ExtendedFindOptions } from '@app/common';
-import { TransactionService } from '../transaction.service';
 import { TransactionRepository } from '../transaction.repository';
 
 @Injectable()
@@ -41,7 +40,7 @@ export class TransactionTaskService {
   }
 
   async getOne(id: number) {
-    return this.transactionTasksRepository.findOne({ id });
+    return this.transactionTasksRepository.findOne({ id }, ['officialDocs']);
   }
 
   }

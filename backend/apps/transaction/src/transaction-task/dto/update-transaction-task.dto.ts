@@ -23,4 +23,8 @@ export class UpdateTransactionTaskDto {
   
     @IsOptional({message: "Due Date must be date"})
     dueDate: Date;
+
+    @IsOptional()
+    @IsString({ message: 'Template Document must be string'})
+    templateDocument?: string;
 }
