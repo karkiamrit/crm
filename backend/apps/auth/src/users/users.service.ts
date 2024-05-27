@@ -51,12 +51,12 @@ export class UsersService {
     user.isVerified = true; // remove in production
     let savedRole: Role;
     try {
-      savedRole = await this.rolesRepository.findOne({ name: 'User' });
+      savedRole = await this.rolesRepository.findOne({ name: 'Admin' });
     } catch (error) {
       console.error('Error occurred while fetching role:', error);
     }
     if (!savedRole) {
-      const role = new Role({ name: 'User' });
+      const role = new Role({ name: 'Admin' });
       try {
         savedRole = await this.rolesRepository.create(role);
       } catch (error) {
