@@ -14,4 +14,8 @@ export class CreateDocumentDto {
   @IsString({message: 'File must be string'}) 
   documentFile?: string;
 
+  @IsOptional()
+  @IsString({message: 'Task Id must be a string'}) 
+  taskId?: string;
+
 }

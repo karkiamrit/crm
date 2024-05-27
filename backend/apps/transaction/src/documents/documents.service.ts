@@ -12,6 +12,7 @@ import { TransactionTask } from '../transaction-task/entities/transaction-task.e
 import { sign } from 'jsonwebtoken';
 import { TransactionTaskRepository } from '../transaction-task/transaction-task.repository';
 import { ConfigService } from '@nestjs/config';
+import { transactionTaskStatus } from '../transaction-task/dto/enum';
 
 @Injectable()
 export class DocumentsService {
@@ -102,9 +103,12 @@ export class DocumentsService {
       { where: { id: id } },
       updatedDocumentDto,
     );
-
+    
     if (!updatedDocument) {
       throw new NotFoundException(`Document #${id} not found`);
+    }
+    if(updateDocumentDto.status === 'COMPLETED'){
+      await this.taskService.findOneAndUpdate({where: {id: updatedDocument.task.id}}, {status: transactionTaskStatus.COMPLETED});
     }
 
     return `Document #${id} has been updated`;

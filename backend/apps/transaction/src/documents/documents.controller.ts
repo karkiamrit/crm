@@ -72,10 +72,18 @@ export class DocumentsController {
     @Body() createDocumentDto: CreateDocumentDto,
     @Req() request: Request,
     @CurrentUser() user: User,
+    
   ) {
+    const {taskId: dtoTaskId , ...seperatedCreateDocumentDto}= createDocumentDto;
     createDocumentDto.documentFile = file.path;
-    const taskId = request.taskId; // Extract taskId from the request object
-    return this.documentsService.create(createDocumentDto, user, taskId);
+    let finalTaskId: number;
+    if(request.taskId){
+      finalTaskId = request.taskId;
+    }
+   else{
+      finalTaskId = Number(dtoTaskId);
+   }
+    return this.documentsService.create(seperatedCreateDocumentDto, user, finalTaskId);
   }
 
   
