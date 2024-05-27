@@ -8,18 +8,19 @@ import {
   OneToOne,
 } from 'typeorm';
 import { listingStatus, transactionStatus, transactionType } from '../dto/enums';
-import { Listing } from '../listing/entities/listing.entity';
 import { TransactionTask } from '../transaction-task/entities/transaction-task.entity';
 
 @Entity()
 export class Transaction extends AbstractEntity<Transaction> {
-  @Column('enum', {
+  @Column( {
+    type: 'enum',
     enum: transactionStatus,
     default: transactionStatus.UNDER_CONTRACT,
   })
   status: transactionStatus;
 
-  @Column('enum', {
+  @Column( {
+    type: 'enum',
     enum: listingStatus,
     default: listingStatus.LISTED,
   })
@@ -40,7 +41,8 @@ export class Transaction extends AbstractEntity<Transaction> {
   @Column()
   propertyStatus: string;
 
-  @Column('enum', {
+  @Column({
+    type: 'enum',
     nullable: true,
     enum: transactionType,
     default: transactionType.PURCHASE,
