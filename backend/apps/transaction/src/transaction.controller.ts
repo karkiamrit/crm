@@ -128,9 +128,8 @@ export class TransactionController {
     return this.transactionsService.getOne(id);
   }
 
-  @Get('/user/:id')
+  @Get('user/:id')
   @UseGuards(TransactionGuard)
-  @Roles('Agent')
   @ApiOperation({ summary: 'Get a transaction by id' })
   @ApiBearerAuth()
   @ApiParam({ name: 'id', required: true, description: 'The id of the transaction' })
