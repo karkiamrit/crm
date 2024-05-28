@@ -280,22 +280,22 @@ export class DocumentsService {
   async findAllTimelines(
     options: ExtendedFindOptions<DocumentTimeline>,
     id: number,
-  ) {
+): Promise<{ data: DocumentTimeline[]; total: number }> {
     const tasks = await this.taskService.findAll({
-      where: { transaction: { id: id } },
-      relations: ['transaction'],
+        where: { transaction: { id: id } },
+        relations: ['transaction'],
     });
     const tasksIds = tasks.data.map((task) => task.id);
     const timelinesPromises = tasksIds.map((id) =>
-      this.documentTimelineRepository.findAll({ where: { taskId: id } }),
+        this.documentTimelineRepository.findAll({ where: { taskId: id } }),
     );
     const timelinesArrays = await Promise.all(timelinesPromises);
     const nonEmptyTimelines = timelinesArrays.filter(
-      (timeline) => timeline.total > 0,
+        (timeline) => timeline.total > 0,
     );
-    const timelines = [].concat(...nonEmptyTimelines);
-    return timelines;
-  }
+    const timelines = nonEmptyTimelines.flatMap(timeline => timeline.data);
+    return { data: timelines, total: timelines.length };
+}
   // async findAllTimelines(
   //   options: ExtendedFindOptions<DocumentTimeline>,
   //   id: number,
