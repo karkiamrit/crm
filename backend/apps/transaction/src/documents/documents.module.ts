@@ -8,6 +8,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { DocumentsRepository } from './documents.repository';
 import { TransactionTaskRepository } from '../transaction-task/transaction-task.repository';
 import { TransactionTaskModule } from '../transaction-task/transaction-task.module';
+import { DocumentTimelineRepositoryModule } from './timelines/timeline.module';
 
 
 
@@ -21,6 +22,7 @@ import { TransactionTaskModule } from '../transaction-task/transaction-task.modu
       isGlobal: true,
       envFilePath: 'apps/transaction/.env',
     }),
+    DocumentTimelineRepositoryModule,
     ClientsModule.registerAsync([
       {
         name: AUTH_SERVICE,

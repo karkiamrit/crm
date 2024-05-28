@@ -13,6 +13,8 @@ import { sign } from 'jsonwebtoken';
 import { TransactionTaskRepository } from '../transaction-task/transaction-task.repository';
 import { ConfigService } from '@nestjs/config';
 import { transactionTaskStatus } from '../transaction-task/dto/enum';
+import { TransactionDocumentTimelineRepository } from './timelines/document.timelines.repository';
+import { DocumentTimeline } from './timelines/timelines.entity';
 
 @Injectable()
 export class DocumentsService {
@@ -20,7 +22,106 @@ export class DocumentsService {
     private readonly taskService: TransactionTaskRepository,
     private readonly documentsRepository: DocumentsRepository,
     private readonly configService: ConfigService,
+    private readonly documentTimelineRepository: TransactionDocumentTimelineRepository,
   ) {}
+
+  // async create(
+  //   createDocumentDto: CreateDocumentDto,
+  //   user: User,
+  //   taskId: number,
+  // ) {
+  //   const documents = new Document(createDocumentDto);
+  //   let task: TransactionTask;
+  //   if (taskId) {
+  //     task = await this.taskService.findOne({ id: Number(taskId) });
+  //     const existingDocument = await this.documentsRepository.findOne({
+  //       task: { id: Number(taskId) },
+  //     });
+
+  //     documents.task = task;
+  //     documents.description = task.name;
+  //     if (existingDocument) {
+  //       const docId = existingDocument.id;
+
+  //       return await this.documentsRepository.findOneAndUpdate(
+  //         { where: { id: docId } },
+  //         documents,
+  //       );
+  //     }
+  //     if (!task) {
+  //       throw new NotFoundException(`Task #${taskId} not found`);
+  //     }
+  //   }
+  //   return await this.documentsRepository.create(documents);
+  // }
+
+  async findTask(taskId: number): Promise<TransactionTask> {
+    const task = await this.taskService.findOne({ id: Number(taskId) });
+    if (!task) {
+      throw new NotFoundException(`Task #${taskId} not found`);
+    }
+    return task;
+  }
+
+  async createTimelineEntry(
+    document: Document,
+    attribute: string,
+    value: any,
+  ): Promise<DocumentTimeline> {
+    if (value === null || value === undefined) {
+      throw new Error(`Invalid value for attribute ${attribute}: ${value}`);
+    }
+    console.log(value)
+    const timeline = new DocumentTimeline({
+      attribute: attribute,
+      value: value,
+      document: document,
+    });
+    return await this.documentTimelineRepository.create(timeline);
+  }
+
+  async findExistingDocument(taskId: number): Promise<Document> {
+    return await this.documentsRepository.findOne({
+      task: { id: Number(taskId) },
+    });
+  }
+
+  async updateExistingDocument(
+    docId: number,
+    documents: Document,
+  ): Promise<Document> {
+    const existingDocument = await this.documentsRepository.findOne({
+      id: docId,
+    });
+    const updatedDocument = await this.documentsRepository.findOneAndUpdate(
+      { where: { id: docId } },
+      documents,
+    );
+
+    // Create a timeline entry for the documentFile attribute if it has changed
+    if (existingDocument.documentFile !== updatedDocument.documentFile) {
+      await this.createTimelineEntry(
+        updatedDocument,
+        'documentFile',
+        updatedDocument.documentFile,
+      );
+    }
+
+    return updatedDocument;
+  }
+
+  async createDocument(documents: Document): Promise<Document> {
+    const newDocument = await this.documentsRepository.create(documents);
+
+    // Create a timeline entry for the documentFile attribute
+    await this.createTimelineEntry(
+      newDocument,
+      'documentFile',
+      newDocument.documentFile,
+    );
+
+    return newDocument;
+  }
 
   async create(
     createDocumentDto: CreateDocumentDto,
@@ -30,32 +131,23 @@ export class DocumentsService {
     const documents = new Document(createDocumentDto);
     let task: TransactionTask;
     if (taskId) {
-      task = await this.taskService.findOne({ id: Number(taskId) });
-      const existingDocument = await this.documentsRepository.findOne({
-        task: { id: Number(taskId) },
-      });
+      task = await this.findTask(taskId);
+      const existingDocument = await this.findExistingDocument(taskId);
 
       documents.task = task;
       documents.description = task.name;
       if (existingDocument) {
         const docId = existingDocument.id;
-
-        return await this.documentsRepository.findOneAndUpdate(
-          { where: { id: docId } },
-          documents,
-        );
-      }
-      if (!task) {
-        throw new NotFoundException(`Task #${taskId} not found`);
+        return await this.updateExistingDocument(docId, documents);
       }
     }
-    return await this.documentsRepository.create(documents);
+    return await this.createDocument(documents);
   }
 
   async generateUploadUrl(taskId: number): Promise<string> {
     const payload = { taskId };
     const token = sign(payload, this.configService.get('JWT_SECRET'), {
-      expiresIn: '1h',
+      expiresIn: '24h',
     }); // The token expires in 1 hour
     const url = `${process.env.FRONTEND_URL}/upload?token=${token}`;
     return url;
@@ -80,20 +172,65 @@ export class DocumentsService {
     return document;
   }
 
+  // async updatefileDocument(
+  //   documentId: number,
+  //   filePath: string,
+  // ): Promise<Document> {
+  //   // const organization = await this.organizationsRepository.findOne({id: organizationId});
+  //   const document = await this.documentsRepository.findOneAndUpdate(
+  //     { where: { id: documentId } },
+  //     { documentFile: filePath },
+  //   );
+  //   return document;
+  // }
+
+  // async update(id: number, updateDocumentDto: UpdateDocumentDto) {
+  //   const updatedDocumentDto = {
+  //     ...updateDocumentDto,
+  //     documentFile: updateDocumentDto.documentFile,
+  //   };
+
+  //   const updatedDocument = await this.documentsRepository.findOneAndUpdate(
+  //     { where: { id: id } },
+  //     updatedDocumentDto,
+  //   );
+
+  //   if (!updatedDocument) {
+  //     throw new NotFoundException(`Document #${id} not found`);
+  //   }
+  //   if(updateDocumentDto.status === 'COMPLETED'){
+  //     await this.taskService.findOneAndUpdate({where: {id: updatedDocument.task.id}}, {status: transactionTaskStatus.COMPLETED});
+  //   }
+
+  //   return `Document #${id} has been updated`;
+  // }
+
   async updatefileDocument(
     documentId: number,
     filePath: string,
   ): Promise<Document> {
-    // const organization = await this.organizationsRepository.findOne({id: organizationId});
-    console.log('filePath', filePath);
-    const document = await this.documentsRepository.findOneAndUpdate(
+    const originalDocument = await this.documentsRepository.findOne({
+      id: documentId,
+    });
+    const updatedDocument = await this.documentsRepository.findOneAndUpdate(
       { where: { id: documentId } },
       { documentFile: filePath },
     );
-    return document;
+
+    if (originalDocument.documentFile !== updatedDocument.documentFile) {
+      const timeline = new DocumentTimeline({
+        attribute: 'documentFile',
+        value: updatedDocument.documentFile,
+        document: updatedDocument,
+      });
+      await this.documentTimelineRepository.create(timeline);
+    }
+
+    return updatedDocument;
   }
 
   async update(id: number, updateDocumentDto: UpdateDocumentDto) {
+    const originalDocument = await this.documentsRepository.findOne({ id: id });
     const updatedDocumentDto = {
       ...updateDocumentDto,
       documentFile: updateDocumentDto.documentFile,
@@ -103,12 +240,27 @@ export class DocumentsService {
       { where: { id: id } },
       updatedDocumentDto,
     );
-    
+
     if (!updatedDocument) {
       throw new NotFoundException(`Document #${id} not found`);
     }
-    if(updateDocumentDto.status === 'COMPLETED'){
-      await this.taskService.findOneAndUpdate({where: {id: updatedDocument.task.id}}, {status: transactionTaskStatus.COMPLETED});
+
+    for (const key in updateDocumentDto) {
+      if (originalDocument[key] !== updatedDocument[key]) {
+        const timeline = new DocumentTimeline({
+          attribute: key,
+          value: updatedDocument[key],
+          document: updatedDocument,
+        });
+        await this.documentTimelineRepository.create(timeline);
+      }
+    }
+
+    if (updateDocumentDto.status === 'COMPLETED') {
+      await this.taskService.findOneAndUpdate(
+        { where: { id: updatedDocument.task.id } },
+        { status: transactionTaskStatus.COMPLETED },
+      );
     }
 
     return `Document #${id} has been updated`;

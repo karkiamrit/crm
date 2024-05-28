@@ -56,7 +56,7 @@ export class TransactionService {
   async generateUploadUrl(transactionId: number): Promise<string> {
     const payload = { transactionId };
     const token = sign(payload, this.configService.get('JWT_SECRET'), {
-      expiresIn: '1h',
+      expiresIn: '24h',
     }); // The token expires in 1 hour
     const url = `${process.env.FRONTEND_URL}/transaction/${transactionId}?token=${token}`;
     return url;

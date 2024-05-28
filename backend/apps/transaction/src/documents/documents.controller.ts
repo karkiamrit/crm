@@ -75,7 +75,7 @@ export class DocumentsController {
     
   ) {
     const {taskId: dtoTaskId , ...seperatedCreateDocumentDto}= createDocumentDto;
-    createDocumentDto.documentFile = file.path;
+    seperatedCreateDocumentDto.documentFile = file.path;
     let finalTaskId: number;
     if(request.taskId){
       finalTaskId = request.taskId;
