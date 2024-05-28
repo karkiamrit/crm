@@ -67,15 +67,17 @@ export class DocumentsService {
     document: Document,
     attribute: string,
     value: any,
+    taskId: number,
   ): Promise<DocumentTimeline> {
     if (value === null || value === undefined) {
       throw new Error(`Invalid value for attribute ${attribute}: ${value}`);
     }
-    console.log(value)
+    console.log(value);
     const timeline = new DocumentTimeline({
       attribute: attribute,
       value: value,
       document: document,
+      taskId: taskId,
     });
     return await this.documentTimelineRepository.create(timeline);
   }
@@ -104,6 +106,7 @@ export class DocumentsService {
         updatedDocument,
         'documentFile',
         updatedDocument.documentFile,
+        updatedDocument.task.id,
       );
     }
 
@@ -118,6 +121,7 @@ export class DocumentsService {
       newDocument,
       'documentFile',
       newDocument.documentFile,
+      newDocument.task.id,
     );
 
     return newDocument;
@@ -223,6 +227,8 @@ export class DocumentsService {
         value: updatedDocument.documentFile,
         document: updatedDocument,
       });
+      timeline.taskId = updatedDocument.task.id;
+
       await this.documentTimelineRepository.create(timeline);
     }
 
@@ -252,6 +258,7 @@ export class DocumentsService {
           value: updatedDocument[key],
           document: updatedDocument,
         });
+        timeline.taskId = updatedDocument.task.id;
         await this.documentTimelineRepository.create(timeline);
       }
     }
@@ -268,5 +275,25 @@ export class DocumentsService {
 
   async remove(id: number) {
     return await this.documentsRepository.findOneAndDelete({ id });
+  }
+
+  async findAllTimelines(
+    options: ExtendedFindOptions<DocumentTimeline>,
+    id: number,
+  ) {
+    const tasks = await this.taskService.findAll({
+      where: { transaction: { id: id } },
+      relations: ['transaction'],
+    });
+    const tasksIds = tasks.data.map((task) => task.id);
+    const timelinesPromises = tasksIds.map((id) =>
+      this.documentTimelineRepository.findAll({ where: { taskId: id } }),
+    );
+    const timelinesArrays = await Promise.all(timelinesPromises);
+    const nonEmptyTimelines = timelinesArrays.filter(
+      (timeline) => timeline.total > 0,
+    );
+    const timelines = [].concat(...nonEmptyTimelines);
+    return timelines;
   }
 }

@@ -17,5 +17,8 @@ export class DocumentTimeline extends AbstractEntity<DocumentTimeline>{
     @ManyToOne(() => Document, document => document.timelines, {onDelete: 'CASCADE'})
     @JoinColumn({ name: 'documentId' })
     document: Document; 
+
+    @Column()
+    taskId: number;
 }
 

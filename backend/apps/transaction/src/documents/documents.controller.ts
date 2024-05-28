@@ -100,6 +100,13 @@ export class DocumentsController {
     return this.documentsService.findAll(query);
   }
 
+  @Get(':id/timeline')
+  // @UseGuards(JwtAuthGuard)
+  @Roles('Agent')
+  findAllTimelines(@Query() query: any, @Param('id') id: number ) {
+    return this.documentsService.findAllTimelines(query, id);
+  }
+
   @Get('lead/:id')
   @UseGuards(JwtAuthGuard)
   @Roles('Agent')
