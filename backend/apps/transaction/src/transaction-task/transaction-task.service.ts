@@ -36,6 +36,7 @@ export class TransactionTaskService {
   }
 
   async findAll(options: ExtendedFindOptions<TransactionTask>) {
+    options.relations =['transaction']
     return this.transactionTasksRepository.findAll(options);
   }
 

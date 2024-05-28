@@ -277,10 +277,29 @@ export class DocumentsService {
     return await this.documentsRepository.findOneAndDelete({ id });
   }
 
+  // async findAllTimelines(
+  //   options: ExtendedFindOptions<DocumentTimeline>,
+  //   id: number,
+  // ) {
+  //   const tasks = await this.taskService.findAll({
+  //     where: { transaction: { id: id } },
+  //     relations: ['transaction'],
+  //   });
+  //   const tasksIds = tasks.data.map((task) => task.id);
+  //   const timelinesPromises = tasksIds.map((id) =>
+  //     this.documentTimelineRepository.findAll({ where: { taskId: id } }),
+  //   );
+  //   const timelinesArrays = await Promise.all(timelinesPromises);
+  //   const nonEmptyTimelines = timelinesArrays.filter(
+  //     (timeline) => timeline.total > 0,
+  //   );
+  //   const timelines = [].concat(...nonEmptyTimelines);
+  //   return timelines;
+  // }
   async findAllTimelines(
     options: ExtendedFindOptions<DocumentTimeline>,
     id: number,
-  ) {
+  ): Promise<{ data: DocumentTimeline[]; total: number }> {
     const tasks = await this.taskService.findAll({
       where: { transaction: { id: id } },
       relations: ['transaction'],
@@ -294,6 +313,6 @@ export class DocumentsService {
       (timeline) => timeline.total > 0,
     );
     const timelines = [].concat(...nonEmptyTimelines);
-    return timelines;
+    return { data: timelines, total: timelines.length };
   }
 }
