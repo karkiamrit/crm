@@ -307,27 +307,6 @@ export class DocumentsService {
     return await this.documentsRepository.findOneAndDelete({ id });
   }
 
-  async findAllTimelines(
-    options: ExtendedFindOptions<DocumentTimeline>,
-    id: number,
-  ): Promise<{ data: DocumentTimeline[]; total: number }> {
-    const tasks = await this.taskService.findAll({
-      where: { transaction: { id: id } },
-      relations: ['transaction'],
-    });
-    const tasksIds = tasks.data.map((task) => task.id);
-    const timelinesPromises = tasksIds.map((id) => {
-      options.where = { taskId: id };
-      return this.documentTimelineRepository.findAll(options);
-    });
-    const timelinesArrays = await Promise.all(timelinesPromises);
-    const nonEmptyTimelines = timelinesArrays.filter(
-      (timeline) => timeline.total > 0,
-    );
-    const timelines = nonEmptyTimelines.flatMap((timeline) => timeline.data);
-    return { data: timelines, total: timelines.length };
-  }
-
   // async findAllTimelines(
   //   options: ExtendedFindOptions<DocumentTimeline>,
   //   id: number,
@@ -337,14 +316,52 @@ export class DocumentsService {
   //     relations: ['transaction'],
   //   });
   //   const tasksIds = tasks.data.map((task) => task.id);
-  //   const timelinesPromises = tasksIds.map((id) =>
-  //     this.documentTimelineRepository.findAll({ where: { taskId: id } }),
-  //   );
+  //   const timelinesPromises = tasksIds.map((id) => {
+  //     options.where = { taskId: id };
+  //     return this.documentTimelineRepository.findAll(options);
+  //   });
   //   const timelinesArrays = await Promise.all(timelinesPromises);
   //   const nonEmptyTimelines = timelinesArrays.filter(
   //     (timeline) => timeline.total > 0,
   //   );
-  //   const timelines = [].concat(...nonEmptyTimelines);
+  //   console.log(options)
+
+  //   const timelines = nonEmptyTimelines.flatMap((timeline) => timeline.data);
+  //   console.log(timelines.length)
   //   return { data: timelines, total: timelines.length };
   // }
+
+  async findAllTimelines(
+    options: ExtendedFindOptions<DocumentTimeline>,
+    id: number,
+  ): Promise<{ data: DocumentTimeline[]; total: number }> {
+    const tasks = await this.taskService.findAll({
+      where: { transaction: { id: id } },
+      relations: ['transaction'],
+    });
+    const tasksIds = tasks.data.map((task) => task.id);
+  
+    // Fetch all timelines for each task ID without any options
+    const timelinesPromises = tasksIds.map((id) =>
+      this.documentTimelineRepository.findAll({ where: { taskId: id } }),
+    );
+    const timelinesArrays = await Promise.all(timelinesPromises);
+  
+    // Combine all timelines into a single array
+    const allTimelines = timelinesArrays.flatMap((timeline) => timeline.data);
+  
+    // Sort the combined data
+    const sortedTimelines = allTimelines.sort((a, b) =>
+      options.order.id === 'DESC' ? b.id - a.id : a.id - b.id
+    );
+  
+    // Calculate the begin and end indices for the slice method
+    const begin = Number(options.skip);
+    const end = Number(options.skip) + Number(options.take);
+  
+    // Slice the array to get the items for the current page
+    const paginatedTimelines = sortedTimelines.slice(begin, end);
+
+    return { data: paginatedTimelines, total: allTimelines.length };
+  }
 }
