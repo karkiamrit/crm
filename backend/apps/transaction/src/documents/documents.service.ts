@@ -316,9 +316,10 @@ export class DocumentsService {
       relations: ['transaction'],
     });
     const tasksIds = tasks.data.map((task) => task.id);
-    const timelinesPromises = tasksIds.map((id) =>
-      this.documentTimelineRepository.findAll({ where: { taskId: id } }),
-    );
+    const timelinesPromises = tasksIds.map((id) => {
+      options.where = { taskId: id };
+      return this.documentTimelineRepository.findAll(options);
+    });
     const timelinesArrays = await Promise.all(timelinesPromises);
     const nonEmptyTimelines = timelinesArrays.filter(
       (timeline) => timeline.total > 0,
