@@ -36,6 +36,7 @@ import { Workbook } from 'exceljs';
 import { Segment } from '../segments/entities/segment.entity';
 import { SegmentsRepository } from '../segments/segments.repository';
 import { Response } from 'express';
+import { EventPattern, Payload } from '@nestjs/microservices';
 
 @Controller('customers')
 export class CustomersController {
@@ -350,6 +351,11 @@ export class CustomersController {
   }
   private normalizeHeader(header: string): string {
     return header.toLowerCase().trim();
+  }
+
+  @EventPattern('get_customer_by_id')
+  async getCustomerName(data: { id: number }) {
+    return this.customersService.getOne(data.id);
   }
 
   // @Patch(':id/upload-documents')

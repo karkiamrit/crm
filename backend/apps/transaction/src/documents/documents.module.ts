@@ -1,7 +1,7 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { DocumentsService } from './documents.service';
 import { DocumentsController } from './documents.controller';
-import { AUTH_SERVICE, DatabaseModule } from '@app/common';
+import { AGENTS_SERVICE, AUTH_SERVICE, DatabaseModule } from '@app/common';
 import { Document } from './entities/document.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
@@ -35,6 +35,18 @@ import { DocumentTimelineRepositoryModule } from './timelines/timeline.module';
         }),
         inject: [ConfigService],
       },
+      ,
+      {
+        name: AGENTS_SERVICE,
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: configService.get('AGENTS_HOST'),
+            port: configService.get('AGENTS_PORT'),
+          },
+        }),
+        inject: [ConfigService]
+      }
     ]),
   ],
   controllers: [DocumentsController],

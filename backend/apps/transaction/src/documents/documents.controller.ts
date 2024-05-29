@@ -101,7 +101,7 @@ export class DocumentsController {
   }
 
   @Get(':id/timeline')
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Roles('Agent')
   findAllTimelines(@Query() query: any, @Param('id') id: number ) {
     return this.documentsService.findAllTimelines(query, id);

@@ -20,5 +20,8 @@ export class DocumentTimeline extends AbstractEntity<DocumentTimeline>{
 
     @Column()
     taskId: number;
+
+    @Column({nullable: true})
+    customerName: string;
 }
 

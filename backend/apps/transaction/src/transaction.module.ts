@@ -2,7 +2,7 @@ import { Module, forwardRef } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { TransactionController } from './transaction.controller';
 import { TransactionRepository } from './transaction.repository';
-import { AUTH_SERVICE, DatabaseModule } from '@app/common';
+import { AGENTS_SERVICE, AUTH_SERVICE, DatabaseModule } from '@app/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { LoggerModule } from '@app/common';
@@ -29,7 +29,7 @@ import { DocumentsModule } from './documents/documents.module';
           },
         }),
         inject: [ConfigService],
-      },
+      }
     ]),
     LoggerModule,
     DocumentsModule,
