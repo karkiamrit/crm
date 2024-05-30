@@ -107,11 +107,18 @@ export class DocumentsController {
     return this.documentsService.findAllTimelines(query, id);
   }
 
-  @Get('lead/:id')
+  @Get('task/:id')
   @UseGuards(JwtAuthGuard)
   @Roles('Agent')
-  findAllByLeadId(@Query() query: any, @Param('id') id: number) {
+  findAllByTaskId(@Query() query: any, @Param('id') id: number) {
     return this.documentsService.findAllByTaskId(query, id);
+  }
+
+  @Get('transaction/:id')
+  @UseGuards(JwtAuthGuard)
+  @Roles('Agent')
+  findAllByTransactionId(@Query() query: any, @Param('id') id: number) {
+    return this.documentsService.findAllBytransactionId(query, id);
   }
 
   @Get(':id')

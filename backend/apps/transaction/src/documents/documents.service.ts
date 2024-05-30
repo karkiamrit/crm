@@ -22,7 +22,7 @@ import { firstValueFrom } from 'rxjs';
 @Injectable()
 export class DocumentsService {
   constructor(
-    private readonly taskService: TransactionTaskRepository,
+    private readonly taskRepository: TransactionTaskRepository,
     private readonly documentsRepository: DocumentsRepository,
     private readonly configService: ConfigService,
     private readonly documentTimelineRepository: TransactionDocumentTimelineRepository,
@@ -38,7 +38,7 @@ export class DocumentsService {
   //   const documents = new Document(createDocumentDto);
   //   let task: TransactionTask;
   //   if (taskId) {
-  //     task = await this.taskService.findOne({ id: Number(taskId) });
+  //     task = await this.taskRepository.findOne({ id: Number(taskId) });
   //     const existingDocument = await this.documentsRepository.findOne({
   //       task: { id: Number(taskId) },
   //     });
@@ -61,7 +61,9 @@ export class DocumentsService {
   // }
 
   async findTask(taskId: number): Promise<TransactionTask> {
-    const task = await this.taskService.findOne({ id: Number(taskId) });
+    const task = await this.taskRepository.findOne({ id: Number(taskId) }, [
+      'transaction',
+    ]);
     if (!task) {
       throw new NotFoundException(`Task #${taskId} not found`);
     }
@@ -105,7 +107,7 @@ export class DocumentsService {
       { where: { id: docId } },
       documents,
     );
-    const task = await this.taskService.findOne({
+    const task = await this.taskRepository.findOne({
       id: Number(documents.task.id),
     });
     const customerId = task.customerId;
@@ -160,6 +162,7 @@ export class DocumentsService {
 
       documents.task = task;
       documents.description = task.name;
+      documents.transactionId = task.transaction.id;
       if (existingDocument) {
         const docId = existingDocument.id;
         return await this.updateExistingDocument(docId, documents);
@@ -185,6 +188,12 @@ export class DocumentsService {
   async findAllByTaskId(options: ExtendedFindOptions<Document>, id: number) {
     options.relations = ['task'];
     options.where = { task: { id: id } };
+    return this.documentsRepository.findAll(options);
+  }
+
+  async findAllBytransactionId(options: ExtendedFindOptions<Document>, id: number) {
+    options.relations = ['task'];
+    options.where = { transactionId:  id  };
     return this.documentsRepository.findAll(options);
   }
 
@@ -223,7 +232,7 @@ export class DocumentsService {
   //     throw new NotFoundException(`Document #${id} not found`);
   //   }
   //   if(updateDocumentDto.status === 'COMPLETED'){
-  //     await this.taskService.findOneAndUpdate({where: {id: updatedDocument.task.id}}, {status: transactionTaskStatus.COMPLETED});
+  //     await this.taskRepository.findOneAndUpdate({where: {id: updatedDocument.task.id}}, {status: transactionTaskStatus.COMPLETED});
   //   }
 
   //   return `Document #${id} has been updated`;
@@ -294,7 +303,7 @@ export class DocumentsService {
     }
 
     if (updateDocumentDto.status === 'COMPLETED') {
-      await this.taskService.findOneAndUpdate(
+      await this.taskRepository.findOneAndUpdate(
         { where: { id: updatedDocument.task.id } },
         { status: transactionTaskStatus.COMPLETED },
       );
@@ -311,7 +320,7 @@ export class DocumentsService {
   //   options: ExtendedFindOptions<DocumentTimeline>,
   //   id: number,
   // ): Promise<{ data: DocumentTimeline[]; total: number }> {
-  //   const tasks = await this.taskService.findAll({
+  //   const tasks = await this.taskRepository.findAll({
   //     where: { transaction: { id: id } },
   //     relations: ['transaction'],
   //   });
@@ -335,30 +344,30 @@ export class DocumentsService {
     options: ExtendedFindOptions<DocumentTimeline>,
     id: number,
   ): Promise<{ data: DocumentTimeline[]; total: number }> {
-    const tasks = await this.taskService.findAll({
+    const tasks = await this.taskRepository.findAll({
       where: { transaction: { id: id } },
       relations: ['transaction'],
     });
     const tasksIds = tasks.data.map((task) => task.id);
-  
+
     // Fetch all timelines for each task ID without any options
     const timelinesPromises = tasksIds.map((id) =>
       this.documentTimelineRepository.findAll({ where: { taskId: id } }),
     );
     const timelinesArrays = await Promise.all(timelinesPromises);
-  
+
     // Combine all timelines into a single array
     const allTimelines = timelinesArrays.flatMap((timeline) => timeline.data);
-  
+
     // Sort the combined data
     const sortedTimelines = allTimelines.sort((a, b) =>
-      options.order.id === 'DESC' ? b.id - a.id : a.id - b.id
+      options.order.id === 'DESC' ? b.id - a.id : a.id - b.id,
     );
-  
+
     // Calculate the begin and end indices for the slice method
     const begin = Number(options.skip);
     const end = Number(options.skip) + Number(options.take);
-  
+
     // Slice the array to get the items for the current page
     const paginatedTimelines = sortedTimelines.slice(begin, end);
 

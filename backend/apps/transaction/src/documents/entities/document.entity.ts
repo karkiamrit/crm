@@ -44,6 +44,9 @@ export class Document extends AbstractEntity<Document> {
   @JoinColumn({ name: 'taskId' })
   task: TransactionTask;
 
+  @Column({ nullable: true })
+  transactionId: number;
+
   @Column('enum', {
     enum: DocumentStatus,
     default: DocumentStatus.PENDING,
