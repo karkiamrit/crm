@@ -1,5 +1,5 @@
 export enum listingStatus{
-    LISTED =  "INITIAL",
+    STARTED =  "STARTED",
     ACCEPTED = "ACCEPTED",
     CLOSED = "CLOSED",
     EXPIRED = "EXPIRED"

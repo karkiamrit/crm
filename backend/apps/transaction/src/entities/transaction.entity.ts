@@ -12,24 +12,24 @@ import { TransactionTask } from '../transaction-task/entities/transaction-task.e
 
 @Entity()
 export class Transaction extends AbstractEntity<Transaction> {
-  @Column( {
-    type: 'enum',
-    enum: transactionStatus,
-    default: transactionStatus.UNDER_CONTRACT,
-  })
-  status: transactionStatus;
+  // @Column( {
+  //   type: 'enum',
+  //   enum: transactionStatus,
+  //   default: transactionStatus.UNDER_CONTRACT,
+  // })
+  // status: transactionStatus;
 
   @Column( {
     type: 'enum',
     enum: listingStatus,
-    default: listingStatus.LISTED,
+    default: listingStatus.STARTED,
   })
   listingStatus: listingStatus;
 
   @Column({type:'float', nullable: true})
   listingPrice: number;
 
-  @Column()
+  @Column({nullable: true})
   propertyType: string;
 
   @Column({ nullable: true })
@@ -38,7 +38,7 @@ export class Transaction extends AbstractEntity<Transaction> {
   @Column()
   listingAddress: string;
 
-  @Column()
+  @Column({nullable: true})
   propertyStatus: string;
 
   @Column({

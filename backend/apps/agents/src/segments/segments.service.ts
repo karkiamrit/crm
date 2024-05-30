@@ -103,6 +103,10 @@ export class SegmentsService {
       segment.name = updateSegmentDto.name;
     }
 
+    if (updateSegmentDto.description !== undefined) {
+      segment.description = updateSegmentDto.description;
+    }
+
     return this.segmentsRepository.findOneAndUpdate(
       { where: { id: id } },
       segment,

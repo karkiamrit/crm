@@ -98,7 +98,6 @@ export class SegmentsController {
     return this.segmentsService.update(+id, updateSegmentDto);
   }
 
-
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @Roles('Admin')

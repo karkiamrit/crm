@@ -5,9 +5,9 @@ import { listingStatus, transactionStatus, transactionType } from '../dto/enums'
  */
 export class UpdateTransactionsDto {
     
-    @IsEnum(transactionStatus, {message: "Invalid status"})
-    @IsOptional()
-    status?: transactionStatus;
+    // @IsEnum(transactionStatus, {message: "Invalid status"})
+    // @IsOptional()
+    // status?: transactionStatus;
 
     @IsEnum(transactionType, {message: "Invalid type"})
     @IsOptional()

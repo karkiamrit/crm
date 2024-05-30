@@ -7,16 +7,16 @@ import { IsFloat } from '@app/common/validators/float.validator';
  */
 export class CreateTransactionsDto {
 
-    @IsEnum(transactionStatus, {message: "Invalid status"})
-    @IsOptional()
-    status?: transactionStatus;
+    // @IsEnum(transactionStatus, {message: "Invalid status"})
+    // @IsOptional()
+    // status?: transactionStatus;
 
-    @IsEnum(listingStatus, {message: "Invalid listing status"})
-    @IsOptional()
-    listingStatus: listingStatus;
+    // @IsEnum(listingStatus, {message: "Invalid listing status"})
+    // @IsOptional()
+    // listingStatus: listingStatus;
 
     @IsFloat({message: "Listing Price must be number"})
-    @IsNotEmpty({message: "Listing Price must not be empty"})
+    @IsOptional({message: "Listing Price must not be empty"})
     listingPrice: number;
 
     @IsEnum(transactionType,{message: "Invalid type"})
@@ -35,7 +35,7 @@ export class CreateTransactionsDto {
     propertyType: string;
   
     @IsString({message: "Listing Address must be string"})
-    @IsOptional()
+    @IsNotEmpty()
     listingAddress: string;
 
     @IsString({message: "Property Status must be string"})
