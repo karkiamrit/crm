@@ -12,6 +12,8 @@ services:
     volumes:
       - .:/usr/src/app
       - ./uploads:/usr/src/app/uploads
+      - /usr/src/app/node_modules
+      - /usr/src/app/apps/auth/node_modules
  
 
   notifications:
@@ -27,6 +29,8 @@ services:
     volumes:
       - .:/usr/src/app
       - ./uploads:/usr/src/app/uploads
+      - /usr/src/app/node_modules
+      - /usr/src/app/apps/notifications/node_modules
 
   organization:
     build:
@@ -41,6 +45,8 @@ services:
     volumes:
       - .:/usr/src/app
       - ./uploads:/usr/src/app/uploads
+      - /usr/src/app/node_modules
+      - /usr/src/app/apps/organization/node_modules
 
 
   agents:
@@ -56,6 +62,8 @@ services:
     volumes:
       - .:/usr/src/app
       - ./uploads:/usr/src/app/uploads
+      - /usr/src/app/node_modules
+      - /usr/src/app/apps/agents/node_modules
 
   transaction:
     build:
@@ -70,6 +78,9 @@ services:
     volumes:
       - .:/usr/src/app
       - ./uploads:/usr/src/app/uploads
+      - /usr/src/app/node_modules
+      - /usr/src/app/apps/transaction/node_modules
+
 
 
   postgres:

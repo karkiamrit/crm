@@ -1,5 +1,5 @@
 import { IsBoolean, IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { listingStatus, transactionStatus, transactionType } from '../dto/enums';
+import { listingStatus, transactionStatus, TransactionType } from '../dto/enums';
 import { IsFloat } from '@app/common/validators/float.validator';
 
 /**
@@ -15,13 +15,18 @@ export class CreateTransactionsDto {
     // @IsOptional()
     // listingStatus: listingStatus;
 
+<<<<<<< Updated upstream
     @IsFloat({message: "Listing Price must be number"})
     @IsOptional({message: "Listing Price must not be empty"})
+=======
+    @IsNotEmpty({message: "Listing Price must not be empty"})
+    @IsFloat({message: "Listing Price must be number"})
+>>>>>>> Stashed changes
     listingPrice: number;
 
-    @IsEnum(transactionType,{message: "Invalid type"})
+    @IsEnum(TransactionType,{message: "Invalid type"})
     @IsOptional()
-    type?: transactionType;
+    type?: TransactionType;
 
     @IsNotEmpty({message: "To Buyer must not be empty"})
     toBuyer: boolean;

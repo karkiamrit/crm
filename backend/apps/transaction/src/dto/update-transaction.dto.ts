@@ -1,23 +1,29 @@
 import { IsBoolean, IsEmail, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
-import { listingStatus, transactionStatus, transactionType } from '../dto/enums';
+import { listingStatus, transactionStatus, TransactionType } from '../dto/enums';
 /**
  * DTO for updating a Transaction
  */
 export class UpdateTransactionsDto {
     
+<<<<<<< Updated upstream
     // @IsEnum(transactionStatus, {message: "Invalid status"})
     // @IsOptional()
     // status?: transactionStatus;
-
-    @IsEnum(transactionType, {message: "Invalid type"})
+=======
+    @IsEnum(transactionStatus, {message: "Invalid Transaction Status"})
     @IsOptional()
-    type?: transactionType;
+    status?: transactionStatus;
+>>>>>>> Stashed changes
+
+    @IsEnum(TransactionType, {message: "Invalid type"})
+    @IsOptional()
+    type?: TransactionType;
 
     @IsOptional()
     toBuyer?: boolean;
 
-    @IsEnum(listingStatus, {message: "Invalid status"})
     @IsOptional()
+    @IsEnum(listingStatus, {message: "Invalid status"})
     listingStatus: listingStatus;
 
     @IsOptional({message: "Closing Date must be date"})

@@ -7,7 +7,7 @@ import {
   OneToMany,
   OneToOne,
 } from 'typeorm';
-import { listingStatus, transactionStatus, transactionType } from '../dto/enums';
+import { listingStatus, transactionStatus, TransactionType } from '../dto/enums';
 import { TransactionTask } from '../transaction-task/entities/transaction-task.entity';
 
 @Entity()
@@ -22,7 +22,11 @@ export class Transaction extends AbstractEntity<Transaction> {
   @Column( {
     type: 'enum',
     enum: listingStatus,
+<<<<<<< Updated upstream
     default: listingStatus.STARTED,
+=======
+    default: listingStatus.INITIAL,
+>>>>>>> Stashed changes
   })
   listingStatus: listingStatus;
 
@@ -44,10 +48,10 @@ export class Transaction extends AbstractEntity<Transaction> {
   @Column({
     type: 'enum',
     nullable: true,
-    enum: transactionType,
-    default: transactionType.PURCHASE,
+    enum: TransactionType,
+    default: TransactionType.PURCHASE,
   })
-  type: transactionType;
+  type: TransactionType;
 
   @Column()
   toBuyer: boolean;
