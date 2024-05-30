@@ -22,11 +22,7 @@ export class Transaction extends AbstractEntity<Transaction> {
   @Column( {
     type: 'enum',
     enum: listingStatus,
-<<<<<<< Updated upstream
     default: listingStatus.STARTED,
-=======
-    default: listingStatus.INITIAL,
->>>>>>> Stashed changes
   })
   listingStatus: listingStatus;
 

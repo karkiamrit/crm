@@ -15,13 +15,8 @@ export class CreateTransactionsDto {
     // @IsOptional()
     // listingStatus: listingStatus;
 
-<<<<<<< Updated upstream
     @IsFloat({message: "Listing Price must be number"})
     @IsOptional({message: "Listing Price must not be empty"})
-=======
-    @IsNotEmpty({message: "Listing Price must not be empty"})
-    @IsFloat({message: "Listing Price must be number"})
->>>>>>> Stashed changes
     listingPrice: number;
 
     @IsEnum(TransactionType,{message: "Invalid type"})

@@ -5,15 +5,9 @@ import { listingStatus, transactionStatus, TransactionType } from '../dto/enums'
  */
 export class UpdateTransactionsDto {
     
-<<<<<<< Updated upstream
     // @IsEnum(transactionStatus, {message: "Invalid status"})
     // @IsOptional()
     // status?: transactionStatus;
-=======
-    @IsEnum(transactionStatus, {message: "Invalid Transaction Status"})
-    @IsOptional()
-    status?: transactionStatus;
->>>>>>> Stashed changes
 
     @IsEnum(TransactionType, {message: "Invalid type"})
     @IsOptional()
