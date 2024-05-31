@@ -126,7 +126,7 @@ export class OrganizationsController {
   }
 
   @Get(':id/users')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get users associated with organization' })
   @ApiBearerAuth()
   @ApiParam({ name: 'id', required: true, description: 'The id of the organization' })

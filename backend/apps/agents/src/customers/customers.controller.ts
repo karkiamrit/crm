@@ -158,7 +158,7 @@ export class CustomersController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   // @Roles('Admin')
   @ApiOperation({ summary: 'Get all customers' })
   @ApiBearerAuth()
@@ -167,8 +167,8 @@ export class CustomersController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
-  @Roles('Admin')
+  // @UseGuards(JwtAuthGuard)
+  // @Roles('Admin')
   @ApiOperation({ summary: 'Get an customer by id' })
   @ApiBearerAuth()
   @ApiParam({

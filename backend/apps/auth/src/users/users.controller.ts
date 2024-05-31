@@ -101,8 +101,8 @@ export class UsersController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
-  @Roles('Admin')
+  // @UseGuards(JwtAuthGuard)
+  // @Roles('Admin')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get a user by ID' })
   @ApiParam({ name: 'id', required: true })
