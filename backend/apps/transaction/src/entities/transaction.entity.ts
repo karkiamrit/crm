@@ -38,6 +38,9 @@ export class Transaction extends AbstractEntity<Transaction> {
   @Column()
   listingAddress: string;
 
+@Column()
+  customerId: number;
+
   @Column({nullable: true})
   propertyStatus: string;
 

@@ -2,6 +2,8 @@
 /dist
 /node_modules
 /build
+/uploads
+
 
 /apps/auth/node_modules
 /apps/notifications/node_modules

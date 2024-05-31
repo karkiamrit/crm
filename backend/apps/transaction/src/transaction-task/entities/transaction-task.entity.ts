@@ -18,9 +18,6 @@ export class TransactionTask extends AbstractEntity<TransactionTask>{
     @Column({type: "enum", enum: transactionTaskStatus, default: transactionTaskStatus.INCOMPLETE})
     status: transactionTaskStatus;
 
-    @Column()
-    customerId: number;
-
     @CreateDateColumn()
     createdAt: Date;
 

@@ -24,9 +24,7 @@ export class CreateTransactionTaskDto {
   @IsOptional()
   type?: transactionTaskType;
 
-  // @IsNumber({},{ message: 'Customer Id must be number' })
-  @IsNotEmpty({ message: 'Customer Id is required'})
-  customerId: number;
+
 
   @IsDateString()
   @IsNotEmpty({ message: 'Due Date must be date' })

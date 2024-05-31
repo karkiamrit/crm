@@ -41,6 +41,10 @@ export class UpdateTransactionsDto {
 
     @IsOptional()
     @IsString({message: "Logo must be string"})
-    logo: string;
+    logo?: string;
+
+    @IsNumber({},{ message: 'Customer Id must be number' })
+    @IsOptional()
+    customerId?: number;
 
 }
