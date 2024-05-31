@@ -99,8 +99,8 @@ async create(
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
-  @Roles('Agent')
+  // @UseGuards(JwtAuthGuard)
+  // @Roles('Agent')
   @ApiOperation({ summary: 'Get all transactionTasks' })
   @ApiBearerAuth()
   @ApiResponse({ status: 200, description: 'Return all transactionTasks.'})
@@ -109,8 +109,8 @@ async create(
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
-  @Roles('Agent')
+  // @UseGuards(JwtAuthGuard)
+  // @Roles('Agent')
   @ApiOperation({ summary: 'Get a transactionTask by id' })
   @ApiBearerAuth()
   @ApiParam({ name: 'id', required: true, description: 'The id of the transactionTask' })

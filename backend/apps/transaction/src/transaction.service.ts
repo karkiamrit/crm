@@ -57,7 +57,7 @@ export class TransactionService {
     const payload = { transactionId };
     const token = sign(payload, this.configService.get('JWT_SECRET'), {
       expiresIn: '24h',
-    }); // The token expires in 1 hour
+    }); // The token expires in 24 hour
     const url = `${process.env.FRONTEND_URL}/transaction/${transactionId}?token=${token}`;
     return url;
   }
