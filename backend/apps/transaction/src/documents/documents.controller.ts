@@ -129,8 +129,8 @@ export class DocumentsController {
   }
 
   @Get('/task/:id')
-  findOneByTaskId(@Param('id') id: string, @Query() query: any) {
-    return this.documentsService.findAllByTaskId(query,+id);
+  findOneByTaskId(@Param('id') id: string) {
+    return this.documentsService.findAllByTaskId(+id);
   }
 
   @Patch(':id')

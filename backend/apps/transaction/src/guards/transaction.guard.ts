@@ -6,7 +6,6 @@ export class TransactionGuard implements CanActivate {
     canActivate(context: ExecutionContext): boolean {
         const request = context.switchToHttp().getRequest();
         const token = request.query.token;
-        console.log(request)
         try {
             const payload = verify(token, process.env.JWT_SECRET) as JwtPayload; // Add type assertion
             request.transactionId = payload.transactionId; // Add transactionId to the request object
