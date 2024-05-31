@@ -7,10 +7,14 @@ import { CurrentUser, JwtAuthGuard, Roles, User } from '@app/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { TransactionService } from '../transaction.service';
 
 @Controller('transactionTask')
 export class TransactionTaskController {
-  constructor(private readonly transactionTasksService: TransactionTaskService) {}
+  constructor(
+    private readonly transactionTasksService: TransactionTaskService,
+    private readonly transactionService: TransactionService
+  ) {}
 
   // @Post()
   // @UseGuards(JwtAuthGuard)
@@ -63,7 +67,6 @@ async create(
     ...createTransactionTasksDto,
     templateDocument,
   };
-  createTransactionTasksDtoSeperated.customerId = Number(createTransactionTasksDto.customerId);
   createTransactionTasksDtoSeperated.transactionId = Number(createTransactionTasksDto.transactionId);
 
   return await this.transactionTasksService.create(createTransactionTasksDtoSeperated);

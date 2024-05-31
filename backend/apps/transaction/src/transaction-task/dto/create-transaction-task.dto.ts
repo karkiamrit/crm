@@ -24,8 +24,6 @@ export class CreateTransactionTaskDto {
   @IsOptional()
   type?: transactionTaskType;
 
-
-
   @IsDateString()
   @IsNotEmpty({ message: 'Due Date must be date' })
   dueDate: Date;

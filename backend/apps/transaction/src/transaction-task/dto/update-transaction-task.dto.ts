@@ -16,6 +16,10 @@ export class UpdateTransactionTaskDto {
     @IsEnum(transactionTaskType, {message: "Invalid type"})
     @IsOptional()
     type?: transactionTaskType;
+
+    @IsNumber({},{ message: 'Customer Id must be number' })
+    @IsOptional()
+    customerId?: number;
   
     @IsOptional({message: "Due Date must be date"})
     dueDate: Date;
