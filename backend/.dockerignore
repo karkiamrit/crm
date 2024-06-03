@@ -2,3 +2,4 @@ node_modules
 dist
 apps/auth/node_modules
 apps/notificationos/node_modules
+apps/agents/node_modules

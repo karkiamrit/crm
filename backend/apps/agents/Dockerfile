@@ -1,5 +1,4 @@
 FROM node:alpine as development
-
 WORKDIR /usr/src/app
 
 COPY package.json ./ 
@@ -10,10 +9,14 @@ COPY tsconfig.json tsconfig.json
 
 COPY nest-cli.json nest-cli.json
 
+RUN which yarn || npm install -g yarn
+
 RUN yarn install
 
 COPY apps/agents apps/agents
 COPY libs libs
+
+RUN cd apps/agents && yarn install
 
 RUN yarn run build agents
 
