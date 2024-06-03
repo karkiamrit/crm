@@ -41,6 +41,7 @@ export class CampaignsService {
   }
 
   async findAll(options: ExtendedFindOptions<Campaign>) {
+    options.relations = ['notification'];
     return this.campaignsRepository.findAll(options);
   }
 
