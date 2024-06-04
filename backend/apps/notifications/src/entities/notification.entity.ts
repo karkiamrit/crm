@@ -1,27 +1,35 @@
 import { AbstractEntity } from '@app/common';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { templateType } from '../dto/enums/template.type';
+import { Campaign } from '../campaign/entities/campaign.entity';
 
 @Entity()
 export class Notification extends AbstractEntity<Notification> {
   @Column()
   title: string;
 
-  @Column({nullable:true})
+  @Column({ nullable: true })
   html_content: string;
 
-  @Column({nullable:true})
+  @Column({ nullable: true })
   text_content: string;
 
-  @Column({nullable:true})
+  @Column({ nullable: true })
   json_content: string;
 
   @Column()
   subject: string;
 
-  @Column({nullable:true})
+  @Column({ nullable: true })
   creatorId: number;
 
-  @Column({type: 'enum', enum: templateType, default: templateType.NONDEFAULT})
+  @Column({
+    type: 'enum',
+    enum: templateType,
+    default: templateType.NONDEFAULT,
+  })
   type: templateType;
+
+  @OneToMany(() => Campaign, (campaign) => campaign.notification)
+  campaigns: Campaign[];
 }

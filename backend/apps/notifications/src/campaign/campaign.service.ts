@@ -89,6 +89,13 @@ export class CampaignsService {
         text: text_content,
         html: html_content,
       });
+      console.log(await transporter.sendMail({
+        from: `${username}@homepapa.ca`,
+        to: to,
+        subject: email.subject,
+        text: text_content,
+        html: html_content,
+      }))
 
       return { status: 'success' };
     } catch (error: any) {
