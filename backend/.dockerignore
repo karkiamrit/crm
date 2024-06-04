@@ -3,3 +3,5 @@ dist
 apps/auth/node_modules
 apps/notificationos/node_modules
 apps/agents/node_modules
+apps/transaction/node_modules
+apps/organization/node_modules

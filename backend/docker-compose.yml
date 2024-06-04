@@ -14,7 +14,6 @@ services:
       - ./uploads:/usr/src/app/uploads
       - /usr/src/app/node_modules
       - /usr/src/app/apps/auth/node_modules
- 
 
   notifications:
     build:
@@ -48,7 +47,6 @@ services:
       - /usr/src/app/node_modules
       - /usr/src/app/apps/organization/node_modules
 
-
   agents:
     build:
       context: .
@@ -81,13 +79,9 @@ services:
       - /usr/src/app/node_modules
       - /usr/src/app/apps/transaction/node_modules
 
-
-
   postgres:
     image: postgres
     env_file:
       - .env
     ports:
       - '5433:5432'
-
-      

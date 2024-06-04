@@ -8,6 +8,7 @@
 /apps/auth/node_modules
 /apps/notifications/node_modules
 /apps/agents/node_modules
+/apps/transaction/node_modules
 
 # Logs
 logs

@@ -8,14 +8,16 @@ COPY yarn.lock ./
 
 COPY tsconfig.json tsconfig.json
 
+COPY nest-cli.json nest-cli.json
+
 RUN which yarn || npm install -g yarn
 
 RUN yarn install
 
-RUN yarn add @nestjs/cli
-
 COPY apps/organization apps/organization
 COPY libs libs
+
+RUN cd apps/organization && yarn install
 
 RUN yarn run build organization
 
