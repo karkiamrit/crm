@@ -1,14 +1,11 @@
-import { CronService } from './cron.service';
-import { CronController } from './cron.controller';
-/*
-https://docs.nestjs.com/modules
-*/
-
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CampaignsModule } from '../campaign/campaign.module';
+import { CronService } from './cron.service';
 
 @Module({
-  imports: [],
-  controllers: [CronController],
+  imports: [ScheduleModule.forRoot(), CampaignsModule],
+
   providers: [CronService],
 })
 export class CronModule {}

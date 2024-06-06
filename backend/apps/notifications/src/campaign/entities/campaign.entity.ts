@@ -16,8 +16,14 @@ export class Campaign extends AbstractEntity<Campaign> {
   @Column()
   segmentName: string; 
 
+  @Column({default:false, nullable:true})
+  sentStatus: boolean;
+
   @Column({nullable:true})
   sendTime: Date; // Add sendTime field
+
+  @Column({default:true})
+  isDraft: boolean; // Add isDraft field
 
   @ManyToOne(() => Notification, notification => notification.campaigns)
   @JoinColumn({ name: 'notificationId' })

@@ -1,4 +1,11 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CampaignsRepository } from './campaign.repository';
 import { Campaign } from './entities/campaign.entity';
 import { ConfigService } from '@nestjs/config';
@@ -30,10 +37,18 @@ export class CampaignsService {
   }
 
   async update(id: number, updateCampaignsDto: UpdateCampaignDto) {
-    return this.campaignsRepository.findOneAndUpdate(
+    const {notificationId, ...rest} = updateCampaignsDto;
+    let notification: any;
+    if(updateCampaignsDto.notificationId){
+      notification = await this.notificationService.getOne(notificationId);
+    }  
+    const newCampaign = new Campaign(rest);
+    newCampaign.notification = notification;
+    const updatedCampaign = await this.campaignsRepository.findOneAndUpdate(
       { where: { id: id } },
-      updateCampaignsDto,
+      newCampaign,
     );
+    return updatedCampaign;
   }
 
   async delete(id: number) {
@@ -46,7 +61,7 @@ export class CampaignsService {
   }
 
   async getOne(id: number) {
-    return this.campaignsRepository.findOne({ id });
+    return this.campaignsRepository.findOne({ id }, ['notification']);
   }
 
   async sendEmail(
@@ -68,8 +83,12 @@ export class CampaignsService {
         connectionTimeout: 60000,
       });
 
-      const compiledHtml = _.template(email.html_content, { interpolate: /\{(.+?)\}/g });
-      const compiledText = _.template(email.text_content, { interpolate: /\{(.+?)\}/g });
+      const compiledHtml = _.template(email.html_content, {
+        interpolate: /\{(.+?)\}/g,
+      });
+      const compiledText = _.template(email.text_content, {
+        interpolate: /\{(.+?)\}/g,
+      });
       const html_content = compiledHtml({
         email: to,
         phone: phone,
@@ -89,28 +108,41 @@ export class CampaignsService {
         text: text_content,
         html: html_content,
       });
-      console.log(await transporter.sendMail({
-        from: `${username}@homepapa.ca`,
-        to: to,
-        subject: email.subject,
-        text: text_content,
-        html: html_content,
-      }))
+      console.log(
+        await transporter.sendMail({
+          from: `${username}@homepapa.ca`,
+          to: to,
+          subject: email.subject,
+          text: text_content,
+          html: html_content,
+        }),
+      );
 
       return { status: 'success' };
-    } catch (error: any) {
-      console.error(`Failed to send email: ${error.message}`);
-      return { status: 'error', message: error.message };
+    } catch (e: any) {
+      console.error(`Failed to send email: ${e.message}`);
+      throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  async sendCampain(campaignId: number, username: string) {
+  async sendCampaign(campaignId: number, username: string) {
     try {
-      const campaign = await this.campaignsRepository.findOne({
-         id: campaignId,
-      }, ['notification']);
+      const campaign = await this.campaignsRepository.findOne(
+        {
+          id: campaignId,
+        },
+        ['notification'],
+      );
       if (!campaign) {
         return { status: 'error', message: 'Campaign not found' };
+      }
+      if (campaign.sentStatus === true) {
+        throw new ConflictException('Campaign already sent');
+      }
+      if (campaign.isDraft === true) {
+        throw new ConflictException(
+          'Please complete the campaign details before inititating send',
+        );
       }
       const segmentId = campaign.segmentId;
       const segment = await firstValueFrom(
@@ -120,7 +152,6 @@ export class CampaignsService {
         return { status: 'error', message: 'Segment not found' };
       }
       for (const lead of segment.leads) {
-        console.log(`Sending email to ${lead.email}`);
         const result = await this.sendEmail(
           username,
           lead.email,
@@ -129,16 +160,18 @@ export class CampaignsService {
           campaign.notification,
         );
         if (result.status === 'error') {
-          console.error(
-            `Failed to send email to ${lead.email}: ${result.message}`,
-          );
+          console.error(`Failed to send email to ${lead.email}: ${result}`);
         }
       }
-
+      campaign.sentStatus = true;
+      await this.campaignsRepository.findOneAndUpdate(
+        { where: { id: campaign.id } },
+        campaign,
+      );
       return { status: 'success' };
     } catch (e: any) {
       console.error(`Failed to send campaign: ${e}`);
-      return { status: 'error', message: e.message };
+      throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

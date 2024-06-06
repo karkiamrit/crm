@@ -1,4 +1,4 @@
-import { IsArray, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Column } from 'typeorm';
 
 export class CreateCampaignDto {
@@ -10,9 +10,13 @@ export class CreateCampaignDto {
   @IsOptional()
   description: string;
 
-  @IsDate({message: 'SendTime must be a date'})
+  // @IsDate({message: 'SendTime must be a date'})
   @IsOptional()
   sendTime: Date;
+
+  @IsBoolean({message: 'isDraft must be a boolean'})
+  @IsOptional()
+  isDraft?: boolean;  
 
   @IsString({ message: 'SegmentName must be a string'})
   @IsNotEmpty({ message: 'SegmentName is required'})

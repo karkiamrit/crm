@@ -60,7 +60,6 @@ export class CampaignController {
   @ApiBearerAuth()
   @ApiResponse({ status: 200, description: 'Return all campaigns.'})
   async findAll(@Query() query: any){
-    console.log("reached here")
     return this.campaignsService.findAll(query);
   }
 
@@ -80,6 +79,6 @@ export class CampaignController {
     @Body('campaignId') campaignId: number ,
     @CurrentUser() user: User,
   ) {
-    return this.campaignsService.sendCampain(campaignId, user.email.split('@')[0]);
+    return await this.campaignsService.sendCampaign(campaignId, user.email.split('@')[0]);
   }
 }

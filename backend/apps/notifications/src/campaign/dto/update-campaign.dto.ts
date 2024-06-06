@@ -1,4 +1,4 @@
-import { IsArray, IsDate, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsArray, IsBoolean, IsDate, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class UpdateCampaignDto {
     @IsString({ message: 'Title must be a string'})
@@ -13,7 +13,14 @@ export class UpdateCampaignDto {
     @IsNumber({}, {message: 'SegmentId must be an array of numbers'})
     segmentId?: number;
 
-    @IsDate({message: 'SendTime must be a date'})
     @IsOptional()
     sendTime: Date;
-}
+
+    @IsBoolean({message: 'isDraft must be a boolean'})
+    @IsOptional()
+    isDraft?: boolean;
+
+    @IsNumber({}, { message: 'NotificationId must be a number'})
+    @IsOptional()
+    notificationId?: number;
+}   

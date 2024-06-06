@@ -9,6 +9,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { NotificationsRepository } from './notifications.repository';
 import { MailchimpModule } from './mailchimp/mailchimp.module';
 import { CampaignsModule } from './campaign/campaign.module';
+import { CronModule } from './cron/cron.module';
 @Module({
   imports: [
     DatabaseModule,
@@ -45,6 +46,7 @@ import { CampaignsModule } from './campaign/campaign.module';
     LoggerModule,
     MailchimpModule,
     CampaignsModule,
+    CronModule,
   ],
   controllers: [NotificationsController],
   providers: [NotificationsService, NotificationsRepository],
