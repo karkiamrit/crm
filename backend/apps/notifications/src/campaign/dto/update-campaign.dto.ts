@@ -13,6 +13,10 @@ export class UpdateCampaignDto {
     @IsNumber({}, {message: 'SegmentId must be an array of numbers'})
     segmentId?: number;
 
+    @IsString({ message: 'SegmentName must be a string'})
+    @IsOptional ({ message: 'SegmentName is required'})
+    segmentName: string; // Change type to number
+
     @IsOptional()
     sendTime: Date;
 
