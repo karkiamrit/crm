@@ -16,6 +16,7 @@ import { Segment } from '../../segments/entities/segment.entity';
 import { Document } from '../../documents/entities/document.entity';
 import { LeadsStatus, LeadType } from '../../shared/data';
 import { Tasks } from '../../tasks/entities/task.entity';
+import { Invoice } from '../../invoices/entities/invoice.entity';
 
 @Entity()
 export class Leads extends AbstractEntity<Leads> {
@@ -61,6 +62,10 @@ export class Leads extends AbstractEntity<Leads> {
     onDelete: 'CASCADE',
   })
   timelines: LeadTimeline[];
+
+
+  @OneToMany(() => Invoice, (invoice) => invoice.lead, {nullable:true})
+  invoices: Invoice[];
 
   @OneToOne(() => Product, { eager: true, nullable: true, cascade: true })
   @JoinColumn({ name: 'productId' })

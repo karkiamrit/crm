@@ -21,7 +21,7 @@ export class TransactionTaskService {
       throw new Error('Transaction not found');
     }
     transactionTask.transaction = transaction;
-    transactionTask.customerId = transaction.customerId;
+    transactionTask.leadId = transaction.leadId;
     return await this.transactionTasksRepository.create(transactionTask);
   }
 

@@ -23,6 +23,9 @@ export class Tasks extends AbstractEntity<Tasks> {
   @Column()
   taskDesc: string;
 
+  @Column({default: 'pending'})
+  status: 'completed' | 'pending' | 'in-progress';
+
   @Column({
     type: 'enum',
     enum: Priority,

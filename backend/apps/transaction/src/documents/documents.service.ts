@@ -110,7 +110,7 @@ export class DocumentsService {
     const task = await this.taskRepository.findOne({
       id: Number(documents.task.id),
     });
-    const customerId = task.customerId;
+    const customerId = task.leadId;
     const customer = await firstValueFrom(
       this.agentsService.send('get_customer_by_id', { id: customerId }),
     );
@@ -132,9 +132,9 @@ export class DocumentsService {
 
   async createDocument(documents: Document): Promise<Document> {
     const newDocument = await this.documentsRepository.create(documents);
-    const customerId = newDocument.task.customerId;
+    const customerId = newDocument.task.leadId;
     const customer = await firstValueFrom(
-      this.agentsService.send('get_customer_by_id', { id: customerId }),
+      this.agentsService.send('get_lead_by_id', { id: customerId }),
     );
 
     // Create a timeline entry for the documentFile attribute
@@ -247,7 +247,7 @@ export class DocumentsService {
       { where: { id: documentId } },
       { documentFile: filePath },
     );
-    const customerId = updatedDocument.task.customerId;
+    const customerId = updatedDocument.task.leadId;
 
     const customer = await firstValueFrom(
       this.agentsService.send('get_customer_by_id', { id: customerId }),
@@ -281,7 +281,7 @@ export class DocumentsService {
     if (!updatedDocument) {
       throw new NotFoundException(`Document #${id} not found`);
     }
-    const customerId = updatedDocument.task.customerId;
+    const customerId = updatedDocument.task.leadId;
     const customer = await firstValueFrom(
       this.agentsService.send('get_customer_by_id', { id: customerId }),
     );

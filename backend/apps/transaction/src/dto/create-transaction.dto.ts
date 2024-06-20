@@ -27,8 +27,8 @@ export class CreateTransactionsDto {
   // listingStatus: listingStatus;
 
   // @IsNumber({},{ message: 'Customer Id must be number' })
-  @IsNotEmpty({ message: 'Customer Id is required' })
-  customerId: number;
+  @IsNotEmpty({ message: 'Lead Id is required' })
+  leadId: number;
 
   @IsFloat({ message: 'Listing Price must be number' })
   @IsOptional({ message: 'Listing Price must not be empty' })

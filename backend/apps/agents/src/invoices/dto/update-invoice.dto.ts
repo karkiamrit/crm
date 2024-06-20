@@ -7,7 +7,6 @@ import { IsFloat } from "@app/common/validators/float.validator";
 export class UpdateInvoiceDto {
     @IsNumber()
     @IsFloat({ message: 'subtotal must be a float' })
-
     @IsOptional()
     subTotal?: number;
   
@@ -22,9 +21,13 @@ export class UpdateInvoiceDto {
     @IsOptional()
     total?: number;
 
-    @IsString({ message: 'customer Name must be a string' })
+    @IsString({ message: 'lead Name must be a string' })
     @IsOptional()
-    customerName: string;
+    leadName?: string;
+
+    @IsString({ message: 'lead Name must be a string' })
+    @IsOptional({ message: 'lead name is optional' })
+    leadEmail?: string;
   
     @IsNumber()
     @IsFloat({ message: 'discount must be a float' })

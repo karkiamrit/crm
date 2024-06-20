@@ -1,33 +1,38 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto';
 import { InvoicesRepository } from './invoices.repository';
-import { ExtendedFindOptions, User } from '@app/common';
+import { ExtendedFindOptions, NOTIFICATIONS_SERVICE, User } from '@app/common';
 import { AgentsService } from '../agents.service';
 import { Product } from '../shared/objects/products/products.entity';
 import { Invoice } from './entities/invoice.entity';
-import { CustomersService } from '../customers/customers.service';
+import { LeadsService } from '../leads/leads.service';
 import { ProductRepository } from '../shared/objects/products/product.repository';
 import { EntityManager, QueryRunner } from 'typeorm';
-import { Customers } from '../customers/entities/customer.entity';
+import { Leads } from '../leads/entities/lead.entity';
 import { Agent } from '../entities/agent.entity';
 import { CreateProductInputDTO } from '../shared/dtos/product.dto';
+import { ClientProxy } from '@nestjs/microservices';
+import { ConfigService } from '@nestjs/config';
+import { tap } from 'rxjs';
+import { InvoiceStatus } from '../shared/data';
 
 @Injectable()
 export class InvoicesService {
   constructor(
     private readonly invoicesRepository: InvoicesRepository,
-    private readonly customersService: CustomersService,
+    private readonly leadsService: LeadsService,
     private readonly agentsService: AgentsService,
     private readonly manager: EntityManager,
     private readonly productRepository: ProductRepository,
-    
-
+    @Inject(NOTIFICATIONS_SERVICE)
+    private readonly notificationsService: ClientProxy,
+    private readonly configService: ConfigService
   ) {}
 
   // async create(createInvoiceDto: CreateInvoiceDto, user: User) {
-  //   let { customerId, ...rest } = createInvoiceDto;
-  //   const customer = await this.customersService.getOne(customerId);
+  //   let { leadId, ...rest } = createInvoiceDto;
+  //   const lead = await this.leadsService.getOne(leadId);
   //   const agent = await this.agentsService.getAgentByUserId(user.id);
   //   let products: Product[] = [];
   //   if (createInvoiceDto.products) {
@@ -44,18 +49,18 @@ export class InvoicesService {
   //     products,
   //   });
 
-  //   invoice.customer = customer;
+  //   invoice.lead = lead;
   //   invoice.agent = agent;
   //   return await this.invoicesRepository.create(invoice);
   // }
 
   async create(createInvoiceDto: CreateInvoiceDto, user: User) {
-    const { customerId, products: productDtos, ...rest } = createInvoiceDto;
-    let customer = null;
+    const { leadId, products: productDtos, ...rest } = createInvoiceDto;
+    let lead = null;
     let agent = null;
   
-    if (customerId) {
-      customer = await this.customersService.getOne(customerId);
+    if (leadId) {
+      lead = await this.leadsService.getOne(leadId);
     }
   
     agent = await this.agentsService.getAgentByUserId(user.id);
@@ -66,7 +71,7 @@ export class InvoicesService {
   
     try {
       // Create a new Invoices entity without products
-      const invoice = this.createInvoice(rest, customer, agent, user);
+      const invoice = this.createInvoice(rest, lead, agent, user);
   
       // Save the invoice to get the generated id
       const savedInvoice = await this.saveInvoice(queryRunner, invoice);
@@ -93,18 +98,18 @@ export class InvoicesService {
     }
   }
   
-  createInvoice(rest: Partial<Invoice>, customer: Customers, agent: Agent, user: User): Invoice {
+  createInvoice(rest: Partial<Invoice>, lead: Leads, agent: Agent, user: User): Invoice {
     if(agent){
       return new Invoice({
         ...rest,
-        customer,
+        lead,
         agent,
         createdBy: agent.name
       });
     }else{
       return new Invoice({
         ...rest,
-        customer,
+        lead,
         agent,
         createdBy: user.email.split('@')[0]
       });
@@ -143,12 +148,13 @@ async createAndSaveProducts(queryRunner: QueryRunner, productDtos: CreateProduct
   }
 
   async findAll(options: ExtendedFindOptions<Invoice>) {
-    return this.invoicesRepository.findAll({...options, relations: ['customer','agent', 'products']});
+    return this.invoicesRepository.findAll({...options, relations: ['lead','agent', 'products']});
   }
 
   async getOne(id: number) {
     return this.invoicesRepository.findOne({ id });
   }
+
   async update(
     id: number,
     updateInvoiceDto: UpdateInvoiceDto,
@@ -195,5 +201,23 @@ async createAndSaveProducts(queryRunner: QueryRunner, productDtos: CreateProduct
       }
     }
     return await this.invoicesRepository.findOneAndUpdate({where:{ id: invoice.id}}, invoice); // Save the updated invoice back to the database
+  }
+
+  async sendInvoice(invoicePath: string, email: string, id: number, user: User){
+    const invoice = await this.invoicesRepository.findOne({id});
+    if(!invoice){
+      throw new NotFoundException(`Invoice #${id} not found`);
+    }
+    const username= user.email.split('@')[0];
+    const text= `${this.configService.get('UPLOAD_URL')}/${invoicePath}`;
+    return this.notificationsService.send('send_invoice_email', { username, to: email, text_content:text }).pipe(
+      tap({
+        next: async (response) => {
+          console.log(`Email Sent successfully: ${response}`);
+          await this.invoicesRepository.findOneAndUpdate({where:{id: invoice.id}}, {status: InvoiceStatus.SAVED});
+        },
+        error: (error) => console.error(`Failed to send email: ${error.message}`),
+      })
+    );
   }
 }

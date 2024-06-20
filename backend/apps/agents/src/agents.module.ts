@@ -2,7 +2,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { AgentsService } from './agents.service';
 import { AgentsController } from './agents.controller';
 import { AgentsRepository } from './agent.repository';
-import { AUTH_SERVICE, DatabaseModule } from '@app/common';
+import { AUTH_SERVICE, DatabaseModule, NOTIFICATIONS_SERVICE } from '@app/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { LoggerModule } from '@app/common';
@@ -32,6 +32,19 @@ import { TasksModule } from './tasks/tasks.module';
           options: {
             host: configService.get('AUTH_HOST'),
             port: configService.get('AUTH_PORT'),
+          },
+        }),
+        inject: [ConfigService],
+      },
+    ]),
+    ClientsModule.registerAsync([
+      {
+        name: NOTIFICATIONS_SERVICE,
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: configService.get('NOTITICATIONS_HOST'),
+            port: configService.get('NOTIFICATIONS_PORT'),
           },
         }),
         inject: [ConfigService],

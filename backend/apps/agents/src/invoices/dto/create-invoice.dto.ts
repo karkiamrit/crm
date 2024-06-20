@@ -16,7 +16,6 @@ import { IsFloat } from '@app/common/validators/float.validator';
 export class CreateInvoiceDto {
   @IsNumber()
   @IsFloat({ message: 'subtotal must be a float' })
-
   @IsNotEmpty({ message: 'subTotal is required' })
   subTotal: number;
 
@@ -47,9 +46,17 @@ export class CreateInvoiceDto {
   @IsNotEmpty({ message: 'remarks is required' })
   remarks: string;
   
-  @IsString({ message: 'customer Name must be a string' })
-  @IsNotEmpty({ message: 'customer name is required' })
-  customerName: string;
+  @IsString({ message: 'lead Name must be a string' })
+  @IsNotEmpty({ message: 'lead name is required' })
+  leadName: string;
+
+  @IsString({ message: 'lead Email must be a string' })
+  @IsNotEmpty({ message: 'lead Email is required' })
+  leadEmail: string;
+
+  @IsString({ message: 'lead Name must be a string' })
+  @IsOptional({ message: 'lead name is optional' })
+  customerEmail: string;
 
   @IsOptional()
   @ValidateNested({ each: true, message: 'products must be valid' })
@@ -57,6 +64,6 @@ export class CreateInvoiceDto {
   products?: CreateProductInputDTO[];
 
   @IsOptional()
-  @IsNumber({},{ message: 'customer Id should be a number'})
-  customerId?: number;
+  @IsNumber({},{ message: 'lead Id should be a number'})
+  leadId?: number;
 }

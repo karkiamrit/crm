@@ -13,14 +13,15 @@ import { Product } from '../../shared/objects/products/products.entity';
 import { Agent } from '../../entities/agent.entity';
 import { Customers } from '../../customers/entities/customer.entity';
 import { InvoiceStatus } from '../../shared/data/enums/invoice.status.enum';
+import { Leads } from '../../leads/entities/lead.entity';
 
 @Entity()
 export class Invoice extends AbstractEntity<Invoice> {
   @Column({nullable:true})
-  customerName: string;
+  leadName: string;
 
   @Column({nullable: true})
-  customerEmail: string;
+  leadEmail: string;
 
   @Column({nullable: true})
   notes: string;
@@ -56,14 +57,18 @@ export class Invoice extends AbstractEntity<Invoice> {
   @JoinColumn({ name: 'agentId', referencedColumnName: 'id' })
   agent: Agent;
 
-  @ManyToOne(() => Customers, { eager: true, onDelete: 'CASCADE', nullable:true })
-  @JoinColumn({ name: 'customerId', referencedColumnName: 'id' })
-  customer: Customers;
+  // @ManyToOne(() => Customers, { eager: true, onDelete: 'CASCADE', nullable:true })
+  // @JoinColumn({ name: 'customerId', referencedColumnName: 'id' })
+  // customer: Customers;
+
+  @ManyToOne(() => Leads, { eager: true, onDelete: 'CASCADE', nullable:true })
+  @JoinColumn({ name: 'leadId', referencedColumnName: 'id' })
+  lead: Leads;
 
   @OneToMany(() => Product, (product) => product.invoice, {
     eager: true,
     nullable: true,
-  })
+  })  
   @JoinColumn({ name: 'productId' })
   products: Product[];
 

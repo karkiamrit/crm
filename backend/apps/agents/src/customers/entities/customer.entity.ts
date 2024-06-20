@@ -55,9 +55,6 @@ export class Customers extends AbstractEntity<Customers> {
   @JoinColumn({ name: 'productId' })
   product: Product;
 
-  @OneToMany(() => Invoice, (invoice) => invoice.customer, {nullable:true})
-  invoices: Invoice[];
-
   @OneToMany(() => Tasks, (task) => task.customer, {nullable: true})
   tasks: Tasks[];
 

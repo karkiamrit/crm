@@ -241,7 +241,7 @@ export class LeadsService {
         return this.leadsTimelineRepository.create(timeline); // Save the timeline to the database
       });
       await Promise.all(timelines);
-      if ('status' in changes && changes.status === LeadsStatus.COMPLETED) {
+      if ('status' in changes && changes.status === LeadsStatus.PAST_CLIENT) {
         await this.handleLeadConversion(lead); // Abstract the lead completion logic into a separate method.
         // This method would handle deletion of the lead, conversion to customer, etc.
       }

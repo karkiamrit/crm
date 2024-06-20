@@ -25,7 +25,7 @@ export class TransactionTask extends AbstractEntity<TransactionTask>{
     dueDate: Date;
 
     @Column()
-    customerId: number;
+    leadId: number;
 
     @Column({ nullable: true })
     templateDocument: string;

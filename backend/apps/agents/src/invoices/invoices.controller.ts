@@ -7,7 +7,9 @@ import {
   Post,
   Put,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 
 import { CurrentUser, JwtAuthGuard, Roles, User } from '@app/common';
@@ -18,16 +20,16 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 
-
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto';
 import { InvoicesService } from './invoices.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @Controller('invoices')
 export class InvoicesController {
-  constructor(
-    private readonly invoicesService: InvoicesService,
-  ) {}
+  constructor(private readonly invoicesService: InvoicesService) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
@@ -53,9 +55,11 @@ export class InvoicesController {
     description: 'The id of the invoice to update',
   })
   @ApiBody({ type: UpdateInvoiceDto })
-  async update(@Param('id') id: number, @Body() updateInvoicesDto: UpdateInvoiceDto) {
+  async update(
+    @Param('id') id: number,
+    @Body() updateInvoicesDto: UpdateInvoiceDto,
+  ) {
     return this.invoicesService.update(id, updateInvoicesDto);
-    console.log(updateInvoicesDto)
   }
 
   @Delete(':id')
@@ -86,8 +90,51 @@ export class InvoicesController {
   @Roles('Admin')
   @ApiOperation({ summary: 'Get an invoice by id' })
   @ApiBearerAuth()
-  @ApiParam({ name: 'id', required: true, description: 'The id of the invoice' })
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'The id of the invoice',
+  })
   async getOne(@Param('id') id: number) {
     return this.invoicesService.getOne(id);
+  }
+
+  @Post('/send')
+  @UseInterceptors(
+    FileInterceptor('invoice', {
+      storage: diskStorage({
+        destination: './uploads', // specify the path where the files should be saved
+        filename: (req, file, callback) => {
+          const name = Date.now() + extname(file.originalname); // generate a unique filename
+          callback(null, name);
+        },
+      }),
+      fileFilter: (req, file, callback) => {
+        // Only accept images
+        if (!file.originalname.match(/\.(pdf)$/)) {
+          // Reject file
+          return callback(new Error('Only pdf is allowed!'), false);
+        }
+        // Accept file
+        callback(null, true);
+      },
+    }),
+  )
+  @UseGuards(JwtAuthGuard)
+  @Roles('Admin')
+  @ApiOperation({ summary: 'Send Invoice email' })
+  @ApiBearerAuth()
+  async sendInvoice(
+    @UploadedFile() file: Express.Multer.File, 
+    @Body('email') email: string,
+    @Body('invoiceId') id: string,
+    @CurrentUser() user: User
+  ){
+    let invoicePdf: any;
+    const invoiceId = Number(id);
+    if (file) {
+      invoicePdf = file.path;
+    }
+    return this.invoicesService.sendInvoice(invoicePdf, email, invoiceId ,user);
   }
 }

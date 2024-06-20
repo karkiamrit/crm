@@ -19,7 +19,7 @@ export class UpdateTransactionTaskDto {
 
     @IsNumber({},{ message: 'Customer Id must be number' })
     @IsOptional()
-    customerId?: number;
+    leadId?: number;
   
     @IsOptional({message: "Due Date must be date"})
     dueDate: Date;

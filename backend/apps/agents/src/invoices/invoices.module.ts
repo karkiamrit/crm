@@ -1,15 +1,15 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { InvoicesService } from './invoices.service';
 import { InvoicesController } from './invoices.controller';
-import { AUTH_SERVICE, DatabaseModule } from '@app/common';
+import { AUTH_SERVICE, DatabaseModule, NOTIFICATIONS_SERVICE } from '@app/common';
 import { Invoice } from './entities/invoice.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { InvoicesRepository } from './invoices.repository';
 import { AgentsModule } from '../agents.module';
-import { CustomersModule } from '../customers/customers.module';
 import { Product } from '../shared/objects/products/products.entity';
 import { ProductRepository } from '../shared/objects/products/product.repository';
+import { LeadsModule } from '../leads/leads.module';
 
 @Module({
   imports: [
@@ -32,8 +32,19 @@ import { ProductRepository } from '../shared/objects/products/product.repository
         }),
         inject: [ConfigService],
       },
+      {
+        name: NOTIFICATIONS_SERVICE,
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: configService.get('NOTIFICATIONS_HOST'),
+            port: configService.get('NOTIFICATIONS_PORT'),
+          },
+        }),
+        inject: [ConfigService],
+      },
     ]),
-    CustomersModule,
+    LeadsModule,
   ],
   controllers: [InvoicesController],
   providers: [InvoicesService, InvoicesRepository, ProductRepository],

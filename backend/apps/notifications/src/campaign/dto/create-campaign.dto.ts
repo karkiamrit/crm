@@ -19,11 +19,11 @@ export class CreateCampaignDto {
   isDraft?: boolean;  
 
   @IsString({ message: 'SegmentName must be a string'})
-  @IsNotEmpty({ message: 'SegmentName is required'})
+  @IsOptional()
   segmentName: string; // Change type to number
 
   @IsNumber({}, { each: true, message: 'SegmentId must be an array of numbers'})
-  @IsNotEmpty({ message: 'SegmentId is required'})
+  @IsOptional()
   segmentId: number;
 
   @IsNumber({}, { message: 'NotificationId must be a number'})

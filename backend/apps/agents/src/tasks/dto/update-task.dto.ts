@@ -24,4 +24,8 @@ export class UpdateTaskDto {
   @IsOptional()
   @IsNumber({},{message: 'LeadId must be a number'})
   leadId?: number;
+
+  @IsEnum(['completed', 'pending', 'in-progress'], {message: 'Status must be one of the following: completed, pending, in-progress'})
+  @IsOptional()
+  status?: 'completed' | 'pending' | 'in-progress';
 }

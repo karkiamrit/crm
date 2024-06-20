@@ -45,6 +45,6 @@ export class UpdateTransactionsDto {
 
     @IsNumber({},{ message: 'Customer Id must be number' })
     @IsOptional()
-    customerId?: number;
+    leadId?: number;
 
 }

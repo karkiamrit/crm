@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -14,6 +16,7 @@ import { CurrentUser, JwtAuthGuard, Roles, User} from '@app/common';
 import { ApiOperation, ApiBearerAuth, ApiParam, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { UpdateCampaignDto } from './dto/update-campaign.dto';
 import { CreateCampaignDto } from './dto/create-campaign.dto';
+import { EventPattern, Payload } from '@nestjs/microservices';
 
 @Controller('campaigns')
 export class CampaignController {
@@ -80,5 +83,19 @@ export class CampaignController {
     @CurrentUser() user: User,
   ) {
     return await this.campaignsService.sendCampaign(campaignId, user.email.split('@')[0]);
+  }
+
+  @EventPattern('send_invoice_email')
+  async handleSendEmail(@Payload() data: {
+    username: string,
+    to: string,
+    text_content: string,
+  }) {
+    try {
+      return await this.campaignsService.sendInvoiceEmail(data.username, data.to, data.text_content);
+    } catch (e: any) {
+      console.error(`Failed to send email: ${e.message}`);
+      throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }
