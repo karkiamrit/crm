@@ -60,6 +60,7 @@ export class TasksService {
     task.dueDate = updateTaskDto.dueDate || task.dueDate;
     task.taskDesc = updateTaskDto.taskDesc || task.taskDesc;
     task.priority = updateTaskDto.priority || task.priority;
+    task.status = updateTaskDto.status || task.status;
     return this.tasksRepository.findOneAndUpdate({where:{id:task.id}}, task);
   }
 
