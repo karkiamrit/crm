@@ -10,7 +10,7 @@ services:
     ports:
       - '8000:8000'
     volumes:
-      - .:/usr/src/app
+      - .:/usr/src/app  
       - ./uploads:/usr/src/app/uploads
       - /usr/src/app/node_modules
       - /usr/src/app/apps/auth/node_modules
@@ -85,3 +85,8 @@ services:
       - .env
     ports:
       - '5433:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

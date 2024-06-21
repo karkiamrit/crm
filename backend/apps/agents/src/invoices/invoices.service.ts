@@ -111,7 +111,7 @@ export class InvoicesService {
         ...rest,
         lead,
         agent,
-        createdBy: user.email.split('@')[0]
+        createdBy: user.email
       });
     }
   

@@ -56,14 +56,6 @@ export class TasksService {
 
   async update(id: number, updateTaskDto: UpdateTaskDto): Promise<Tasks> {
     const task = await this.findOne(id);
-    if(updateTaskDto.customerId){
-      const customer = await this.customersService.getOne(updateTaskDto.customerId);
-      task.customer = customer;
-    }
-    if(updateTaskDto.leadId){
-      const lead = await this.leadsService.getOne(updateTaskDto.leadId);
-      task.lead = lead;
-    }
     task.name = updateTaskDto.name || task.name;
     task.dueDate = updateTaskDto.dueDate || task.dueDate;
     task.taskDesc = updateTaskDto.taskDesc || task.taskDesc;
