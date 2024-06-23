@@ -17,6 +17,7 @@ import { Document } from '../../documents/entities/document.entity';
 import { LeadsStatus, LeadType } from '../../shared/data';
 import { Tasks } from '../../tasks/entities/task.entity';
 import { Invoice } from '../../invoices/entities/invoice.entity';
+import { Email } from '../../emails/entities/email.entity';
 
 @Entity()
 export class Leads extends AbstractEntity<Leads> {
@@ -90,4 +91,7 @@ export class Leads extends AbstractEntity<Leads> {
 
   @OneToMany(() => Document, (document) => document.lead, { nullable: true })
   officialDocs: Document[];
+
+  @OneToMany(() => Email, (email) => email.lead, { nullable: true })
+  emails: Email[];
 }

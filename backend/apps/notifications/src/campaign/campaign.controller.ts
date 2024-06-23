@@ -98,4 +98,18 @@ export class CampaignController {
       throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  @EventPattern('send_email_to_lead')
+  async handleLeadEmail(@Payload() data: {
+    username: string,
+    to: string,
+    text_content: string,
+  }) {
+    try {
+      return await this.campaignsService.sendInvoiceEmail(data.username, data.to, data.text_content);
+    } catch (e: any) {
+      console.error(`Failed to send email: ${e.message}`);
+      throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 }

@@ -14,6 +14,7 @@ import { SegmentsModule } from './segments/segments.module';
 import { DocumentsModule } from './documents/documents.module';
 import { InvoicesModule } from './invoices/invoices.module';
 import { TasksModule } from './tasks/tasks.module';
+import { EmailsModule } from './emails/emails.module';
 
 @Module({
   
@@ -57,7 +58,8 @@ import { TasksModule } from './tasks/tasks.module';
     forwardRef(()=>SegmentsModule),
     DocumentsModule,
     InvoicesModule,
-    TasksModule
+    TasksModule,
+    EmailsModule
   ],
   controllers: [AgentsController],
   providers: [AgentsService, AgentsRepository],
