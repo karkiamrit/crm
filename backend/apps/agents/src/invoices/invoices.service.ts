@@ -104,14 +104,14 @@ export class InvoicesService {
         ...rest,
         lead,
         agent,
-        createdBy: agent.name
+        sendorName: agent.name
       });
     }else{
       return new Invoice({
         ...rest,
         lead,
         agent,
-        createdBy: user.email
+        sendorName: agent.name
       });
     }
   

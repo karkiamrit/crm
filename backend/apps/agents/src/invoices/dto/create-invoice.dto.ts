@@ -54,9 +54,25 @@ export class CreateInvoiceDto {
   @IsNotEmpty({ message: 'lead Email is required' })
   leadEmail: string;
 
-  @IsString({ message: 'lead Name must be a string' })
-  @IsOptional({ message: 'lead name is optional' })
-  customerEmail: string;
+  @IsString({ message: 'lead Org must be a string' })
+  @IsNotEmpty({ message: 'lead Org is required' })
+  leadOrganization: string;
+
+  @IsString({ message: 'lead Email must be a string' })
+  @IsNotEmpty({ message: 'lead Email is required' })
+  sendorName: string;
+
+  @IsString({ message: 'lead Email must be a string' })
+  @IsNotEmpty({ message: 'lead Email is required' })
+  sendorEmail: string;
+
+  @IsString({ message: 'lead Email must be a string' })
+  @IsOptional({ message: 'lead Email is required' })
+  sendorOrganization?: string;
+
+  // @IsString({ message: 'lead Name must be a string' })
+  // @IsOptional({ message: 'lead name is optional' })
+  // customerEmail: string;
 
   @IsOptional()
   @ValidateNested({ each: true, message: 'products must be valid' })

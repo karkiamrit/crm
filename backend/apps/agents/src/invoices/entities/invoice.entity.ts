@@ -24,6 +24,9 @@ export class Invoice extends AbstractEntity<Invoice> {
   leadEmail: string;
 
   @Column({nullable: true})
+  leadOrganization: string;
+
+  @Column({nullable: true})
   notes: string;
 
   @Column({type: 'float'})
@@ -73,5 +76,13 @@ export class Invoice extends AbstractEntity<Invoice> {
   products: Product[];
 
   @Column({nullable: true})
-  createdBy: string;
+  sendorName: string;
+
+  @Column({nullable: true})
+  sendorEmail: string;
+
+  @Column({nullable: true})
+  sendorOrganization: string;
+
+
 }
