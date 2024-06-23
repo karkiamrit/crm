@@ -27,7 +27,7 @@ export class InvoicesService {
     private readonly productRepository: ProductRepository,
     @Inject(NOTIFICATIONS_SERVICE)
     private readonly notificationsService: ClientProxy,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
   ) {}
 
   // async create(createInvoiceDto: CreateInvoiceDto, user: User) {
@@ -40,7 +40,7 @@ export class InvoicesService {
   //     products.forEach(async(product)=>{
   //       await this.productRepository.create(product);
   //     })
-     
+
   //   }
 
   //   // Create a new Invoices entity
@@ -58,33 +58,37 @@ export class InvoicesService {
     const { leadId, products: productDtos, ...rest } = createInvoiceDto;
     let lead = null;
     let agent = null;
-  
-    if (leadId) {
+
+    if (leadId && leadId !== 0) {
       lead = await this.leadsService.getOne(leadId);
     }
-  
+
     agent = await this.agentsService.getAgentByUserId(user.id);
-  
+
     // Start a transaction
-    const queryRunner = this.manager.connection.createQueryRunner();    
+    const queryRunner = this.manager.connection.createQueryRunner();
     await queryRunner.startTransaction();
-  
+
     try {
       // Create a new Invoices entity without products
       const invoice = this.createInvoice(rest, lead, agent, user);
-  
+
       // Save the invoice to get the generated id
       const savedInvoice = await this.saveInvoice(queryRunner, invoice);
-  
+
       if (productDtos) {
         // Create and save the products
-        const products = await this.createAndSaveProducts(queryRunner, productDtos, savedInvoice);
-  
+        const products = await this.createAndSaveProducts(
+          queryRunner,
+          productDtos,
+          savedInvoice,
+        );
+
         // Update the invoice with the products
         savedInvoice.products = products;
         await this.saveInvoice(queryRunner, savedInvoice);
       }
-  
+
       // Commit the transaction
       await queryRunner.commitTransaction();
       return savedInvoice;
@@ -97,37 +101,53 @@ export class InvoicesService {
       await queryRunner.release();
     }
   }
-  
-  createInvoice(rest: Partial<Invoice>, lead: Leads, agent: Agent, user: User): Invoice {
-    if(agent){
+
+  createInvoice(
+    rest: Partial<Invoice>,
+    lead: Leads,
+    agent: Agent,
+    user: User,
+  ): Invoice {
+    if (agent) {
+      if (lead) {
+        return new Invoice({
+          ...rest,
+          lead,
+          agent,
+        });
+      } else {
+        return new Invoice({
+          ...rest,
+          agent,
+        });
+      }
+    } else {
       return new Invoice({
         ...rest,
         lead,
         agent,
-        sendorName: agent.name
-      });
-    }else{
-      return new Invoice({
-        ...rest,
-        lead,
-        agent,
-        sendorName: agent.name
       });
     }
-  
   }
 
-async saveInvoice(queryRunner: QueryRunner, invoice: Invoice): Promise<Invoice> {
-  return await queryRunner.manager.save(invoice);
-}
+  async saveInvoice(
+    queryRunner: QueryRunner,
+    invoice: Invoice,
+  ): Promise<Invoice> {
+    return await queryRunner.manager.save(invoice);
+  }
 
-async createAndSaveProducts(queryRunner: QueryRunner, productDtos: CreateProductInputDTO[], invoice: Invoice): Promise<Product[]> {
-  let products: Product[] = [];
-  for (const prodDto of productDtos) {
+  async createAndSaveProducts(
+    queryRunner: QueryRunner,
+    productDtos: CreateProductInputDTO[],
+    invoice: Invoice,
+  ): Promise<Product[]> {
+    let products: Product[] = [];
+    for (const prodDto of productDtos) {
       // Create a new Product entity with the invoiceId
       const product = new Product({
-          ...prodDto,
-          invoice, // Assign the saved invoice to the product
+        ...prodDto,
+        invoice, // Assign the saved invoice to the product
       });
 
       // Save the product
@@ -139,16 +159,19 @@ async createAndSaveProducts(queryRunner: QueryRunner, productDtos: CreateProduct
       }
 
       products.push(savedProduct);
+    }
+    return products;
   }
-  return products;
-}
 
   async delete(id: number) {
     return this.invoicesRepository.findOneAndDelete({ id });
   }
 
   async findAll(options: ExtendedFindOptions<Invoice>) {
-    return this.invoicesRepository.findAll({...options, relations: ['lead','agent', 'products']});
+    return this.invoicesRepository.findAll({
+      ...options,
+      relations: ['lead', 'agent', 'products'],
+    });
   }
 
   async getOne(id: number) {
@@ -159,7 +182,7 @@ async createAndSaveProducts(queryRunner: QueryRunner, productDtos: CreateProduct
     id: number,
     updateInvoiceDto: UpdateInvoiceDto,
   ): Promise<Invoice> {
-    const invoice = await this.invoicesRepository.findOne({ id },['products'] );
+    const invoice = await this.invoicesRepository.findOne({ id }, ['products']);
     if (!invoice) {
       throw new NotFoundException(`Invoice #${id} not found`);
     }
@@ -182,12 +205,14 @@ async createAndSaveProducts(queryRunner: QueryRunner, productDtos: CreateProduct
               product[key] = prod[key];
             }
           }
-          await this.productRepository.findOneAndUpdate({where:{id: product.id}}, product);
+          await this.productRepository.findOneAndUpdate(
+            { where: { id: product.id } },
+            product,
+          );
         } else {
           product = new Product(prod); // Create a new instance of the Product entity
           product.invoice = invoice;
           await this.productRepository.create(product);
-
         }
         return product;
       });
@@ -200,24 +225,38 @@ async createAndSaveProducts(queryRunner: QueryRunner, productDtos: CreateProduct
         invoice[key] = updateInvoiceDto[key];
       }
     }
-    return await this.invoicesRepository.findOneAndUpdate({where:{ id: invoice.id}}, invoice); // Save the updated invoice back to the database
+    return await this.invoicesRepository.findOneAndUpdate(
+      { where: { id: invoice.id } },
+      invoice,
+    ); // Save the updated invoice back to the database
   }
 
-  async sendInvoice(invoicePath: string, email: string, id: number, user: User){
-    const invoice = await this.invoicesRepository.findOne({id});
-    if(!invoice){
+  async sendInvoice(
+    invoicePath: string,
+    email: string,
+    id: number,
+    user: User,
+  ) {
+    const invoice = await this.invoicesRepository.findOne({ id });
+    if (!invoice) {
       throw new NotFoundException(`Invoice #${id} not found`);
     }
-    const username= user.email.split('@')[0];
-    const text= `${this.configService.get('UPLOAD_URL')}/${invoicePath}`;
-    return this.notificationsService.send('send_invoice_email', { username, to: email, text_content:text }).pipe(
-      tap({
-        next: async (response) => {
-          console.log(`Email Sent successfully: ${response}`);
-          await this.invoicesRepository.findOneAndUpdate({where:{id: invoice.id}}, {status: InvoiceStatus.SAVED});
-        },
-        error: (error) => console.error(`Failed to send email: ${error.message}`),
-      })
-    );
+    const username = user.email.split('@')[0];
+    const text = `${this.configService.get('UPLOAD_URL')}/${invoicePath}`;
+    return this.notificationsService
+      .send('send_invoice_email', { username, to: email, text_content: text })
+      .pipe(
+        tap({
+          next: async (response) => {
+            console.log(`Email Sent successfully: ${response}`);
+            await this.invoicesRepository.findOneAndUpdate(
+              { where: { id: invoice.id } },
+              { status: InvoiceStatus.SAVED },
+            );
+          },
+          error: (error) =>
+            console.error(`Failed to send email: ${error.message}`),
+        }),
+      );
   }
 }
