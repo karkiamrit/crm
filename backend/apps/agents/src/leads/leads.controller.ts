@@ -39,6 +39,7 @@ import { AgentsService } from '../agents.service';
 import { Agent } from '../entities/agent.entity';
 import { SegmentsRepository } from '../segments/segments.repository';
 import { Segment } from '../segments/entities/segment.entity';
+import { EventPattern } from '@nestjs/microservices';
 
 @Controller('leads')
 export class LeadsController {
@@ -442,4 +443,8 @@ export class LeadsController {
     return matchedEnumKey ? enumObject[matchedEnumKey] : normalizedValue;
   }
 
+  @EventPattern('get_lead_by_id')
+  async getCustomerName(data: { id: number }) {
+    return this.leadsService.getOne(data.id);
+  }
 }

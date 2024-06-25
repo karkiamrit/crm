@@ -110,12 +110,12 @@ export class DocumentsService {
     const task = await this.taskRepository.findOne({
       id: Number(documents.task.id),
     });
-    const customerId = task.leadId;
-    const customer = await firstValueFrom(
-      this.agentsService.send('get_customer_by_id', { id: customerId }),
+    const leadId = task.leadId;
+    const lead = await firstValueFrom(
+      this.agentsService.send('get_lead_by_id', { id: leadId }),
     );
 
-    console.log(customer);
+    console.log(lead);
     // Create a timeline entry for the documentFile attribute if it has changed
     if (existingDocument.documentFile !== updatedDocument.documentFile) {
       await this.createTimelineEntry(
@@ -123,7 +123,7 @@ export class DocumentsService {
         'documentFile',
         updatedDocument.documentFile,
         updatedDocument.task.id,
-        customer.name,
+        lead.name,
       );
     }
 

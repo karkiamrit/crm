@@ -60,8 +60,8 @@ export class NotificationsController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
-  @Roles('Agent')
+  // @UseGuards(JwtAuthGuard)
+  // @Roles('Agent')
   @ApiOperation({ summary: 'Get all notifications' })
   @ApiBearerAuth()
   @ApiResponse({ status: 200, description: 'Return all notifications.', type: [NotificationResponseDto]})
@@ -71,8 +71,8 @@ export class NotificationsController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
-  @Roles('Agent')
+  // @UseGuards(JwtAuthGuard)
+  // @Roles('Agent')
   @ApiOperation({ summary: 'Get a notification by id' })
   @ApiBearerAuth()
   @ApiParam({ name: 'id', required: true, description: 'The id of the notification' })

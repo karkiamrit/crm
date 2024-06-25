@@ -31,7 +31,7 @@ export class Invoice extends AbstractEntity<Invoice> {
 
   @Column({type: 'float'})
   subTotal: number;
-
+  
   @Column({type: 'float'})
   tax: number;
 
