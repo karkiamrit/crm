@@ -33,4 +33,7 @@ export class Email extends AbstractEntity<Document> {
     default: EmailStatus.PENDING,
   })
   status: EmailStatus;
+
+  @Column()
+  subject:string;
 }

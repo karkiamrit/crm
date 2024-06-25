@@ -104,9 +104,10 @@ export class CampaignController {
     username: string,
     to: string,
     text_content: string,
+    subject?: string,
   }) {
     try {
-      return await this.campaignsService.sendInvoiceEmail(data.username, data.to, data.text_content);
+      return await this.campaignsService.sendInvoiceEmail(data.username, data.to, data.text_content, data.subject);
     } catch (e: any) {
       console.error(`Failed to send email: ${e.message}`);
       throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);

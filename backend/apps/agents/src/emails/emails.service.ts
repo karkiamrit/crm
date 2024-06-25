@@ -19,19 +19,20 @@ export class EmailsService {
     
   }
 
-  async sendEmailToLead( email: string, id: number, text: string, user: User){
+  async sendEmailToLead( email: string, id: number, text: string, user: User, subject:string){
     const lead = await this.leadsService.getOne(id);
     if(!lead){
       throw new NotFoundException(`Lead #${id} not found`);
     }
     const username= user.email.split('@')[0];
-    return this.notificationsService.send('send_email_to_lead', { username, to: email, text_content:text }).pipe(
+    return this.notificationsService.send('send_email_to_lead', { username, to: email, text_content:text, subject: subject }).pipe(
       tap({
         next: async (response) => {
           console.log(`Email Sent successfully: ${response}`);
           const email =new Email({});
           email.status = EmailStatus.SENT;
           email.lead =lead;
+          email.subject = subject;
           await this.emailsRepository.create(email);
         },
         error: async(error) => {

@@ -37,11 +37,11 @@ export class CampaignsService {
   }
 
   async update(id: number, updateCampaignsDto: UpdateCampaignDto) {
-    const {notificationId, ...rest} = updateCampaignsDto;
+    const { notificationId, ...rest } = updateCampaignsDto;
     let notification: any;
-    if(updateCampaignsDto.notificationId){
+    if (updateCampaignsDto.notificationId) {
       notification = await this.notificationService.getOne(notificationId);
-    }  
+    }
     const newCampaign = new Campaign(rest);
     newCampaign.notification = notification;
     const updatedCampaign = await this.campaignsRepository.findOneAndUpdate(
@@ -82,24 +82,36 @@ export class CampaignsService {
         },
         connectionTimeout: 60000,
       });
+      console.log(`html_content: ${email.html_content}`);
+      console.log(`text_content: ${email.text_content}`);
+      // const compiledHtml = _.template(email.html_content, {
+      //   interpolate: /\{(.+?)\}/g,
+      // });
 
-      const compiledHtml = _.template(email.html_content, {
-        interpolate: /\{(.+?)\}/g,
-      });
-      const compiledText = _.template(email.text_content, {
-        interpolate: /\{(.+?)\}/g,
-      });
-      const html_content = compiledHtml({
-        email: to,
-        phone: phone,
-        name: name,
-      });
+      // const compiledText = _.template(email.text_content, {
+      //   interpolate: /\{(.+?)\}/g,
+      // });
+      // const html_content = compiledHtml({
+      //   email: to,
+      //   phone: phone,
+      //   name: name,
+      // });
 
-      const text_content = compiledText({
-        email: to,
-        phone: phone,
-        name: name,
-      });
+      // const text_content = compiledText({
+      //   email: to,
+      //   phone: phone,
+      //   name: name,
+      // });
+
+      const html_content = email.html_content
+        .replace(/\{email\}/g, to)
+        .replace(/\{phone\}/g, phone)
+        .replace(/\{name\}/g, name);
+
+      const text_content = email.text_content
+        .replace(/\{email\}/g, to)
+        .replace(/\{phone\}/g, phone)
+        .replace(/\{name\}/g, name);
 
       await transporter.sendMail({
         from: `${username}@homepapa.ca`,
@@ -108,15 +120,6 @@ export class CampaignsService {
         text: text_content,
         html: html_content,
       });
-      console.log(
-        await transporter.sendMail({
-          from: `${username}@homepapa.ca`,
-          to: to,
-          subject: email.subject,
-          text: text_content,
-          html: html_content,
-        }),
-      );
 
       return { status: 'success' };
     } catch (e: any) {
@@ -175,12 +178,7 @@ export class CampaignsService {
     }
   }
 
-
-  async sendInvoiceEmail(
-    username: string,
-    to: string,
-    text_content: string,
-  ) {
+  async sendInvoiceEmail(username: string, to: string, text_content: string, subject?:string) {
     try {
       const transporter = nodemailer.createTransport({
         host: this.configService.get('CAMPAIGN_HOST'),
@@ -192,11 +190,10 @@ export class CampaignsService {
         },
         connectionTimeout: 60000,
       });
-      console.log(username, to, text_content)
       await transporter.sendMail({
         from: `${username}@homepapa.ca`,
         to: to,
-        subject: 'Invoice',
+        subject: subject ? subject : 'Invoice',
         html: `<html>Please click the link below to view or download your invoice :  <a href="http://${text_content}">${text_content}</a></html>`,
       });
 
@@ -206,5 +203,4 @@ export class CampaignsService {
       throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
 }
