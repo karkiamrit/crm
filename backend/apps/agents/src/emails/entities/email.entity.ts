@@ -34,6 +34,6 @@ export class Email extends AbstractEntity<Document> {
   })
   status: EmailStatus;
 
-  @Column()
+  @Column({nullable:true})
   subject:string;
 }

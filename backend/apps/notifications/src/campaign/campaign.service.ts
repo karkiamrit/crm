@@ -196,7 +196,31 @@ export class CampaignsService {
         subject: subject ? subject : 'Invoice',
         html: `<html>Please click the link below to view or download your invoice :  <a href="http://${text_content}">${text_content}</a></html>`,
       });
+      return { status: 'success' };
+    } catch (e: any) {
+      console.error(`Failed to send email: ${e.message}`);
+      throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
+  async sendLeadEmail(username: string, to: string, text_content: string, subject?:string) {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: this.configService.get('CAMPAIGN_HOST'),
+        port: this.configService.get('CAMPAIGN_PORT'),
+        secure: false,
+        auth: {
+          user: username,
+          pass: this.configService.get('CAMPAIGN_SMTP_PASSWORD'),
+        },
+        connectionTimeout: 60000,
+      });
+      await transporter.sendMail({
+        from: `${username}@homepapa.ca`,
+        to: to,
+        subject: subject ? subject : 'Lead Mail',
+        html: `${text_content}`,
+      });
       return { status: 'success' };
     } catch (e: any) {
       console.error(`Failed to send email: ${e.message}`);
