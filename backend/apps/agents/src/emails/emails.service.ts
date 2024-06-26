@@ -1,7 +1,7 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { EmailsRepository } from './emails.repository';
 import { LeadsService } from '../leads/leads.service';
-import { NOTIFICATIONS_SERVICE, User } from '@app/common';
+import { ExtendedFindOptions, NOTIFICATIONS_SERVICE, User } from '@app/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { tap } from 'rxjs';
 import { EmailStatus } from './dto/enums/status.enum';
@@ -16,7 +16,6 @@ export class EmailsService {
     private readonly notificationsService: ClientProxy,
 
    ){
-    
   }
 
   async sendEmailToLead( email: string, id: number, text: string, user: User, subject:string){
@@ -44,5 +43,10 @@ export class EmailsService {
         },
       })
     );
+  }
+
+  async findAll(options: ExtendedFindOptions<Email>) {
+    options.relations = ['lead'];
+    return this.emailsRepository.findAll(options);
   }
 }

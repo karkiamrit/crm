@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { EmailsService } from './emails.service';
 import { CurrentUser, JwtAuthGuard, Roles, User } from '@app/common';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
@@ -6,6 +6,15 @@ import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 @Controller('emails')
 export class EmailsController {
   constructor(private readonly emailsService: EmailsService) {}
+
+  @Get()
+  // @UseGuards(JwtAuthGuard)
+  // @Roles('Admin')
+  @ApiOperation({ summary: 'Get all customers' })
+  @ApiBearerAuth()
+  async findAll(@Query() query: any) {
+    return this.emailsService.findAll(query);
+  }
 
   @Post('/send')
   @UseGuards(JwtAuthGuard)
