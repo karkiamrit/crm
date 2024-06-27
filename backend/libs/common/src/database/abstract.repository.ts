@@ -85,22 +85,27 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
     where: FindOneOptions<T>,
     partialEntity: QueryDeepPartialEntity<T>,
   ) {
-    const entity = await this.entityRepository.findOne(where);
-    if (!entity) {
-      this.logger.warn('Entity not found with where', where);
-      throw new NotFoundException('Entity not found ');
+    try {
+      const entity = await this.entityRepository.findOne(where);
+      if (!entity) {
+        this.logger.warn('Entity not found with where', where);
+        throw new NotFoundException('Entity not found ');
+      }
+  
+      // Merge the existing entity with the partial update
+      const updatedEntity = this.entityRepository.merge(
+        entity,
+        partialEntity as DeepPartial<T>,
+      );
+  
+      // Save the updated entity
+      await this.entityRepository.save(updatedEntity);
+  
+      return updatedEntity;
+    } catch (error) {
+      this.logger.error('Error updating entity', error);
+      throw error;
     }
-
-    // Merge the existing entity with the partial update
-    const updatedEntity = this.entityRepository.merge(
-      entity,
-      partialEntity as DeepPartial<T>,
-    );
-
-    // Save the updated entity
-    await this.entityRepository.save(updatedEntity);
-
-    return updatedEntity;
   }
 
   async findOneAndDelete(where: FindOptionsWhere<T>) {

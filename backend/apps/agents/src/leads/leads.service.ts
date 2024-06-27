@@ -377,10 +377,11 @@ export class LeadsService {
   
     segment.leads.push(lead);
   
-    return this.segmentsRepository.findOneAndUpdate(
+    const updatedSegment =await  this.segmentsRepository.findOneAndUpdate(
       { where: { id: segment.id } },
       segment,
     );
+    return updatedSegment;
   }
 
   // async addDocuments(id: number, documents: string[]): Promise<Leads> {

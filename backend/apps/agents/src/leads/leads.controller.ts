@@ -166,7 +166,7 @@ export class LeadsController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   // @Roles('Admin')
   @ApiOperation({ summary: 'Get all leads' })
   @ApiBearerAuth()

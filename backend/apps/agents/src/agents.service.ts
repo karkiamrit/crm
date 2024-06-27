@@ -145,7 +145,6 @@ export class AgentsService {
 
       await this.agentsRepository.create(agent); // save the updated agent
     }
-
     return agent;
   }
 

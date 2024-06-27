@@ -15,6 +15,7 @@ import { DocumentsModule } from './documents/documents.module';
 import { InvoicesModule } from './invoices/invoices.module';
 import { TasksModule } from './tasks/tasks.module';
 import { EmailsModule } from './emails/emails.module';
+import { PhoneModule } from './phone/phone.module';
 
 @Module({
   
@@ -59,7 +60,8 @@ import { EmailsModule } from './emails/emails.module';
     DocumentsModule,
     InvoicesModule,
     TasksModule,
-    EmailsModule
+    EmailsModule,
+    PhoneModule
   ],
   controllers: [AgentsController],
   providers: [AgentsService, AgentsRepository],
