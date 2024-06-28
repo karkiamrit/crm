@@ -2,7 +2,11 @@ import { forwardRef, Module } from '@nestjs/common';
 import { AgentsService } from './agents.service';
 import { AgentsController } from './agents.controller';
 import { AgentsRepository } from './agent.repository';
-import { AUTH_SERVICE, DatabaseModule, NOTIFICATIONS_SERVICE } from '@app/common';
+import {
+  AUTH_SERVICE,
+  DatabaseModule,
+  NOTIFICATIONS_SERVICE,
+} from '@app/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { LoggerModule } from '@app/common';
@@ -18,7 +22,6 @@ import { EmailsModule } from './emails/emails.module';
 import { PhoneModule } from './phone/phone.module';
 
 @Module({
-  
   imports: [
     DatabaseModule,
     DatabaseModule.forFeature([Agent]),
@@ -53,18 +56,18 @@ import { PhoneModule } from './phone/phone.module';
       },
     ]),
     LoggerModule,
-    forwardRef(()=>LeadsModule),
-    forwardRef(()=>NotesModule),
-    forwardRef(()=>CustomersModule),
-    forwardRef(()=>SegmentsModule),
+    forwardRef(() => LeadsModule),
+    forwardRef(() => NotesModule),
+    forwardRef(() => CustomersModule),
+    forwardRef(() => SegmentsModule),
     DocumentsModule,
     InvoicesModule,
     TasksModule,
     EmailsModule,
-    PhoneModule
+    PhoneModule,
   ],
   controllers: [AgentsController],
   providers: [AgentsService, AgentsRepository],
-  exports:[AgentsService, AgentsRepository]
+  exports: [AgentsService, AgentsRepository],
 })
 export class AgentsModule {}

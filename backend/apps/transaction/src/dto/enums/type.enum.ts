@@ -1,4 +1,4 @@
-export enum TransactionType{
-    PURCHASE =  "PURCHASE",
-    LEASE = "LEASE"
+export enum TransactionType {
+  PURCHASE = 'PURCHASE',
+  LEASE = 'LEASE',
 }

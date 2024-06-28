@@ -13,25 +13,24 @@ export class NotesService {
     private readonly notesRepository: NotesRepository,
     private readonly leadService: LeadsService,
     private readonly customerService: CustomersService,
-    ){
-  }
+  ) {}
 
   async create(createNoteDto: CreateNoteDto, user: User) {
     try {
       const content = createNoteDto.content;
-      const note = new Note({content});
-      if(createNoteDto.leadId){
+      const note = new Note({ content });
+      if (createNoteDto.leadId) {
         const leadId = createNoteDto.leadId;
         const lead = await this.leadService.getOne(leadId);
         note.lead = lead;
       }
-      if(createNoteDto.customerId){
+      if (createNoteDto.customerId) {
         const customerId = createNoteDto.customerId;
         const customer = await this.customerService.getOne(customerId);
         note.customer = customer;
       }
       note.userId = user.id;
-     
+
       note.author = user.email.split('@')[0];
       return this.notesRepository.create(note);
     } catch (error) {
@@ -41,23 +40,27 @@ export class NotesService {
   }
 
   async update(id: number, updateNoteDto: UpdateNoteDto, user: User) {
-    try{
+    try {
       const note = await this.notesRepository.findOne({ id });
       if (!note) {
         throw new Error(`Note with ID ${id} not found`);
       }
-      
-      if (note.userId !== user.id && !user.roles.some(role => role.name === 'Admin')) {
-        throw new ForbiddenException(`You are not authorized to update this note`);
+
+      if (
+        note.userId !== user.id &&
+        !user.roles.some((role) => role.name === 'Admin')
+      ) {
+        throw new ForbiddenException(
+          `You are not authorized to update this note`,
+        );
       }
-      note.content = updateNoteDto.content
+      note.content = updateNoteDto.content;
       return this.notesRepository.findOneAndUpdate({ where: { id } }, note);
-    }
-    catch(e){
+    } catch (e) {
       throw e;
     }
   }
-  
+
   async delete(id: number) {
     return this.notesRepository.findOneAndDelete({ id });
   }

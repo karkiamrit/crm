@@ -1,27 +1,34 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
 
-import { AbstractEntity } from "@app/common";
-import { Document } from "../entities/document.entity";
+import { AbstractEntity } from '@app/common';
+import { Document } from '../entities/document.entity';
 
 @Entity()
-export class DocumentTimeline extends AbstractEntity<DocumentTimeline>{
-    @Column()
-    attribute: string;
+export class DocumentTimeline extends AbstractEntity<DocumentTimeline> {
+  @Column()
+  attribute: string;
 
-    @Column()
-    value: string;
+  @Column()
+  value: string;
 
-    @CreateDateColumn()
-    createdAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @ManyToOne(() => Document, document => document.timelines, {onDelete: 'CASCADE'})
-    @JoinColumn({ name: 'documentId' })
-    document: Document; 
+  @ManyToOne(() => Document, (document) => document.timelines, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'documentId' })
+  document: Document;
 
-    @Column()
-    taskId: number;
+  @Column()
+  taskId: number;
 
-    @Column({nullable: true})
-    customerName: string;
+  @Column({ nullable: true })
+  customerName: string;
 }
-

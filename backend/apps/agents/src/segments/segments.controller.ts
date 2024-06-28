@@ -12,7 +12,11 @@ import {
 } from '@nestjs/common';
 import { SegmentsService } from './segments.service';
 import { CreateSegmentDto } from './dto/create-segment.dto';
-import { AddCustomersToSegmentDto, AddLeadsToSegmentDto, UpdateSegmentDto } from './dto/update-segment.dto';
+import {
+  AddCustomersToSegmentDto,
+  AddLeadsToSegmentDto,
+  UpdateSegmentDto,
+} from './dto/update-segment.dto';
 import { JwtAuthGuard, Roles, CurrentUser, User } from '@app/common';
 import {
   ApiOperation,
@@ -45,7 +49,7 @@ export class SegmentsController {
   @ApiOperation({ summary: 'Get all segments' })
   @ApiBearerAuth()
   async findAll(@Query() query: any) {
-    return this.segmentsService.findAll( query );
+    return this.segmentsService.findAll(query);
   }
 
   @Get(':id')
@@ -151,7 +155,10 @@ export class SegmentsController {
     @Param('segmentId') segmentId: number,
     @Body() addLeadsToSegmentDto: AddLeadsToSegmentDto,
   ) {
-    return this.segmentsService.addLeadsToSegment(segmentId, addLeadsToSegmentDto.leadIds);
+    return this.segmentsService.addLeadsToSegment(
+      segmentId,
+      addLeadsToSegmentDto.leadIds,
+    );
   }
 
   @Put(':segmentId/addCustomers')
@@ -161,7 +168,10 @@ export class SegmentsController {
     @Param('segmentId') segmentId: number,
     @Body() addCustomersToSegmentDto: AddCustomersToSegmentDto,
   ) {
-    return this.segmentsService.addCustomersToSegment(segmentId, addCustomersToSegmentDto.customerIds);
+    return this.segmentsService.addCustomersToSegment(
+      segmentId,
+      addCustomersToSegmentDto.customerIds,
+    );
   }
 
   @Delete(':segmentId/leads/:leadId')
@@ -169,7 +179,6 @@ export class SegmentsController {
     @Param('segmentId') segmentId: number,
     @Param('leadId') leadId: number,
   ) {
-
     return this.segmentsService.removeLeadFromSegment(segmentId, leadId);
   }
 

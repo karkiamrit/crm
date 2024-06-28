@@ -29,7 +29,7 @@ import { Organization } from './entities/organization.entity';
         inject: [ConfigService],
       },
     ]),
-    LoggerModule
+    LoggerModule,
   ],
   controllers: [OrganizationsController],
   providers: [OrganizationsService, OrganizationsRepository],

@@ -1,7 +1,6 @@
-
 import { AbstractEntity } from '@app/common';
 import {
-    Column,
+  Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
@@ -34,6 +33,6 @@ export class Email extends AbstractEntity<Document> {
   })
   status: EmailStatus;
 
-  @Column({nullable:true})
-  subject:string;
+  @Column({ nullable: true })
+  subject: string;
 }

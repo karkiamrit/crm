@@ -33,16 +33,15 @@ export class LeadsService {
     private readonly segmentsRepository: SegmentsRepository,
   ) {}
 
-  async create(createLeadDto: CreateLeadDto, user?: User, agent?: Agent ) {
+  async create(createLeadDto: CreateLeadDto, user?: User, agent?: Agent) {
     let newSegment: number | null;
-    if(createLeadDto.segment === '' || undefined){
-      newSegment = null
+    if (createLeadDto.segment === '' || undefined) {
+      newSegment = null;
+    } else {
+      newSegment = Number(createLeadDto.segment);
     }
-    else{
-      newSegment =Number(createLeadDto.segment);
-    }
-    
-    const {revenuePotential,...rest} = createLeadDto;
+
+    const { revenuePotential, ...rest } = createLeadDto;
     // Convert CreateTimelineInputDTO[] to LeadTimeline[]
     let product: Product, service: Service, timelines: LeadTimeline[];
     // Convert CreateProductInputDTO to Product
@@ -52,24 +51,26 @@ export class LeadsService {
     if (createLeadDto.service) {
       service = new Service(createLeadDto.service);
     }
-    let updatedRevenuePotential = Number(createLeadDto.revenuePotential)
+    let updatedRevenuePotential = Number(createLeadDto.revenuePotential);
     // Create a new Leads entity
     const lead = new Leads({
       ...rest,
       service,
       product,
-      revenuePotential: updatedRevenuePotential
+      revenuePotential: updatedRevenuePotential,
     });
     if (agent) {
       lead.agentId = agent.id;
     }
 
     let createdLead = await this.leadsRepository.create(lead);
-    console.log(newSegment)
-    if(createdLead && newSegment!==null){
+    console.log(newSegment);
+    if (createdLead && newSegment !== null) {
       const segment = this.addLeadToSegment(newSegment, createdLead.id);
-      if(!segment){
-        throw new NotFoundException(`Lead Created But Segment couldnt be created`);
+      if (!segment) {
+        throw new NotFoundException(
+          `Lead Created But Segment couldnt be created`,
+        );
       }
     }
     return createdLead;
@@ -84,13 +85,13 @@ export class LeadsService {
       if (dto.service) {
         service = new Service(dto.service);
       }
-      const {revenuePotential,...rest} = dto;
-      let updatedRevenuePotential = Number(dto.revenuePotential)
+      const { revenuePotential, ...rest } = dto;
+      let updatedRevenuePotential = Number(dto.revenuePotential);
       return new Leads({
         ...rest,
         service,
         product,
-        revenuePotential: updatedRevenuePotential
+        revenuePotential: updatedRevenuePotential,
       });
     });
     return await this.leadsRepository.createMany(leads);
@@ -212,7 +213,7 @@ export class LeadsService {
       'priority',
       'source',
       'profilePicture',
-      'revenuePotential'
+      'revenuePotential',
     ];
 
     attributes.forEach((attribute) => {
@@ -229,7 +230,7 @@ export class LeadsService {
       // Apply all changes in one go to the lead
       Object.assign(lead, changes);
       await this.leadsRepository.create(lead); // Use save() instead of create()
-    
+
       // Create and save timeline records
       const timelines = Object.entries(changes).map(([attribute, value]) => {
         const timeline = new LeadTimeline({
@@ -273,7 +274,7 @@ export class LeadsService {
     });
     if (agent) {
       customer.agentId = agent.id;
-    } 
+    }
     return await this.customerService.create(customer, agent);
   }
 
@@ -301,7 +302,7 @@ export class LeadsService {
   async findAll(options: ExtendedFindOptions<Leads>) {
     options.relations = ['product', 'service', 'timelines', 'segments'];
 
-    const leads= await this.leadsRepository.findAll(options);
+    const leads = await this.leadsRepository.findAll(options);
     return leads;
   }
 
@@ -327,7 +328,6 @@ export class LeadsService {
     return this.leadsRepository.findOne({ email: email });
   }
 
-
   async updateProfilePicture(leadId: number, filePath: string): Promise<Leads> {
     // const organization = await this.organizationsRepository.findOne({id: organizationId});
     console.log('filePath', filePath);
@@ -345,8 +345,7 @@ export class LeadsService {
           id,
         },
       },
-      relations: ['lead']
-      ,
+      relations: ['lead'],
     });
   }
 
@@ -357,30 +356,30 @@ export class LeadsService {
           id,
         },
       },
-      relations: ['customer']
+      relations: ['customer'],
     });
   }
 
   async addLeadToSegment(segmentId: number, leadId: number): Promise<Segment> {
-    if(segmentId && segmentId === undefined){
+    if (segmentId && segmentId === undefined) {
       throw new Error('Segment ID cant be undefined');
-    }  
+    }
     const segment = await this.segmentsRepository.findOne({ id: segmentId });
 
     const lead = await this.getOne(leadId);
-  
+
     if (!segment || !lead) {
       throw new NotFoundException('Segment or Lead not found');
     }
-  
+
     // Check if segment.leads is defined, if not, initialize it as an empty array
     if (!segment.leads) {
       segment.leads = [];
     }
-  
+
     segment.leads.push(lead);
-  
-    const updatedSegment =await  this.segmentsRepository.findOneAndUpdate(
+
+    const updatedSegment = await this.segmentsRepository.findOneAndUpdate(
       { where: { id: segment.id } },
       segment,
     );

@@ -15,7 +15,6 @@ import { CustomerTimeline } from '../shared/objects/timelines/timelines.entity';
 import { Product } from '../shared/objects/products/products.entity';
 import { CustomerTimelineRepository } from '../shared/objects/timelines/customers.timelines.repository';
 
-
 @Injectable()
 export class CustomersService {
   constructor(
@@ -40,7 +39,7 @@ export class CustomersService {
       service,
       product,
     });
-    if(agent){
+    if (agent) {
       customer.agentId = agent.id;
     }
 
@@ -48,7 +47,6 @@ export class CustomersService {
 
     return customer;
   }
-
 
   async createMany(createCustomerDtos: CreateCustomerDto[]) {
     const customers = createCustomerDtos.map((dto) => {
@@ -59,12 +57,12 @@ export class CustomersService {
       if (dto.service) {
         service = new Service(dto.service);
       }
-      const {revenuePotential,...rest} = dto;
-      let updatedRevenuePotential = Number(dto.revenuePotential)
+      const { revenuePotential, ...rest } = dto;
+      let updatedRevenuePotential = Number(dto.revenuePotential);
       return new Customers({
         ...rest,
         service,
-        product
+        product,
       });
     });
     return await this.customersRepository.createMany(customers);
@@ -145,22 +143,23 @@ export class CustomersService {
     return this.customersRepository.findAll(options);
   }
 
-  async findAllCustomersOfAgent(
-    options: ExtendedFindOptions<Customers>,
-  ){
+  async findAllCustomersOfAgent(options: ExtendedFindOptions<Customers>) {
     return this.customersRepository.findAll(options);
   }
 
   async getOne(id: number) {
     return this.customersRepository.findOne({ id });
   }
-  
-  async updateProfilePicture(leadId: number, filePath: string): Promise<Customers> {
+
+  async updateProfilePicture(
+    leadId: number,
+    filePath: string,
+  ): Promise<Customers> {
     const customer = await this.customersRepository.findOneAndUpdate(
       { where: { id: leadId } },
       { profilePicture: filePath },
     );
-    if(!customer){
+    if (!customer) {
       throw new NotFoundException(`Customer with ID ${leadId} not found`);
     }
     return customer;

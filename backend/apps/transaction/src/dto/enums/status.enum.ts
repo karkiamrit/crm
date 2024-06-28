@@ -5,7 +5,7 @@
 //     EXPIRED = "ExPIRED"
 // }
 
-export enum transactionStatus{
-    UNDER_CONTRACT =  "UNDER CONTRACT",
-    EXPIRED = "EXPIRED"
+export enum transactionStatus {
+  UNDER_CONTRACT = 'UNDER CONTRACT',
+  EXPIRED = 'EXPIRED',
 }

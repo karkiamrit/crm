@@ -21,7 +21,7 @@ export class Otp extends AbstractEntity<Otp> {
   @Column({ default: false })
   is_used: boolean;
 
-  @ManyToOne(() => User,{onDelete: 'CASCADE'})
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: User;
 }

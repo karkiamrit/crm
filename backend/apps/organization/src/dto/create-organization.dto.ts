@@ -2,25 +2,40 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateOrganizationsDto {
-  @ApiProperty({ description: 'The name of the organization.', example: 'Organization Name' })
+  @ApiProperty({
+    description: 'The name of the organization.',
+    example: 'Organization Name',
+  })
   @IsNotEmpty()
   @IsString()
   name: string;
 
-  @ApiProperty({ description: 'The description of the organization.', example: 'Organization Desc' })
+  @ApiProperty({
+    description: 'The description of the organization.',
+    example: 'Organization Desc',
+  })
   @IsNotEmpty()
   @IsString()
   description: string;
 
-  @ApiProperty({ description: 'The email of the organization.', example: 'Organization Email' })
+  @ApiProperty({
+    description: 'The email of the organization.',
+    example: 'Organization Email',
+  })
   @IsString()
   email: string;
 
-  @ApiProperty({ description: 'The address of the organization.', example: 'Organization Address' })
+  @ApiProperty({
+    description: 'The address of the organization.',
+    example: 'Organization Address',
+  })
   @IsString()
   address: string;
 
-  @ApiProperty({ description: 'The phone number of the organization.', example: 'Organization Phone' })
+  @ApiProperty({
+    description: 'The phone number of the organization.',
+    example: 'Organization Phone',
+  })
   @IsString()
   phone: string;
 

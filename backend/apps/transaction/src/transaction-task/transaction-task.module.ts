@@ -17,7 +17,7 @@ import { TransactionModule } from '../transaction.module';
       isGlobal: true,
       envFilePath: 'apps/transaction/.env',
     }),
-   
+
     ClientsModule.registerAsync([
       {
         name: AUTH_SERVICE,
@@ -32,10 +32,10 @@ import { TransactionModule } from '../transaction.module';
       },
     ]),
     LoggerModule,
-    forwardRef(()=>TransactionModule),
+    forwardRef(() => TransactionModule),
   ],
   controllers: [TransactionTaskController],
   providers: [TransactionTaskService, TransactionTaskRepository],
-  exports: [TransactionTaskService, TransactionTaskRepository]
+  exports: [TransactionTaskService, TransactionTaskRepository],
 })
 export class TransactionTaskModule {}

@@ -26,9 +26,15 @@ export class EmailsController {
     @Body('leadId') id: string,
     @Body('text') text: string,
     @Body('subject') subject: string,
-    @CurrentUser() user: User
-  ){
+    @CurrentUser() user: User,
+  ) {
     const leadId = Number(id);
-    return this.emailsService.sendEmailToLead(email, leadId, text, user, subject);
+    return this.emailsService.sendEmailToLead(
+      email,
+      leadId,
+      text,
+      user,
+      subject,
+    );
   }
 }

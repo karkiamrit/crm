@@ -118,7 +118,7 @@ export class AgentsService {
     if (index !== -1) {
       const unlinkAsync = promisify(unlink);
       await unlinkAsync(agent.documents[index]);
-      agent.documents[index] = newFilePath; 
+      agent.documents[index] = newFilePath;
     }
     return this.agentsRepository.findOneAndUpdate({ where: { id: id } }, agent);
   }

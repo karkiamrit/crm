@@ -1,4 +1,12 @@
-import { Body, Controller, Post, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Res,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -6,8 +14,6 @@ import { CurrentUser, User } from '@app/common';
 import { Response } from 'express';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
-
-
 
 @Controller('auth')
 export class AuthController {
@@ -23,10 +29,10 @@ export class AuthController {
       type: 'object',
       properties: {
         email: {
-          example:'johndoe@gmail.com'
+          example: 'johndoe@gmail.com',
         },
         password: {
-          example: '3857572676wwE#'
+          example: '3857572676wwE#',
         },
       },
     },
@@ -45,7 +51,10 @@ export class AuthController {
   @ApiBody({
     description: 'email',
     type: 'object',
-    schema: { type: 'object', properties: { email: { example:'johndoe@gmail.com' } } },
+    schema: {
+      type: 'object',
+      properties: { email: { example: 'johndoe@gmail.com' } },
+    },
   })
   @ApiResponse({
     status: 201,
@@ -55,7 +64,6 @@ export class AuthController {
   async requestOtpVerify(@Body('email') email: string): Promise<boolean> {
     return this.authService.requestOtpVerify(email);
   }
-
 
   @Post('verify-otp')
   @ApiOperation({ summary: 'Verify OTP' })
@@ -93,7 +101,10 @@ export class AuthController {
   @ApiBody({
     description: 'email',
     type: 'object',
-    schema: { type: 'object', properties: { email: { example: 'johndoe@gmail.com' } } },
+    schema: {
+      type: 'object',
+      properties: { email: { example: 'johndoe@gmail.com' } },
+    },
   })
   @ApiResponse({
     status: 201,
@@ -143,7 +154,11 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Log out a user' })
-  @ApiResponse({ status: 201, description: 'Returns Logged out message and clears cookie', type: String })
+  @ApiResponse({
+    status: 201,
+    description: 'Returns Logged out message and clears cookie',
+    type: String,
+  })
   @Post('logout')
   async logout(@Res({ passthrough: true }) response: Response) {
     response.clearCookie('Authentication');

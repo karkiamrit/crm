@@ -1,4 +1,4 @@
 export enum TaskType {
-    AGENT = 'AGENT',
-    LEAD = 'LEAD',
+  AGENT = 'AGENT',
+  LEAD = 'LEAD',
 }

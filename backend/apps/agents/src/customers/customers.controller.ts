@@ -16,7 +16,10 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { CustomersService } from './customers.service';
-import { CreateCustomerDto, CustomerImportDto } from './dto/create-customer.dto';
+import {
+  CreateCustomerDto,
+  CustomerImportDto,
+} from './dto/create-customer.dto';
 import { CurrentUser, JwtAuthGuard, Roles, User } from '@app/common';
 import {
   ApiOperation,
@@ -43,7 +46,7 @@ export class CustomersController {
   constructor(
     private readonly customersService: CustomersService,
     private readonly agentService: AgentsService,
-    private readonly segmentsRepository: SegmentsRepository
+    private readonly segmentsRepository: SegmentsRepository,
   ) {}
 
   @Post()
@@ -87,7 +90,7 @@ export class CustomersController {
       ...createCustomersDto,
       profilePicture,
     };
-    if(await this.customersService.findOne(createCustomersDto.email)){
+    if (await this.customersService.findOne(createCustomersDto.email)) {
       throw new InternalServerErrorException('Lead with email already exists');
     }
     if (!referenceNo.referenceNo) {
@@ -299,12 +302,9 @@ export class CustomersController {
     const requiredHeaders = ['phone', 'email', 'name'].map(
       this.normalizeHeader,
     );
-    const optionalHeaders = [
-      'address',
-      'details',
-      'type',
-      'source',
-    ].map(this.normalizeHeader);
+    const optionalHeaders = ['address', 'details', 'type', 'source'].map(
+      this.normalizeHeader,
+    );
     const headers = (worksheet.getRow(1).values as string[]).slice(1);
     const missingHeaders = requiredHeaders.filter((h) => !headers.includes(h));
     if (missingHeaders.length > 0) {
@@ -342,7 +342,8 @@ export class CustomersController {
       customers.push(customer);
     });
     try {
-      const createdCustomers = await this.customersService.createMany(customers);
+      const createdCustomers =
+        await this.customersService.createMany(customers);
       res.status(201).json(createdCustomers);
     } catch (error) {
       console.error(error);

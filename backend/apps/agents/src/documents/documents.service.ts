@@ -23,16 +23,16 @@ export class DocumentsService {
     console.log('createDocumentDto', createDocumentDto);
     const { leadId, customerId, ...rest } = createDocumentDto;
     const documents = new Document(rest);
-    let lead: Leads, customer: Customers
-    if(leadId){
+    let lead: Leads, customer: Customers;
+    if (leadId) {
       lead = await this.leadsService.getOne(Number(leadId));
       documents.lead = lead;
       if (!lead) {
         throw new NotFoundException(`Lead #${leadId} not found`);
       }
     }
-    
-    if(customerId){
+
+    if (customerId) {
       customer = await this.customersService.getOne(Number(customerId));
       documents.customer = customer;
       if (!customer) {
@@ -46,7 +46,7 @@ export class DocumentsService {
   }
 
   async findAll(options: ExtendedFindOptions<Document>) {
-    options.relations= ['lead', 'customer']
+    options.relations = ['lead', 'customer'];
     return this.documentsRepository.findAll(options);
   }
 
@@ -56,7 +56,10 @@ export class DocumentsService {
     return this.documentsRepository.findAll(options);
   }
 
-  async findAllByCustomerId(options: ExtendedFindOptions<Document>, id: number) {
+  async findAllByCustomerId(
+    options: ExtendedFindOptions<Document>,
+    id: number,
+  ) {
     options.relations = ['customer'];
     options.where = { customer: { id: id } };
     return this.documentsRepository.findAll(options);
@@ -88,16 +91,16 @@ export class DocumentsService {
       ...updateDocumentDto,
       documentFile: updateDocumentDto.documentFile,
     };
-  
+
     const updatedDocument = await this.documentsRepository.findOneAndUpdate(
       { where: { id: id } },
       updatedDocumentDto,
     );
-  
+
     if (!updatedDocument) {
       throw new NotFoundException(`Document #${id} not found`);
     }
-  
+
     return `Document #${id} has been updated`;
   }
 

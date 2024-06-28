@@ -1,5 +1,5 @@
 export enum EmailStatus {
-    PENDING = "PENDING",
-    SENT = "SENT",
-    FAILED = "FAILED",
+  PENDING = 'PENDING',
+  SENT = 'SENT',
+  FAILED = 'FAILED',
 }

@@ -1,7 +1,11 @@
 import { Module } from '@nestjs/common';
 import { EmailsService } from './emails.service';
 import { EmailsController } from './emails.controller';
-import { AUTH_SERVICE, DatabaseModule, NOTIFICATIONS_SERVICE } from '@app/common';
+import {
+  AUTH_SERVICE,
+  DatabaseModule,
+  NOTIFICATIONS_SERVICE,
+} from '@app/common';
 import { Email } from './entities/email.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
@@ -9,7 +13,8 @@ import { LeadsModule } from '../leads/leads.module';
 import { EmailsRepository } from './emails.repository';
 
 @Module({
-  imports:[DatabaseModule,
+  imports: [
+    DatabaseModule,
     DatabaseModule.forFeature([Email]),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -39,7 +44,8 @@ import { EmailsRepository } from './emails.repository';
         }),
         inject: [ConfigService],
       },
-    ]),],
+    ]),
+  ],
   controllers: [EmailsController],
   providers: [EmailsService, EmailsRepository],
 })

@@ -31,10 +31,10 @@ import { CustomersModule } from '../customers/customers.module';
       },
     ]),
     LeadsModule,
-    CustomersModule
+    CustomersModule,
   ],
   controllers: [DocumentsController],
   providers: [DocumentsService, DocumentsRepository],
-  exports: [DocumentsService]
+  exports: [DocumentsService],
 })
 export class DocumentsModule {}

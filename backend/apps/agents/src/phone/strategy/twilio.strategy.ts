@@ -16,7 +16,12 @@ export class TwilioOauthStrategy extends PassportStrategy(Strategy, 'twilio') {
     } as StrategyOptions);
   }
 
-  async validate(accessToken: string, refreshToken: string, profile: any, done: VerifyCallback) {
+  async validate(
+    accessToken: string,
+    refreshToken: string,
+    profile: any,
+    done: VerifyCallback,
+  ) {
     // Handle user validation here
     done(null, profile);
   }

@@ -33,6 +33,6 @@ export class CreateTransactionTaskDto {
   transactionId: number;
 
   @IsOptional()
-  @IsString({ message: 'Template Document must be string'})
+  @IsString({ message: 'Template Document must be string' })
   templateDocument?: string;
 }

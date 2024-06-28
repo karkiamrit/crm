@@ -11,25 +11,39 @@ import { IsStatus, Status } from '@app/common';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateUserDto {
-  @ApiProperty({ description: 'The email of the user.', required: false, example: 'johndoe@gmail.com' })
+  @ApiProperty({
+    description: 'The email of the user.',
+    required: false,
+    example: 'johndoe@gmail.com',
+  })
   @IsOptional()
-  @IsEmail({},{ message: 'Invalid email address'})
+  @IsEmail({}, { message: 'Invalid email address' })
   email?: string;
 }
 
 export class UpdateUserDtoAdmin extends UpdateUserDto {
-  @ApiProperty({ description: 'The roles of the user.', required: false, type: [RoleDto], example: [{ name: 'Admin' }] })
+  @ApiProperty({
+    description: 'The roles of the user.',
+    required: false,
+    type: [RoleDto],
+    example: [{ name: 'Admin' }],
+  })
   @IsOptional()
-  @IsArray({ message: 'Roles must be an array'})
+  @IsArray({ message: 'Roles must be an array' })
   roles?: RoleDto[];
 
-  @ApiProperty({ description: 'The status of the user.', required: false, enum: Status, example: Status.Live })
+  @ApiProperty({
+    description: 'The status of the user.',
+    required: false,
+    enum: Status,
+    example: Status.Live,
+  })
   @IsOptional()
-  @IsStatus({ message: 'Invalid status'})
+  @IsStatus({ message: 'Invalid status' })
   status?: Status;
 
-  @ApiProperty({example: '1', description: 'The id of organization'})
+  @ApiProperty({ example: '1', description: 'The id of organization' })
   @IsOptional()
-  @IsNumber({},{ message: 'Invalid organization id'})
+  @IsNumber({}, { message: 'Invalid organization id' })
   organizationId?: number;
 }

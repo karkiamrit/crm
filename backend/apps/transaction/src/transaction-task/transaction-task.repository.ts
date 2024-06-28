@@ -15,4 +15,3 @@ export class TransactionTaskRepository extends AbstractRepository<TransactionTas
     super(transactionTasksRepository, entityManager);
   }
 }
-

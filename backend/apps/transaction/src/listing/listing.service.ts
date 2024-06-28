@@ -32,6 +32,4 @@ export class ListingService {
   async getOne(id: number) {
     return this.listingRepository.findOne({ id });
   }
-
-  }
-
+}

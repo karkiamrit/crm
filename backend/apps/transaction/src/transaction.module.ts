@@ -29,14 +29,14 @@ import { DocumentsModule } from './documents/documents.module';
           },
         }),
         inject: [ConfigService],
-      }
+      },
     ]),
     LoggerModule,
     DocumentsModule,
-    TransactionTaskModule
+    TransactionTaskModule,
   ],
   controllers: [TransactionController],
   providers: [TransactionService, TransactionRepository],
-  exports: [TransactionService, TransactionRepository]
+  exports: [TransactionService, TransactionRepository],
 })
 export class TransactionModule {}

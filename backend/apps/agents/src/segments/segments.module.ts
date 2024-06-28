@@ -9,12 +9,11 @@ import { SegmentsRepository } from './segments.repository';
 import { SegmentsService } from './segments.service';
 import { CustomersModule } from '../customers/customers.module';
 
-
 @Module({
-  imports:[
+  imports: [
     DatabaseModule,
-    forwardRef(()=>LeadsModule), 
-    forwardRef(()=>CustomersModule), 
+    forwardRef(() => LeadsModule),
+    forwardRef(() => CustomersModule),
     DatabaseModule.forFeature([Segment]),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -33,10 +32,9 @@ import { CustomersModule } from '../customers/customers.module';
         inject: [ConfigService],
       },
     ]),
-    
   ],
   controllers: [SegmentsController],
   providers: [SegmentsService, SegmentsRepository],
-  exports: [SegmentsService, SegmentsRepository]
+  exports: [SegmentsService, SegmentsRepository],
 })
 export class SegmentsModule {}

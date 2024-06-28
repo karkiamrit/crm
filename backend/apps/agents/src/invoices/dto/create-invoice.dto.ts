@@ -45,7 +45,7 @@ export class CreateInvoiceDto {
   @IsString({ message: 'remarks must be a string' })
   @IsNotEmpty({ message: 'remarks is required' })
   remarks: string;
-  
+
   @IsString({ message: 'lead Name must be a string' })
   @IsNotEmpty({ message: 'lead name is required' })
   leadName: string;
@@ -80,6 +80,6 @@ export class CreateInvoiceDto {
   products?: CreateProductInputDTO[];
 
   @IsOptional()
-  @IsNumber({},{ message: 'lead Id should be a number'})
+  @IsNumber({}, { message: 'lead Id should be a number' })
   leadId?: number;
 }

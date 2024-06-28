@@ -14,9 +14,18 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AgentsService } from './agents.service';
-import { CreateAgentsDto, CreateAgentsDtoWithDocuments } from './dto/create-agent.dto';
-import {  CurrentUser, JwtAuthGuard, Roles, User  } from '@app/common';
-import { ApiOperation, ApiBearerAuth, ApiParam, ApiBody, ApiResponse } from '@nestjs/swagger';
+import {
+  CreateAgentsDto,
+  CreateAgentsDtoWithDocuments,
+} from './dto/create-agent.dto';
+import { CurrentUser, JwtAuthGuard, Roles, User } from '@app/common';
+import {
+  ApiOperation,
+  ApiBearerAuth,
+  ApiParam,
+  ApiBody,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { UpdateAgentDtoAdmin, UpdateAgentsDto } from './dto/update-agent.dto';
 import { Agent } from './entities/agent.entity';
 import { diskStorage } from 'multer';
@@ -26,19 +35,22 @@ import { AgentResponseDto } from './responses/agent.response.dto';
 
 @Controller('agents')
 export class AgentsController {
-  constructor(
-    private readonly agentsService: AgentsService,
-    ) {}
-    
+  constructor(private readonly agentsService: AgentsService) {}
+
   @Post()
   @UseGuards(JwtAuthGuard)
   @Roles('Agent')
   @ApiOperation({ summary: 'Create a new agent' })
   @ApiBearerAuth()
   @ApiBody({ type: CreateAgentsDto })
-  @ApiResponse({ status: 201, description: 'The agent has been successfully created.', type: AgentResponseDto})
+  @ApiResponse({
+    status: 201,
+    description: 'The agent has been successfully created.',
+    type: AgentResponseDto,
+  })
   @UseInterceptors(
-    FilesInterceptor('documents', 10, { // 'documents' is the name of the field that should contain the files
+    FilesInterceptor('documents', 10, {
+      // 'documents' is the name of the field that should contain the files
       storage: diskStorage({
         destination: './uploads', // specify the path where the files should be saved
         filename: (req, file, callback) => {
@@ -51,13 +63,16 @@ export class AgentsController {
   async create(
     @UploadedFiles() files: Express.Multer.File[],
     @Body() createAgentsDto: CreateAgentsDto,
-    @CurrentUser() user: User
+    @CurrentUser() user: User,
   ) {
-    let documents:any;
-    if(files){
-      documents = files.map(file => file.path);
+    let documents: any;
+    if (files) {
+      documents = files.map((file) => file.path);
     }
-    const createAgentsDtoWithDocuments: CreateAgentsDtoWithDocuments = { ...createAgentsDto, documents };
+    const createAgentsDtoWithDocuments: CreateAgentsDtoWithDocuments = {
+      ...createAgentsDto,
+      documents,
+    };
     return await this.agentsService.create(createAgentsDtoWithDocuments, user);
   }
 
@@ -67,9 +82,14 @@ export class AgentsController {
   @ApiOperation({ summary: 'Create a new agent' })
   @ApiBearerAuth()
   @ApiBody({ type: CreateAgentsDto })
-  @ApiResponse({ status: 201, description: 'The agent has been successfully created.', type: AgentResponseDto})
+  @ApiResponse({
+    status: 201,
+    description: 'The agent has been successfully created.',
+    type: AgentResponseDto,
+  })
   @UseInterceptors(
-    FilesInterceptor('documents', 10, { // 'documents' is the name of the field that should contain the files
+    FilesInterceptor('documents', 10, {
+      // 'documents' is the name of the field that should contain the files
       storage: diskStorage({
         destination: './uploads', // specify the path where the files should be saved
         filename: (req, file, callback) => {
@@ -84,21 +104,35 @@ export class AgentsController {
     @Body() createAgentsDto: CreateAgentsDto,
     @Body('userId') userId: number,
   ) {
-    let documents:any;
-    if(files){
-      documents = files.map(file => file.path);
+    let documents: any;
+    if (files) {
+      documents = files.map((file) => file.path);
     }
-    const createAgentsDtoWithDocuments: CreateAgentsDtoWithDocuments = { ...createAgentsDto, documents };
-    return await this.agentsService.createAgentAdmin(createAgentsDtoWithDocuments, userId);
+    const createAgentsDtoWithDocuments: CreateAgentsDtoWithDocuments = {
+      ...createAgentsDto,
+      documents,
+    };
+    return await this.agentsService.createAgentAdmin(
+      createAgentsDtoWithDocuments,
+      userId,
+    );
   }
 
   @Put(':id')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Update a agent' })
   @ApiBearerAuth()
-  @ApiParam({ name: 'id', required: true, description: 'The id of the agent to update' })
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'The id of the agent to update',
+  })
   @ApiBody({ type: UpdateAgentsDto })
-  @ApiResponse({ status: 200, description: 'The agent has been successfully updated.', type: AgentResponseDto})
+  @ApiResponse({
+    status: 200,
+    description: 'The agent has been successfully updated.',
+    type: AgentResponseDto,
+  })
   async update(
     @Param('id') id: number,
     @Body() updateAgentsDto: UpdateAgentsDto,
@@ -111,24 +145,39 @@ export class AgentsController {
   @Roles('Admin')
   @ApiOperation({ summary: 'Update a agent' })
   @ApiBearerAuth()
-  @ApiParam({ name: 'id', required: true, description: 'The id of the agent to update' })
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'The id of the agent to update',
+  })
   @ApiBody({ type: UpdateAgentDtoAdmin })
-  @ApiResponse({ status: 200, description: 'The agent has been successfully updated.', type: AgentResponseDto})
+  @ApiResponse({
+    status: 200,
+    description: 'The agent has been successfully updated.',
+    type: AgentResponseDto,
+  })
   async updateAgentByAdmin(
     @Param('id') id: number,
     @Body() updateAgentsDto: UpdateAgentDtoAdmin,
   ) {
     return this.agentsService.update(id, updateAgentsDto);
   }
-  
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @Roles('Admin')
   @ApiOperation({ summary: 'Delete a agent' })
   @ApiBearerAuth()
-  @ApiParam({ name: 'id', required: true, description: 'The id of the agent to delete' })
-  @ApiResponse({ status: 200, description: 'The agent has been successfully deleted.', type: AgentResponseDto})
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'The id of the agent to delete',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The agent has been successfully deleted.',
+    type: AgentResponseDto,
+  })
   async delete(@Param('id') id: number) {
     return this.agentsService.delete(id);
   }
@@ -138,19 +187,26 @@ export class AgentsController {
   @Roles('Admin')
   @ApiOperation({ summary: 'Get all agents' })
   @ApiBearerAuth()
-  @ApiResponse({ status: 200, description: 'Return all agents.', type: [AgentResponseDto]})
-  async findAll(@Query() query: any){
+  @ApiResponse({
+    status: 200,
+    description: 'Return all agents.',
+    type: [AgentResponseDto],
+  })
+  async findAll(@Query() query: any) {
     return this.agentsService.findAll(query);
   }
 
-
   @Get('myprofile')
   @UseGuards(JwtAuthGuard)
-  @Roles('Agent') 
+  @Roles('Agent')
   @ApiOperation({ summary: 'Get current logged in agent profile' })
   @ApiBearerAuth()
   @ApiParam({ name: 'id', required: true, description: 'The id of the agent' })
-  @ApiResponse({ status: 200, description: 'Return the agent.', type: AgentResponseDto})
+  @ApiResponse({
+    status: 200,
+    description: 'Return the agent.',
+    type: AgentResponseDto,
+  })
   async getCurrentAgentProfile(@CurrentUser() user: User) {
     return this.agentsService.getAgentByUserId(user.id);
   }
@@ -161,11 +217,14 @@ export class AgentsController {
   @ApiOperation({ summary: 'Get an agent by id' })
   @ApiBearerAuth()
   @ApiParam({ name: 'id', required: true, description: 'The id of the agent' })
-  @ApiResponse({ status: 200, description: 'Return the agent.', type: AgentResponseDto})
+  @ApiResponse({
+    status: 200,
+    description: 'Return the agent.',
+    type: AgentResponseDto,
+  })
   async getOne(@Param('id') id: number) {
     return this.agentsService.getOne(id);
   }
-
 
   // @Get(':1/users')
   // @UseGuards(JwtAuthGuard)
@@ -183,7 +242,10 @@ export class AgentsController {
   @Roles('Agent')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Upload agent documents' })
-  @ApiResponse({ status: 200, description: 'The documents have been successfully uploaded.'})
+  @ApiResponse({
+    status: 200,
+    description: 'The documents have been successfully uploaded.',
+  })
   @UseInterceptors(
     FilesInterceptor('documents', 10, {
       storage: diskStorage({
@@ -197,9 +259,9 @@ export class AgentsController {
   )
   async addDocuments(
     @UploadedFiles() files: Express.Multer.File[],
-    @Param('id') id: number
+    @Param('id') id: number,
   ): Promise<Agent> {
-    const documents = files.map(file => file.path);
+    const documents = files.map((file) => file.path);
     return this.agentsService.addDocuments(id, documents);
   }
 
@@ -208,7 +270,10 @@ export class AgentsController {
   @Roles('Admin')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update a document of an agent' })
-  @ApiResponse({ status: 200, description: 'The document has been successfully updated.'})
+  @ApiResponse({
+    status: 200,
+    description: 'The document has been successfully updated.',
+  })
   @UseInterceptors(
     FileInterceptor('document', {
       storage: diskStorage({
@@ -222,7 +287,7 @@ export class AgentsController {
   async updateDocument(
     @UploadedFile() file: Express.Multer.File,
     @Param('id') id: number,
-    @Param('filename') filename: string
+    @Param('filename') filename: string,
   ): Promise<Agent> {
     return this.agentsService.updateDocument(id, filename, file.path);
   }
@@ -232,10 +297,13 @@ export class AgentsController {
   @Roles('Admin')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete a document of an agent' })
-  @ApiResponse({ status: 200, description: 'The document has been successfully deleted.'})
+  @ApiResponse({
+    status: 200,
+    description: 'The document has been successfully deleted.',
+  })
   async deleteDocument(
     @Param('id') id: number,
-    @Param('filename') filename: string
+    @Param('filename') filename: string,
   ): Promise<Agent> {
     return this.agentsService.deleteDocument(id, filename);
   }

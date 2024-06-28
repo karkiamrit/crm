@@ -14,13 +14,15 @@ async function bootstrap() {
   app.use(json());
   const config = new DocumentBuilder()
     .setTitle('Notification')
-    .setDescription('The Notification API is a microservice for notification crud. ')
+    .setDescription(
+      'The Notification API is a microservice for notification crud. ',
+    )
     .setVersion('1.0')
     .addTag('auth')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document); 
-  
+  SwaggerModule.setup('api', app, document);
+
   const configService = app.get(ConfigService);
   app.connectMicroservice({
     transport: Transport.TCP,
@@ -35,7 +37,6 @@ async function bootstrap() {
   app.enableCors({
     origin: true,
     credentials: true,
-    
   });
   await app.startAllMicroservices();
   await app.listen(configService.get('HTTP_PORT'));

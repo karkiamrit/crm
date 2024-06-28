@@ -14,10 +14,12 @@ export class TransactionTaskService {
   ) {}
 
   async create(createTransactionTasksDto: CreateTransactionTaskDto) {
-    const {transactionId, ...rest} = createTransactionTasksDto;
+    const { transactionId, ...rest } = createTransactionTasksDto;
     const transactionTask = new TransactionTask(rest);
-    const transaction = await this.transactionsRepository.findOne({id: transactionId});
-    if(!transaction){
+    const transaction = await this.transactionsRepository.findOne({
+      id: transactionId,
+    });
+    if (!transaction) {
       throw new Error('Transaction not found');
     }
     transactionTask.transaction = transaction;
@@ -25,7 +27,10 @@ export class TransactionTaskService {
     return await this.transactionTasksRepository.create(transactionTask);
   }
 
-  async update(id: number, updateTransactionTasksDto: UpdateTransactionTaskDto) {
+  async update(
+    id: number,
+    updateTransactionTasksDto: UpdateTransactionTaskDto,
+  ) {
     return this.transactionTasksRepository.findOneAndUpdate(
       { where: { id: id } },
       updateTransactionTasksDto,
@@ -37,13 +42,11 @@ export class TransactionTaskService {
   }
 
   async findAll(options: ExtendedFindOptions<TransactionTask>) {
-    options.relations =['transaction']
+    options.relations = ['transaction'];
     return this.transactionTasksRepository.findAll(options);
   }
 
   async getOne(id: number) {
     return this.transactionTasksRepository.findOne({ id }, ['officialDocs']);
   }
-
-  }
-
+}

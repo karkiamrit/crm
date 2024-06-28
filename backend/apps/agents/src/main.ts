@@ -7,7 +7,10 @@ import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import { json } from 'express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { BadRequestExceptionFilter, HttpExceptionFilter } from '@app/common/exception/exception.filter';
+import {
+  BadRequestExceptionFilter,
+  HttpExceptionFilter,
+} from '@app/common/exception/exception.filter';
 import * as express from 'express';
 
 async function bootstrap() {
@@ -25,12 +28,22 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
-  app.use('/uploads', (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    next();
-  }, express.static('/usr/src/app/uploads'));
-
+  app.use(
+    '/uploads',
+    (
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction,
+    ) => {
+      res.header('Access-Control-Allow-Origin', '*');
+      res.header(
+        'Access-Control-Allow-Headers',
+        'Origin, X-Requested-With, Content-Type, Accept',
+      );
+      next();
+    },
+    express.static('/usr/src/app/uploads'),
+  );
 
   const configService = app.get(ConfigService);
   app.connectMicroservice({
@@ -42,7 +55,10 @@ async function bootstrap() {
   });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useLogger(app.get(Logger));
-  app.useGlobalFilters(new HttpExceptionFilter(), new BadRequestExceptionFilter());
+  app.useGlobalFilters(
+    new HttpExceptionFilter(),
+    new BadRequestExceptionFilter(),
+  );
   app.use(cookieParser());
   app.enableCors({
     origin: true,

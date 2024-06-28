@@ -28,7 +28,7 @@ export class NotificationsService {
   //     refreshToken: this.configService.get('GOOGLE_OAUTH_REFRESH_TOKEN'),
   //   },
   // });
-  
+
   private readonly transporter = nodemailer.createTransport({
     host: this.configService.get('SMTP_HOST'),
     port: this.configService.get('SMTP_PORT'),
@@ -37,27 +37,32 @@ export class NotificationsService {
       user: this.configService.get('SMTP_USER'),
       pass: this.configService.get('SMTP_PASSWORD'),
     },
-    connectionTimeout: 60000
+    connectionTimeout: 60000,
   });
 
   async create(createNotificationsDto: CreateNotificationsDto, user: User) {
     const notification = new Notification(createNotificationsDto);
-    notification.creatorId= user.id;
+    notification.creatorId = user.id;
     return await this.notificationsRepository.create(notification);
   }
 
-  async update(id: number, updateNotificationsDto: UpdateNotificationsDto, user: User) {
+  async update(
+    id: number,
+    updateNotificationsDto: UpdateNotificationsDto,
+    user: User,
+  ) {
     const notification = await this.getOne(+id);
-    if(notification.creatorId === user.id || notification.type=== templateType.NONDEFAULT){
+    if (
+      notification.creatorId === user.id ||
+      notification.type === templateType.NONDEFAULT
+    ) {
       return this.notificationsRepository.findOneAndUpdate(
         { where: { id: id } },
         updateNotificationsDto,
       );
-    }
-    else{
+    } else {
       throw new Error('You are not permitted to update this template');
     }
-
   }
 
   async delete(id: number) {

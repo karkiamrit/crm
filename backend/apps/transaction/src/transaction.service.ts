@@ -14,7 +14,7 @@ export class TransactionService {
     private readonly configService: ConfigService,
   ) {}
 
-  async create( createTransactionDto: CreateTransactionsDto, user: User) {
+  async create(createTransactionDto: CreateTransactionsDto, user: User) {
     try {
       const transaction = new Transaction(createTransactionDto);
       transaction.userId = user.id;
@@ -61,5 +61,4 @@ export class TransactionService {
     const url = `${process.env.FRONTEND_URL}/transaction/${transactionId}?token=${token}`;
     return url;
   }
-  }
-
+}

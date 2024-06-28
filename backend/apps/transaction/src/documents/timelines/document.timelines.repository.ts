@@ -6,7 +6,9 @@ import { DocumentTimeline } from './timelines.entity';
 
 @Injectable()
 export class TransactionDocumentTimelineRepository extends AbstractRepository<DocumentTimeline> {
-  protected readonly logger = new Logger(TransactionDocumentTimelineRepository.name);
+  protected readonly logger = new Logger(
+    TransactionDocumentTimelineRepository.name,
+  );
   constructor(
     @InjectRepository(DocumentTimeline)
     transactionDocumentTimelineRepository: Repository<DocumentTimeline>,

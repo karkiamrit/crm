@@ -8,7 +8,6 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { LoggerModule } from '@app/common';
 import { Listing } from './entities/listing.entity';
 
-
 @Module({
   imports: [
     DatabaseModule,

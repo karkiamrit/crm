@@ -5,7 +5,6 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UsersService } from '../users/users.service';
 import { TokenPayload } from '../interfaces/token-payload.interface';
 
-
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
@@ -15,17 +14,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: any) => {
-          let token=null;
-          if(request?.cookies?.Authentication){
-             token = request?.cookies?.Authentication
+          let token = null;
+          if (request?.cookies?.Authentication) {
+            token = request?.cookies?.Authentication;
+          } else if (request?.Authentication) {
+            token = request?.Authentication;
+          } else {
+            token = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
           }
-          else if(request?.Authentication){
-             token = request?.Authentication
-          }
-          else{
-            token= ExtractJwt.fromAuthHeaderAsBearerToken()(request)
-          }
-                      
+
           console.log(`Accessing token from request: ${token}`);
           return token;
         },
@@ -33,10 +30,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       secretOrKey: configService.get('JWT_SECRET'),
     });
   }
-  
 
   async validate({ userId }: TokenPayload) {
-    const user= this.usersService.getOne({ id: userId });
+    const user = this.usersService.getOne({ id: userId });
     return user;
   }
 }

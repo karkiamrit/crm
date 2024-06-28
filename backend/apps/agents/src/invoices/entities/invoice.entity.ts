@@ -17,28 +17,28 @@ import { Leads } from '../../leads/entities/lead.entity';
 
 @Entity()
 export class Invoice extends AbstractEntity<Invoice> {
-  @Column({nullable:true})
+  @Column({ nullable: true })
   leadName: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   leadEmail: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   leadOrganization: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   notes: string;
 
-  @Column({type: 'float'})
+  @Column({ type: 'float' })
   subTotal: number;
-  
-  @Column({type: 'float'})
+
+  @Column({ type: 'float' })
   tax: number;
 
-  @Column({default: InvoiceStatus.PENDING, type: 'enum', enum: InvoiceStatus})
-  status: InvoiceStatus
+  @Column({ default: InvoiceStatus.PENDING, type: 'enum', enum: InvoiceStatus })
+  status: InvoiceStatus;
 
-  @Column({type: 'float'})
+  @Column({ type: 'float' })
   total: number;
 
   @Column({ nullable: true, type: 'float' })
@@ -56,7 +56,7 @@ export class Invoice extends AbstractEntity<Invoice> {
   @Column()
   remarks: string;
 
-  @ManyToOne(() => Agent, { eager: true, onDelete: 'CASCADE',nullable:true })
+  @ManyToOne(() => Agent, { eager: true, onDelete: 'CASCADE', nullable: true })
   @JoinColumn({ name: 'agentId', referencedColumnName: 'id' })
   agent: Agent;
 
@@ -64,25 +64,23 @@ export class Invoice extends AbstractEntity<Invoice> {
   // @JoinColumn({ name: 'customerId', referencedColumnName: 'id' })
   // customer: Customers;
 
-  @ManyToOne(() => Leads, { eager: true, onDelete: 'CASCADE', nullable:true })
+  @ManyToOne(() => Leads, { eager: true, onDelete: 'CASCADE', nullable: true })
   @JoinColumn({ name: 'leadId', referencedColumnName: 'id' })
   lead: Leads;
 
   @OneToMany(() => Product, (product) => product.invoice, {
     eager: true,
     nullable: true,
-  })  
+  })
   @JoinColumn({ name: 'productId' })
   products: Product[];
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   sendorName: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   sendorEmail: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   sendorOrganization: string;
-
-
 }

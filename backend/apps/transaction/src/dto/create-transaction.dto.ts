@@ -1,23 +1,17 @@
-import {
-  IsBoolean,
-  IsEmail,
-  IsEnum,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
-import {
-  listingStatus,
-  transactionStatus,
-  TransactionType,
-} from '../dto/enums';
-import { IsFloat } from '@app/common/validators/float.validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 /**
  * DTO for creating a Transaction
  */
 export class CreateTransactionsDto {
+  @IsNumber({}, { message: 'Lead Id must be number' })
+  @IsNotEmpty({ message: 'Lead Id is required' })
+  leadId: number;
+
+  @IsString({ message: 'Purpose should be string' })
+  @IsNotEmpty({ message: 'Purpose should not be empty' })
+  purpose: string;
+
   // @IsEnum(transactionStatus, {message: "Invalid status"})
   // @IsOptional()
   // status?: transactionStatus;
@@ -25,10 +19,6 @@ export class CreateTransactionsDto {
   // @IsEnum(listingStatus, {message: "Invalid listing status"})
   // @IsOptional()
   // listingStatus: listingStatus;
-
-  // @IsNumber({},{ message: 'Customer Id must be number' })
-  @IsNotEmpty({ message: 'Lead Id is required' })
-  leadId: number;
 
   // @IsFloat({ message: 'Listing Price must be number' })
   // @IsOptional({ message: 'Listing Price must not be empty' })
@@ -48,10 +38,6 @@ export class CreateTransactionsDto {
   // @IsString({ message: 'Property Type must be string' })
   // @IsOptional()
   // propertyType: string;
-
-  @IsString({ message: 'Listing Address must be string' })
-  @IsNotEmpty()
-  purpose: string;
 
   // @IsString({ message: 'Property Status must be string' })
   // @IsOptional()

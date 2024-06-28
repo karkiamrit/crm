@@ -14,7 +14,7 @@ export class User extends AbstractEntity<User> {
   @Column({ type: 'enum', enum: Status, default: Status.Pending })
   status: Status;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   organizationId: number;
 
   @Column({ default: false })

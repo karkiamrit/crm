@@ -1,7 +1,11 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { InvoicesService } from './invoices.service';
 import { InvoicesController } from './invoices.controller';
-import { AUTH_SERVICE, DatabaseModule, NOTIFICATIONS_SERVICE } from '@app/common';
+import {
+  AUTH_SERVICE,
+  DatabaseModule,
+  NOTIFICATIONS_SERVICE,
+} from '@app/common';
 import { Invoice } from './entities/invoice.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';

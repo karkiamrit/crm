@@ -4,7 +4,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, EntityManager } from 'typeorm';
 import { Document } from './entities/document.entity';
 
-
 @Injectable()
 export class DocumentsRepository extends AbstractRepository<Document> {
   protected readonly logger = new Logger(DocumentsRepository.name);

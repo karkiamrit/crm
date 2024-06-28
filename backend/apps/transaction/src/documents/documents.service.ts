@@ -185,13 +185,16 @@ export class DocumentsService {
     return this.documentsRepository.findAll(options);
   }
 
-  async findAllByTaskId( id: number) {
-    return this.documentsRepository.findOne({ task: { id: id } },['task']);
+  async findAllByTaskId(id: number) {
+    return this.documentsRepository.findOne({ task: { id: id } }, ['task']);
   }
 
-  async findAllBytransactionId(options: ExtendedFindOptions<Document>, id: number) {
+  async findAllBytransactionId(
+    options: ExtendedFindOptions<Document>,
+    id: number,
+  ) {
     options.relations = ['task'];
-    options.where = { transactionId:  id  };
+    options.where = { transactionId: id };
     return this.documentsRepository.findAll(options);
   }
 

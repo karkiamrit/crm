@@ -7,7 +7,11 @@ import {
   OneToMany,
   OneToOne,
 } from 'typeorm';
-import { listingStatus, transactionStatus, TransactionType } from '../dto/enums';
+import {
+  listingStatus,
+  transactionStatus,
+  TransactionType,
+} from '../dto/enums';
 import { TransactionTask } from '../transaction-task/entities/transaction-task.entity';
 
 @Entity()
@@ -35,7 +39,7 @@ export class Transaction extends AbstractEntity<Transaction> {
   // @Column({ nullable: true })
   // logo: string;
 
-  @Column({nullable:true})
+  @Column({ nullable: true })
   purpose: string;
 
   @Column()
@@ -67,7 +71,7 @@ export class Transaction extends AbstractEntity<Transaction> {
   @OneToMany(() => TransactionTask, (task) => task.transaction, {
     onDelete: 'CASCADE',
     eager: true,
-    nullable: true
+    nullable: true,
   })
   tasks: TransactionTask[];
 }

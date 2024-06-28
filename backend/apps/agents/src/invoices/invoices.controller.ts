@@ -125,16 +125,16 @@ export class InvoicesController {
   @ApiOperation({ summary: 'Send Invoice email' })
   @ApiBearerAuth()
   async sendInvoice(
-    @UploadedFile() file: Express.Multer.File, 
+    @UploadedFile() file: Express.Multer.File,
     @Body('email') email: string,
     @Body('invoiceId') id: string,
-    @CurrentUser() user: User
-  ){
+    @CurrentUser() user: User,
+  ) {
     let invoicePdf: any;
     const invoiceId = Number(id);
     if (file) {
       invoicePdf = file.path;
     }
-    return this.invoicesService.sendInvoice(invoicePdf, email, invoiceId ,user);
+    return this.invoicesService.sendInvoice(invoicePdf, email, invoiceId, user);
   }
 }

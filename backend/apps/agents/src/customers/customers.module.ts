@@ -18,11 +18,17 @@ import { SegmentsModule } from '../segments/segments.module';
 
 @Module({
   imports: [
-    forwardRef(() => AgentsModule), 
+    forwardRef(() => AgentsModule),
     forwardRef(() => SegmentsModule),
 
     DatabaseModule,
-    DatabaseModule.forFeature([Customers, CustomerTimeline, Product, Service, CustomerTimelineRepository]),
+    DatabaseModule.forFeature([
+      Customers,
+      CustomerTimeline,
+      Product,
+      Service,
+      CustomerTimelineRepository,
+    ]),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: 'apps/agent/.env',
@@ -42,7 +48,11 @@ import { SegmentsModule } from '../segments/segments.module';
     ]),
   ],
   controllers: [CustomersController],
-  providers: [CustomersService, CustomersRepository, CustomerTimelineRepository],
-  exports: [CustomersService]
+  providers: [
+    CustomersService,
+    CustomersRepository,
+    CustomerTimelineRepository,
+  ],
+  exports: [CustomersService],
 })
 export class CustomersModule {}

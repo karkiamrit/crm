@@ -21,19 +21,19 @@ import { Segment } from '../../segments/entities/segment.entity';
 
 @Entity()
 export class Customers extends AbstractEntity<Customers> {
-  @Column({nullable:true})
+  @Column({ nullable: true })
   address: string;
 
   @Column({ default: LeadType.SOLE, type: 'enum', enum: LeadType })
   type: LeadType;
 
-  @Column({nullable:true})
+  @Column({ nullable: true })
   details: string;
 
   @Column()
   phone: string;
 
-  @Column({unique: true})
+  @Column({ unique: true })
   email: string;
 
   @Column()
@@ -55,7 +55,7 @@ export class Customers extends AbstractEntity<Customers> {
   @JoinColumn({ name: 'productId' })
   product: Product;
 
-  @OneToMany(() => Tasks, (task) => task.customer, {nullable: true})
+  @OneToMany(() => Tasks, (task) => task.customer, { nullable: true })
   tasks: Tasks[];
 
   @OneToOne(() => Service, { eager: true, nullable: true, cascade: true })
@@ -73,13 +73,13 @@ export class Customers extends AbstractEntity<Customers> {
   @Column({ nullable: true })
   profilePicture: string;
 
-  @Column({type: 'float', nullable:true})
+  @Column({ type: 'float', nullable: true })
   revenuePotential: number;
 
   @ManyToMany(() => Segment, (segment) => segment.leads, {
     eager: true,
     onDelete: 'CASCADE',
-    nullable: true
+    nullable: true,
   })
   @JoinTable()
   segments: Segment[];

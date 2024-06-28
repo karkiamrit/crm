@@ -81,7 +81,6 @@ export class LeadsController {
     @CurrentUser() user: User,
     @Body() referenceNo?: any,
   ) {
-
     let agent: Agent;
 
     let profilePicture: any;
@@ -93,7 +92,7 @@ export class LeadsController {
       profilePicture,
     };
 
-    if(await this.leadsService.findOne(createLeadsDto.email)){
+    if (await this.leadsService.findOne(createLeadsDto.email)) {
       throw new InternalServerErrorException('Lead with email already exists');
     }
     const { ...createLeadsDtoWithDocuments } = createLeadsDtoSeperated;
@@ -288,7 +287,7 @@ export class LeadsController {
 
     const workbook = new Workbook();
     const worksheet = workbook.addWorksheet('Leads');
-    console.log(filter)
+    console.log(filter);
     // Define columns in the worksheet
     worksheet.columns = [
       { header: 'Id', key: 'id', width: 10 },
@@ -448,4 +447,3 @@ export class LeadsController {
     return this.leadsService.getOne(data.id);
   }
 }
-  

@@ -1,6 +1,11 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AUTH_SERVICE, DatabaseModule, LoggerModule, SEGMENT_SERVICE } from '@app/common';
+import {
+  AUTH_SERVICE,
+  DatabaseModule,
+  LoggerModule,
+  SEGMENT_SERVICE,
+} from '@app/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { Campaign } from './entities/campaign.entity';
 import { CampaignController } from './campaign.controller';
@@ -11,7 +16,7 @@ import { NotificationsModule } from '../notifications.module';
   imports: [
     DatabaseModule,
     DatabaseModule.forFeature([Campaign]),
-    forwardRef(()=>NotificationsModule),
+    forwardRef(() => NotificationsModule),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: 'apps/notifications/.env',
@@ -25,8 +30,6 @@ import { NotificationsModule } from '../notifications.module';
             host: configService.get('AUTH_HOST'),
             port: configService.get('AUTH_PORT'),
           },
-          
-          
         }),
         inject: [ConfigService],
       },
@@ -42,8 +45,6 @@ import { NotificationsModule } from '../notifications.module';
         }),
         inject: [ConfigService],
       },
-      
-      
     ]),
     LoggerModule,
   ],

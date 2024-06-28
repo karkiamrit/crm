@@ -1,4 +1,8 @@
-import { registerDecorator, ValidationOptions, ValidationArguments } from 'class-validator';
+import {
+  registerDecorator,
+  ValidationOptions,
+  ValidationArguments,
+} from 'class-validator';
 import { parseISO, isValid } from 'date-fns';
 
 export function IsDateString(validationOptions?: ValidationOptions) {

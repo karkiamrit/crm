@@ -1,4 +1,18 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -24,7 +38,11 @@ export class DocumentsController {
         },
       }),
       fileFilter: (req, file, callback) => {
-        if (!file.originalname.match(/\.(pdf|docx|xlsx|csv|doc|jpeg|gif|png|svg|jpg)$/)) {
+        if (
+          !file.originalname.match(
+            /\.(pdf|docx|xlsx|csv|doc|jpeg|gif|png|svg|jpg)$/,
+          )
+        ) {
           return callback(new Error('Only document files are allowed!'), false);
         }
         // Accept file
@@ -32,7 +50,11 @@ export class DocumentsController {
       },
     }),
   )
-  create(@UploadedFile() file: Express.Multer.File, @Body() createDocumentDto: CreateDocumentDto, @CurrentUser() user: User) {
+  create(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() createDocumentDto: CreateDocumentDto,
+    @CurrentUser() user: User,
+  ) {
     createDocumentDto.documentFile = file.path;
     return this.documentsService.create(createDocumentDto, user);
   }
@@ -51,7 +73,6 @@ export class DocumentsController {
     return this.documentsService.findAllByLeadId(query, id);
   }
 
-  
   @Get('customer/:id')
   @UseGuards(JwtAuthGuard)
   @Roles('Agent')
@@ -78,24 +99,30 @@ export class DocumentsController {
       }),
     }),
   )
-  update(@Param('id') id: string, @UploadedFile() documentFile: Express.Multer.File, @Body() updateDocumentDto: UpdateDocumentDto) {
-    if(documentFile){
+  update(
+    @Param('id') id: string,
+    @UploadedFile() documentFile: Express.Multer.File,
+    @Body() updateDocumentDto: UpdateDocumentDto,
+  ) {
+    if (documentFile) {
       updateDocumentDto.documentFile = documentFile.path;
     }
-   
+
     return this.documentsService.update(+id, updateDocumentDto);
   }
-  
+
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @Roles('Agent')
   remove(@Param('id') id: string) {
     return this.documentsService.remove(+id);
   }
-  
+
   //only for test of notification
   @Post('webhook')
-  async handleWebhook(@Body('mandrill_events') mandrillEvents: any[]): Promise<string> {
+  async handleWebhook(
+    @Body('mandrill_events') mandrillEvents: any[],
+  ): Promise<string> {
     try {
       // Process the webhook data here...
       for (const event of mandrillEvents) {
@@ -107,7 +134,10 @@ export class DocumentsController {
       return 'Webhook received!';
     } catch (error) {
       console.error(`Failed to process webhook: ${error}`);
-      throw new HttpException('Failed to process webhook', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Failed to process webhook',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
   // @Post(':id/append')

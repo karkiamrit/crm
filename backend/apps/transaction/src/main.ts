@@ -14,18 +14,31 @@ async function bootstrap() {
   app.use(json());
   const config = new DocumentBuilder()
     .setTitle('Transaction')
-    .setDescription('The Transaction API is a microservice for transaction crud. It is used to manage transaction.')
+    .setDescription(
+      'The Transaction API is a microservice for transaction crud. It is used to manage transaction.',
+    )
     .setVersion('1.0')
     .addTag('transaction')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document); 
-  app.use('/uploads', (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    next();
-  }, express.static('/usr/src/app/uploads'));
-  
+  SwaggerModule.setup('api', app, document);
+  app.use(
+    '/uploads',
+    (
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction,
+    ) => {
+      res.header('Access-Control-Allow-Origin', '*');
+      res.header(
+        'Access-Control-Allow-Headers',
+        'Origin, X-Requested-With, Content-Type, Accept',
+      );
+      next();
+    },
+    express.static('/usr/src/app/uploads'),
+  );
+
   const configService = app.get(ConfigService);
   app.connectMicroservice({
     transport: Transport.TCP,

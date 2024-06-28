@@ -1,4 +1,4 @@
-export enum transactionTaskStatus{
-    INCOMPLETE =  "INCOMPLETE",
-    COMPLETED = "COMPLETED",
+export enum transactionTaskStatus {
+  INCOMPLETE = 'INCOMPLETE',
+  COMPLETED = 'COMPLETED',
 }

@@ -6,24 +6,26 @@ import { AUTH_SERVICE } from '@app/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
-  imports:[
+  imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: 'apps/notifications/.env',}),
+      envFilePath: 'apps/notifications/.env',
+    }),
 
     ClientsModule.registerAsync([
-    {
-      name: AUTH_SERVICE,
-      useFactory: (configService: ConfigService) => ({
-        transport: Transport.TCP,
-        options: {
-          host: configService.get('AUTH_HOST'),
-          port: configService.get('AUTH_PORT'),
-        },
-      }),
-      inject: [ConfigService],
-    },
-  ]),],
+      {
+        name: AUTH_SERVICE,
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: configService.get('AUTH_HOST'),
+            port: configService.get('AUTH_PORT'),
+          },
+        }),
+        inject: [ConfigService],
+      },
+    ]),
+  ],
   controllers: [MailchimpController],
 })
 export class MailchimpModule {}

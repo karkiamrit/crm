@@ -1,4 +1,4 @@
 export enum LeadType {
-    SOLE = 'SOLE',
-    ORGANIZATION = 'ORGANIZATION',
-  }
+  SOLE = 'SOLE',
+  ORGANIZATION = 'ORGANIZATION',
+}

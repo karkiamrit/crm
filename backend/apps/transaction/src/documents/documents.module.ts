@@ -10,14 +10,11 @@ import { TransactionTaskRepository } from '../transaction-task/transaction-task.
 import { TransactionTaskModule } from '../transaction-task/transaction-task.module';
 import { DocumentTimelineRepositoryModule } from './timelines/timeline.module';
 
-
-
-
 @Module({
   imports: [
     DatabaseModule,
     DatabaseModule.forFeature([Document]),
-    forwardRef(()=>TransactionTaskModule),
+    forwardRef(() => TransactionTaskModule),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: 'apps/transaction/.env',
@@ -45,12 +42,12 @@ import { DocumentTimelineRepositoryModule } from './timelines/timeline.module';
             port: configService.get('AGENTS_PORT'),
           },
         }),
-        inject: [ConfigService]
-      }
+        inject: [ConfigService],
+      },
     ]),
   ],
   controllers: [DocumentsController],
   providers: [DocumentsService, DocumentsRepository],
-  exports: [DocumentsService]
+  exports: [DocumentsService],
 })
 export class DocumentsModule {}

@@ -16,7 +16,7 @@ export class PhoneController {
     res.set('Content-Type', 'text/xml');
     res.send(voiceResponse.toString());
   }
-  
+
   @Get('call')
   async makeCall(@Req() req: Request) {
     const { to, url } = req.query;
@@ -29,4 +29,3 @@ export class PhoneController {
     return this.phoneService.makeCall(from, to.toString(), url.toString());
   }
 }
-  

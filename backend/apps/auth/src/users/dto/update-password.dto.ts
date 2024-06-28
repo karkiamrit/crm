@@ -10,7 +10,10 @@ export class UpdatePasswordDto {
   @IsStrongPassword()
   newPassword: string;
 
-  @ApiProperty({ description: 'The confirmed new password.', example: 'NewPassword123!' })
+  @ApiProperty({
+    description: 'The confirmed new password.',
+    example: 'NewPassword123!',
+  })
   @IsStrongPassword()
   confirmedNewPassword: string;
 }

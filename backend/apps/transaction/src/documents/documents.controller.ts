@@ -13,7 +13,7 @@ import {
   Req,
   UploadedFile,
   UseGuards,
-  UseInterceptors
+  UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -39,7 +39,7 @@ declare global {
 export class DocumentsController {
   constructor(
     private readonly documentsService: DocumentsService,
-    private readonly transactionTasksService : TransactionTaskService,
+    private readonly transactionTasksService: TransactionTaskService,
   ) {}
 
   @Post()
@@ -72,26 +72,27 @@ export class DocumentsController {
     @Body() createDocumentDto: CreateDocumentDto,
     @Req() request: Request,
     @CurrentUser() user: User,
-    
   ) {
-    const {taskId: dtoTaskId , ...seperatedCreateDocumentDto}= createDocumentDto;
+    const { taskId: dtoTaskId, ...seperatedCreateDocumentDto } =
+      createDocumentDto;
     seperatedCreateDocumentDto.documentFile = file.path;
     let finalTaskId: number;
-    if(request.taskId){
+    if (request.taskId) {
       finalTaskId = request.taskId;
-    }
-   else{
+    } else {
       finalTaskId = Number(dtoTaskId);
-   }
-    return this.documentsService.create(seperatedCreateDocumentDto, user, finalTaskId);
+    }
+    return this.documentsService.create(
+      seperatedCreateDocumentDto,
+      user,
+      finalTaskId,
+    );
   }
 
-  
   @Get('generate-upload-url/:taskId')
   async generateUploadUrl(@Param('taskId') taskId: number) {
     return await this.documentsService.generateUploadUrl(taskId);
   }
-
 
   @Get()
   @UseGuards(JwtAuthGuard)
@@ -103,7 +104,7 @@ export class DocumentsController {
   @Get(':id/timeline')
   @UseGuards(JwtAuthGuard)
   @Roles('Agent')
-  findAllTimelines(@Query() query: any, @Param('id') id: number ) {
+  findAllTimelines(@Query() query: any, @Param('id') id: number) {
     return this.documentsService.findAllTimelines(query, id);
   }
 
@@ -161,7 +162,7 @@ export class DocumentsController {
   @UseGuards(JwtAuthGuard)
   @Roles('Agent')
   remove(@Param('id') id: string) {
-    return this.documentsService.remove(+id); 
+    return this.documentsService.remove(+id);
   }
 
   @Put('/transactionTask/:id')
@@ -180,7 +181,10 @@ export class DocumentsController {
         // Only accept documents
         if (!file.originalname.match(/\.(doc|docx|pdf|csv|xlxs|jpeg)$/)) {
           // Reject file
-          const error = new HttpException('Only document files are allowed!', HttpStatus.BAD_REQUEST);
+          const error = new HttpException(
+            'Only document files are allowed!',
+            HttpStatus.BAD_REQUEST,
+          );
           return callback(error, false);
         }
         // Accept file
@@ -199,14 +203,18 @@ export class DocumentsController {
     }
     const task = await this.transactionTasksService.getOne(id);
     const document = task.officialDocs;
-    if(document){
-      await this.documentsService.update(document.id, {description: updateTransactionTasksDto.name});
+    if (document) {
+      await this.documentsService.update(document.id, {
+        description: updateTransactionTasksDto.name,
+      });
     }
     const updateTransactionTasksDtoSeperated: UpdateTransactionTaskDto = {
       ...updateTransactionTasksDto,
       templateDocument,
     };
-    return await this.transactionTasksService.update(id, updateTransactionTasksDtoSeperated);
+    return await this.transactionTasksService.update(
+      id,
+      updateTransactionTasksDtoSeperated,
+    );
   }
-
 }

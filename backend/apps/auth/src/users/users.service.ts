@@ -9,7 +9,12 @@ import { CreateUserAdminDto, CreateUserDto } from './dto/create-user.dto';
 import { UsersRepository } from './users.repository';
 import * as bcrypt from 'bcryptjs';
 import { GetUserDto } from './dto/get-user.dto';
-import { ExtendedFindOptions, ORGANIZATION_SERVICE, Role, User } from '@app/common';
+import {
+  ExtendedFindOptions,
+  ORGANIZATION_SERVICE,
+  Role,
+  User,
+} from '@app/common';
 import { Status } from '@app/common';
 import { UpdateUserDto, UpdateUserDtoAdmin } from './dto/update-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
@@ -35,12 +40,19 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     const existingUser = await this.validateCreateUser(createUserDto);
-    if(existingUser){
-      throw new UnprocessableEntityException('User with this email already exists');
+    if (existingUser) {
+      throw new UnprocessableEntityException(
+        'User with this email already exists',
+      );
     }
     const organizationId = createUserDto.organizationId;
-   
-    const organization = await firstValueFrom(this.organizationsService.send<Organization>('get_organization_by_id', { organizationId }));    if(!organization){
+
+    const organization = await firstValueFrom(
+      this.organizationsService.send<Organization>('get_organization_by_id', {
+        organizationId,
+      }),
+    );
+    if (!organization) {
       throw new NotFoundException('Organization not found');
     }
     const user = new User({
@@ -76,11 +88,18 @@ export class UsersService {
 
   async adminCreate(createUserAdminDto: CreateUserAdminDto) {
     const existingUser = await this.validateCreateUser(createUserAdminDto);
-    if(existingUser){
-      throw new UnprocessableEntityException('User with this email already exists');
+    if (existingUser) {
+      throw new UnprocessableEntityException(
+        'User with this email already exists',
+      );
     }
     const organizationId = createUserAdminDto.organizationId;
-    const organization = await firstValueFrom(this.organizationsService.send<Organization>('get_organization_by_id', { organizationId }));    if(!organization){
+    const organization = await firstValueFrom(
+      this.organizationsService.send<Organization>('get_organization_by_id', {
+        organizationId,
+      }),
+    );
+    if (!organization) {
       throw new NotFoundException('Organization not found');
     }
 
@@ -89,7 +108,7 @@ export class UsersService {
       password: await bcrypt.hash(createUserAdminDto.password, 10),
       organizationId: createUserAdminDto.organizationId,
       status: createUserAdminDto.status || Status.Live,
-      isVerified: true
+      isVerified: true,
     });
 
     const roles = [];
@@ -123,7 +142,9 @@ export class UsersService {
     return createdUser;
   }
 
-  private async validateCreateUser(createUserDto: CreateUserDto | CreateUserAdminDto): Promise<User | null> {
+  private async validateCreateUser(
+    createUserDto: CreateUserDto | CreateUserAdminDto,
+  ): Promise<User | null> {
     try {
       return await this.usersRepository.findOne({ email: createUserDto.email });
     } catch (err) {
@@ -196,7 +217,7 @@ export class UsersService {
   }
 
   async findAll(options: ExtendedFindOptions<User>) {
-    return this.usersRepository.findAll({...options, relations: ['roles']});
+    return this.usersRepository.findAll({ ...options, relations: ['roles'] });
   }
 
   async changePassword(updatePasswordDto: UpdatePasswordDto, user: User) {

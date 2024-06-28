@@ -164,32 +164,37 @@ export class MailchimpController {
   @Post('add-members')
   async addMembers(@Body() body): Promise<any> {
     const { access_token, dc, listId, members } = body;
-  
+
     try {
       const responses = await Promise.all(
         members.map(async (member: any) => {
-          const response = await fetch(`https://${dc}.api.mailchimp.com/3.0/lists/${listId}/members`, {
-            method: 'POST',
-            headers: {
-              Authorization: `OAuth ${access_token}`,
-              'Content-Type': 'application/json',
+          const response = await fetch(
+            `https://${dc}.api.mailchimp.com/3.0/lists/${listId}/members`,
+            {
+              method: 'POST',
+              headers: {
+                Authorization: `OAuth ${access_token}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                email_address: member.email,
+                status: 'subscribed', // or 'pending' if double opt-in is enabled
+                merge_fields: { EMAIL: member.email }, // replace EMAIL merge tag with member's email
+              }),
             },
-            body: JSON.stringify({
-              email_address: member.email,
-              status: 'subscribed', // or 'pending' if double opt-in is enabled
-              merge_fields: { EMAIL: member.email }, // replace EMAIL merge tag with member's email
-            }),
-          });
-  
+          );
+
           if (!response.ok) {
             const errorText = await response.text();
-            throw new Error(`Failed to add member. Mailchimp error: ${errorText}`);
+            throw new Error(
+              `Failed to add member. Mailchimp error: ${errorText}`,
+            );
           }
-  
+
           return response;
         }),
       );
-  
+
       return { status: 'Members added' };
     } catch (error) {
       console.error('An error occurred:', error);
@@ -261,23 +266,28 @@ export class MailchimpController {
   }
 
   @Post('send-campaign')
-  async sendCampaign(@Body() body:any): Promise<any> {
+  async sendCampaign(@Body() body: any): Promise<any> {
     const { access_token, dc, campaignId } = body;
-  
+
     try {
-      const response = await fetch(`https://${dc}.api.mailchimp.com/3.0/campaigns/${campaignId}/actions/send`, {
-        method: 'POST',
-        headers: {
-          Authorization: `OAuth ${access_token}`,
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `https://${dc}.api.mailchimp.com/3.0/campaigns/${campaignId}/actions/send`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `OAuth ${access_token}`,
+            'Content-Type': 'application/json',
+          },
         },
-      });
-  
+      );
+
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Failed to send campaign. Mailchimp error: ${errorText}`);
+        throw new Error(
+          `Failed to send campaign. Mailchimp error: ${errorText}`,
+        );
       }
-  
+
       return { status: 'Campaign sent' };
     } catch (error) {
       console.error('An error occurred:', error);

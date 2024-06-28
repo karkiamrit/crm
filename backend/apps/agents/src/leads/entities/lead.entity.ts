@@ -40,13 +40,13 @@ export class Leads extends AbstractEntity<Leads> {
   @Column()
   phone: string;
 
-  @Column({unique: true})
+  @Column({ unique: true })
   email: string;
 
   @Column()
   name: string;
 
-  @Column({type: 'float', nullable:true})
+  @Column({ type: 'float', nullable: true })
   revenuePotential: number;
 
   @CreateDateColumn()
@@ -64,8 +64,7 @@ export class Leads extends AbstractEntity<Leads> {
   })
   timelines: LeadTimeline[];
 
-
-  @OneToMany(() => Invoice, (invoice) => invoice.lead, {nullable:true})
+  @OneToMany(() => Invoice, (invoice) => invoice.lead, { nullable: true })
   invoices: Invoice[];
 
   @OneToOne(() => Product, { eager: true, nullable: true, cascade: true })

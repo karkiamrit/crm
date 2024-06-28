@@ -1,4 +1,4 @@
-export enum templateType{
-    DEFAULT =  "DEFAULT",
-    NONDEFAULT = "NONDEFAULT"
+export enum templateType {
+  DEFAULT = 'DEFAULT',
+  NONDEFAULT = 'NONDEFAULT',
 }

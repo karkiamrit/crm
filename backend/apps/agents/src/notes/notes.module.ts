@@ -13,8 +13,8 @@ import { CustomersModule } from '../customers/customers.module';
   imports: [
     DatabaseModule,
     DatabaseModule.forFeature([Note, NotesRepository]),
-    forwardRef(()=>LeadsModule),
-    forwardRef(()=>CustomersModule),
+    forwardRef(() => LeadsModule),
+    forwardRef(() => CustomersModule),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: 'apps/agent/.env',

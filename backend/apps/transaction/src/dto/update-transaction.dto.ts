@@ -1,50 +1,47 @@
-import { IsBoolean, IsEmail, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
-import { listingStatus, transactionStatus, TransactionType } from '../dto/enums';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
+
 /**
  * DTO for updating a Transaction
  */
 export class UpdateTransactionsDto {
-    
-    // @IsEnum(transactionStatus, {message: "Invalid status"})
-    // @IsOptional()
-    // status?: transactionStatus;
+  @IsString({ message: 'Purpose must be string' })
+  @IsOptional()
+  purpose: string;
 
-    // @IsEnum(TransactionType, {message: "Invalid type"})
-    // @IsOptional()
-    // type?: TransactionType;
+  @IsNumber({}, { message: 'Customer Id must be number' })
+  @IsOptional()
+  leadId?: number;
 
-    // @IsOptional()
-    // toBuyer?: boolean;
+  // @IsEnum(transactionStatus, {message: "Invalid status"})
+  // @IsOptional()
+  // status?: transactionStatus;
 
-    // @IsOptional()
-    // @IsEnum(listingStatus, {message: "Invalid status"})
-    // listingStatus: listingStatus;
+  // @IsEnum(TransactionType, {message: "Invalid type"})
+  // @IsOptional()
+  // type?: TransactionType;
 
-    // @IsOptional({message: "Closing Date must be date"})
-    // closingDate?: Date;
+  // @IsOptional()
+  // toBuyer?: boolean;
 
-    // @IsNumber({}, {message: "Price must be number"})
-    // @IsOptional()
-    // listingPrice?: number;
-  
-    // @IsString({message: "Property Type must be string"})
-    // @IsOptional()
-    // propertyType?: string;
-  
-    // @IsString({message: "Listing Address must be string"})
-    // @IsOptional()
-    // listingAddress?: string;
+  // @IsOptional()
+  // @IsEnum(listingStatus, {message: "Invalid status"})
+  // listingStatus: listingStatus;
 
-    @IsString({message: "Purpose must be string"})
-    @IsOptional()
-    purpose: string;
+  // @IsOptional({message: "Closing Date must be date"})
+  // closingDate?: Date;
 
-    // @IsOptional()
-    // @IsString({message: "Logo must be string"})
-    // logo?: string;
+  // @IsNumber({}, {message: "Price must be number"})
+  // @IsOptional()
+  // listingPrice?: number;
 
-    @IsNumber({},{ message: 'Customer Id must be number' })
-    @IsOptional()
-    leadId?: number;
+  // @IsString({message: "Property Type must be string"})
+  // @IsOptional()
+  // propertyType?: string;
 
+  // @IsString({message: "Listing Address must be string"})
+  // @IsOptional()
+  // listingAddress?: string;
+  // @IsOptional()
+  // @IsString({message: "Logo must be string"})
+  // logo?: string;
 }

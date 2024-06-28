@@ -178,7 +178,12 @@ export class CampaignsService {
     }
   }
 
-  async sendInvoiceEmail(username: string, to: string, text_content: string, subject?:string) {
+  async sendInvoiceEmail(
+    username: string,
+    to: string,
+    text_content: string,
+    subject?: string,
+  ) {
     try {
       const transporter = nodemailer.createTransport({
         host: this.configService.get('CAMPAIGN_HOST'),
@@ -203,7 +208,12 @@ export class CampaignsService {
     }
   }
 
-  async sendLeadEmail(username: string, to: string, text_content: string, subject?:string) {
+  async sendLeadEmail(
+    username: string,
+    to: string,
+    text_content: string,
+    subject?: string,
+  ) {
     try {
       const transporter = nodemailer.createTransport({
         host: this.configService.get('CAMPAIGN_HOST'),

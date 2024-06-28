@@ -18,18 +18,18 @@ export class TasksService {
   ) {}
 
   async create(createTaskDto: CreateTaskDto, user: User): Promise<Tasks> {
-    const { leadId, customerId ,...rest} =createTaskDto;
-    const task = new Tasks({...rest});
+    const { leadId, customerId, ...rest } = createTaskDto;
+    const task = new Tasks({ ...rest });
     const agent = await this.agentsService.getAgentByUserId(user.id);
-    if(agent){
+    if (agent) {
       task.agent = agent;
     }
-    if(leadId){
+    if (leadId) {
       const lead = await this.leadsService.getOne(leadId);
       task.lead = lead;
     }
-    if(customerId){
-      const customer= await this.customersService.getOne(customerId);
+    if (customerId) {
+      const customer = await this.customersService.getOne(customerId);
       task.customer = customer;
     }
     task.dueDate = createTaskDto.dueDate;
@@ -39,10 +39,8 @@ export class TasksService {
     return this.tasksRepository.create(task);
   }
 
-  async findAll(
-    options: ExtendedFindOptions<Tasks>,
-  ) {
-    options.relations = ['lead','customer'];
+  async findAll(options: ExtendedFindOptions<Tasks>) {
+    options.relations = ['lead', 'customer'];
     return await this.tasksRepository.findAll(options);
   }
 
@@ -61,7 +59,10 @@ export class TasksService {
     task.taskDesc = updateTaskDto.taskDesc || task.taskDesc;
     task.priority = updateTaskDto.priority || task.priority;
     task.status = updateTaskDto.status || task.status;
-    return this.tasksRepository.findOneAndUpdate({where:{id:task.id}}, task);
+    return this.tasksRepository.findOneAndUpdate(
+      { where: { id: task.id } },
+      task,
+    );
   }
 
   async remove(id: number): Promise<void> {
@@ -69,6 +70,6 @@ export class TasksService {
     if (!task) {
       throw new NotFoundException(`Task with ID ${id} not found`);
     }
-    await this.tasksRepository.findOneAndDelete({id});
+    await this.tasksRepository.findOneAndDelete({ id });
   }
 }

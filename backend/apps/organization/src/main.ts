@@ -15,18 +15,31 @@ async function bootstrap() {
   app.use(json());
   const config = new DocumentBuilder()
     .setTitle('Organization')
-    .setDescription('The Organization API is a microservice for organization crud. It is used to manage organization.')
+    .setDescription(
+      'The Organization API is a microservice for organization crud. It is used to manage organization.',
+    )
     .setVersion('1.0')
     .addTag('organization')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document); 
-  app.use('/uploads', (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    next();
-  }, express.static('/usr/src/app/uploads'));
-  
+  SwaggerModule.setup('api', app, document);
+  app.use(
+    '/uploads',
+    (
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction,
+    ) => {
+      res.header('Access-Control-Allow-Origin', '*');
+      res.header(
+        'Access-Control-Allow-Headers',
+        'Origin, X-Requested-With, Content-Type, Accept',
+      );
+      next();
+    },
+    express.static('/usr/src/app/uploads'),
+  );
+
   const configService = app.get(ConfigService);
   app.connectMicroservice({
     transport: Transport.TCP,
