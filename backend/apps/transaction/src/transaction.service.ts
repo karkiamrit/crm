@@ -14,11 +14,11 @@ export class TransactionService {
     private readonly configService: ConfigService,
   ) {}
 
-  async create( createTransactionDto: CreateTransactionsDto, user: User, logo: string) {
+  async create( createTransactionDto: CreateTransactionsDto, user: User) {
     try {
       const transaction = new Transaction(createTransactionDto);
       transaction.userId = user.id;
-      transaction.logo = logo;
+      // transaction.logo = logo;
       return await this.transactionsRepository.create(transaction);
     } catch (error) {
       throw new Error(error);
@@ -44,14 +44,14 @@ export class TransactionService {
     return this.transactionsRepository.findOne({ id });
   }
 
-  async updateLogo(leadId: number, filePath: string): Promise<Transaction> {
-    // const organization = await this.organizationsRepository.findOne({id: organizationId});
-    const leads = await this.transactionsRepository.findOneAndUpdate(
-      { where: { id: leadId } },
-      { logo: filePath },
-    );
-    return leads;
-  }
+  // async updateLogo(leadId: number, filePath: string): Promise<Transaction> {
+  //   // const organization = await this.organizationsRepository.findOne({id: organizationId});
+  //   const leads = await this.transactionsRepository.findOneAndUpdate(
+  //     { where: { id: leadId } },
+  //     { logo: filePath },
+  //   );
+  //   return leads;
+  // }
 
   async generateUploadUrl(transactionId: number): Promise<string> {
     const payload = { transactionId };

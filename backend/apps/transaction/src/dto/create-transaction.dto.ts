@@ -30,34 +30,34 @@ export class CreateTransactionsDto {
   @IsNotEmpty({ message: 'Lead Id is required' })
   leadId: number;
 
-  @IsFloat({ message: 'Listing Price must be number' })
-  @IsOptional({ message: 'Listing Price must not be empty' })
-  listingPrice: number;
+  // @IsFloat({ message: 'Listing Price must be number' })
+  // @IsOptional({ message: 'Listing Price must not be empty' })
+  // listingPrice: number;
 
-  @IsEnum(TransactionType, { message: 'Invalid type' })
-  @IsOptional()
-  type?: TransactionType;
+  // @IsEnum(TransactionType, { message: 'Invalid type' })
+  // @IsOptional()
+  // type?: TransactionType;
 
-  @IsNotEmpty({ message: 'To Buyer must not be empty' })
-  toBuyer: boolean;
+  // @IsNotEmpty({ message: 'To Buyer must not be empty' })
+  // toBuyer: boolean;
 
-  @IsOptional({ message: 'Closing Date must be date' })
-  @IsNotEmpty()
-  closingDate: Date;
+  // @IsOptional({ message: 'Closing Date must be date' })
+  // @IsNotEmpty()
+  // closingDate: Date;
 
-  @IsString({ message: 'Property Type must be string' })
-  @IsOptional()
-  propertyType: string;
+  // @IsString({ message: 'Property Type must be string' })
+  // @IsOptional()
+  // propertyType: string;
 
   @IsString({ message: 'Listing Address must be string' })
   @IsNotEmpty()
-  listingAddress: string;
+  purpose: string;
 
-  @IsString({ message: 'Property Status must be string' })
-  @IsOptional()
-  propertyStatus: string;
+  // @IsString({ message: 'Property Status must be string' })
+  // @IsOptional()
+  // propertyStatus: string;
 
-  @IsOptional()
-  @IsString({ message: 'Logo must be string' })
-  logo?: string;
+  // @IsOptional()
+  // @IsString({ message: 'Logo must be string' })
+  // logo?: string;
 }

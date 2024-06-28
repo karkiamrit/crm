@@ -21,36 +21,36 @@ export class TransactionController {
   @ApiBearerAuth()
   @ApiBody({ type: CreateTransactionsDto })
   @ApiResponse({ status: 201, description: 'The transaction has been successfully created.'})
-  @UseInterceptors(
-    FileInterceptor('logo', {
-      storage: diskStorage({
-        destination: './uploads', // specify the path where the files should be saved
-        filename: (req, file, callback) => {
-          const name = Date.now() + extname(file.originalname); // generate a unique filename
-          callback(null, name);
-        },
-      }),
-      fileFilter: (req, file, callback) => {
-        // Only accept images
-        if (!file.originalname.match(/\.(jpg|jpeg|png|gif|webp)$/)) {
-          // Reject file
-          return callback(new Error('Only image files are allowed!'), false);
-        }
-        // Accept file
-        callback(null, true);
-      },
-    }),
-  )
+  // @UseInterceptors(
+  //   FileInterceptor('logo', {
+  //     storage: diskStorage({
+  //       destination: './uploads', // specify the path where the files should be saved
+  //       filename: (req, file, callback) => {
+  //         const name = Date.now() + extname(file.originalname); // generate a unique filename
+  //         callback(null, name);
+  //       },
+  //     }),
+  //     fileFilter: (req, file, callback) => {
+  //       // Only accept images
+  //       if (!file.originalname.match(/\.(jpg|jpeg|png|gif|webp)$/)) {
+  //         // Reject file
+  //         return callback(new Error('Only image files are allowed!'), false);
+  //       }
+  //       // Accept file
+  //       callback(null, true);
+  //     },
+  //   }),
+  // )
   async create(
-    @UploadedFile() file: Express.Multer.File,
+    // @UploadedFile() file: Express.Multer.File,
     @Body() createDto: CreateTransactionsDto,
     @CurrentUser() user: User
   ) {
     let logo: any;
-    if (file) {
-      logo = file.path;
-    }
-    return await this.transactionsService.create(createDto, user, logo);
+    // if (file) {
+    //   logo = file.path;
+    // }
+    return await this.transactionsService.create(createDto, user);
   }
 
   @Put(':id')
@@ -90,32 +90,32 @@ export class TransactionController {
     return this.transactionsService.findAll(query);
   }
 
-  @Put(':id/update-profile-picture')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Upload lead picture' })
-  @ApiResponse({
-    status: 200,
-    description: 'The picture has been successfully uploaded.',
-  })
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: './uploads', // specify the path where the files should be saved
-        filename: (req, file, callback) => {
-          const name = Date.now() + extname(file.originalname); // generate a unique filename
-          callback(null, name);
-        },
-      }),
-    }),
-  )
-  async updateLogo(
-    @UploadedFile() file: Express.Multer.File,
-    @Param('id') id: number,
-    @Param('filename') filename: string,
-  ): Promise<Transaction> {
-    return this.transactionsService.updateLogo(id, file.path);
-  }
+  // @Put(':id/update-profile-picture')
+  // @UseGuards(JwtAuthGuard)
+  // @ApiBearerAuth()
+  // @ApiOperation({ summary: 'Upload lead picture' })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'The picture has been successfully uploaded.',
+  // })
+  // @UseInterceptors(
+  //   FileInterceptor('file', {
+  //     storage: diskStorage({
+  //       destination: './uploads', // specify the path where the files should be saved
+  //       filename: (req, file, callback) => {
+  //         const name = Date.now() + extname(file.originalname); // generate a unique filename
+  //         callback(null, name);
+  //       },
+  //     }),
+  //   }),
+  // )
+  // async updateLogo(
+  //   @UploadedFile() file: Express.Multer.File,
+  //   @Param('id') id: number,
+  //   @Param('filename') filename: string,
+  // ): Promise<Transaction> {
+  //   return this.transactionsService.updateLogo(id, file.path);
+  // }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)

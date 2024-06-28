@@ -362,8 +362,11 @@ export class LeadsService {
   }
 
   async addLeadToSegment(segmentId: number, leadId: number): Promise<Segment> {
+    if(segmentId && segmentId === undefined){
+      throw new Error('Segment ID cant be undefined');
+    }  
     const segment = await this.segmentsRepository.findOne({ id: segmentId });
-  
+
     const lead = await this.getOne(leadId);
   
     if (!segment || !lead) {

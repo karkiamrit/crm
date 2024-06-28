@@ -19,41 +19,41 @@ export class Transaction extends AbstractEntity<Transaction> {
   // })
   // status: transactionStatus;
 
-  @Column( {
-    type: 'enum',
-    enum: listingStatus,
-    default: listingStatus.STARTED,
-  })
-  listingStatus: listingStatus;
+  // @Column( {
+  //   type: 'enum',
+  //   enum: listingStatus,
+  //   default: listingStatus.STARTED,
+  // })
+  // listingStatus: listingStatus;
 
-  @Column({type:'float', nullable: true})
-  listingPrice: number;
+  // @Column({type:'float', nullable: true})
+  // listingPrice: number;
 
-  @Column({nullable: true})
-  propertyType: string;
+  // @Column({nullable: true})
+  // propertyType: string;
 
-  @Column({ nullable: true })
-  logo: string;
+  // @Column({ nullable: true })
+  // logo: string;
 
-  @Column()
-  listingAddress: string;
+  @Column({nullable:true})
+  purpose: string;
 
   @Column()
   leadId: number;
 
-  @Column({nullable: true})
-  propertyStatus: string;
+  // @Column({nullable: true})
+  // propertyStatus: string;
 
-  @Column({
-    type: 'enum',
-    nullable: true,
-    enum: TransactionType,
-    default: TransactionType.PURCHASE,
-  })
-  type: TransactionType;
+  // @Column({
+  //   type: 'enum',
+  //   nullable: true,
+  //   enum: TransactionType,
+  //   default: TransactionType.PURCHASE,
+  // })
+  // type: TransactionType;
 
-  @Column()
-  toBuyer: boolean;
+  // @Column()
+  // toBuyer: boolean;
 
   @Column()
   userId: number;
@@ -61,8 +61,8 @@ export class Transaction extends AbstractEntity<Transaction> {
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column({ nullable: true })
-  closingDate: Date;
+  // @Column({ nullable: true })
+  // closingDate: Date;
 
   @OneToMany(() => TransactionTask, (task) => task.transaction, {
     onDelete: 'CASCADE',
