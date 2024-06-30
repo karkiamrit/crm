@@ -46,7 +46,7 @@ export class TransactionTask extends AbstractEntity<TransactionTask> {
   @Column({ nullable: true })
   templateDocument: string;
 
-  @ManyToOne(() => Transaction, (transaction) => transaction.tasks)
+  @ManyToOne(() => Transaction, (transaction) => transaction.tasks,{onDelete: 'CASCADE'})
   @JoinColumn({ name: 'transactionId' }) // The foreign key column in the TransactionTask table
   transaction: Transaction;
 

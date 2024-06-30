@@ -3,15 +3,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   OneToMany,
-  OneToOne,
 } from 'typeorm';
-import {
-  listingStatus,
-  transactionStatus,
-  TransactionType,
-} from '../dto/enums';
 import { TransactionTask } from '../transaction-task/entities/transaction-task.entity';
 
 @Entity()
@@ -69,7 +62,6 @@ export class Transaction extends AbstractEntity<Transaction> {
   // closingDate: Date;
 
   @OneToMany(() => TransactionTask, (task) => task.transaction, {
-    onDelete: 'CASCADE',
     eager: true,
     nullable: true,
   })

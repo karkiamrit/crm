@@ -132,9 +132,9 @@ export class DocumentsService {
 
   async createDocument(documents: Document): Promise<Document> {
     const newDocument = await this.documentsRepository.create(documents);
-    const customerId = newDocument.task.leadId;
-    const customer = await firstValueFrom(
-      this.agentsService.send('get_lead_by_id', { id: customerId }),
+    const leadId = newDocument.task.leadId;
+    const lead = await firstValueFrom(
+      this.agentsService.send('get_lead_by_id', { id: leadId }),
     );
 
     // Create a timeline entry for the documentFile attribute
@@ -143,7 +143,7 @@ export class DocumentsService {
       'documentFile',
       newDocument.documentFile,
       newDocument.task.id,
-      customer.name,
+      lead.name,
     );
 
     return newDocument;

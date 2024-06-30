@@ -1,14 +1,7 @@
 FROM node:alpine as development
-
 WORKDIR /usr/src/app
 
-COPY package.json ./ 
-
-COPY yarn.lock ./
-
-COPY tsconfig.json tsconfig.json
-
-COPY nest-cli.json nest-cli.json
+COPY package.json yarn.lock tsconfig.json nest-cli.json ./
 
 RUN yarn install
 
@@ -26,14 +19,13 @@ ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /usr/src/app
 
-COPY package.json ./ 
-COPY yarn.lock ./
+COPY package.json yarn.lock ./
 
-RUN npm install -g yarn
-
-RUN yarn install --prod
-RUN yarn global add @nestjs/cli
+RUN npm ci --only=production
 
 COPY --from=development /usr/src/app/dist ./dist
+
+RUN addgroup app && adduser -S -G app app
+USER app
 
 CMD ["node", "dist/apps/notifications/main"]
