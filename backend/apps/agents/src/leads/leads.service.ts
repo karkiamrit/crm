@@ -214,6 +214,7 @@ export class LeadsService {
       'source',
       'profilePicture',
       'revenuePotential',
+      'updatedAt'
     ];
 
     attributes.forEach((attribute) => {
@@ -232,14 +233,16 @@ export class LeadsService {
       await this.leadsRepository.create(lead); // Use save() instead of create()
 
       // Create and save timeline records
-      const timelines = Object.entries(changes).map(([attribute, value]) => {
+      const timelines = Object.entries(changes).map(async([attribute, value]) => {
         const timeline = new LeadTimeline({
           lead,
           attribute,
           value: value as string, // Cast the value to string
           // createdAt: new Date(),
         });
-        return this.leadsTimelineRepository.create(timeline); // Save the timeline to the database
+        const createdTimeline= await this.leadsTimelineRepository.create(timeline); // Save the timeline to the database
+        console.log(await this.update(lead.id, {updatedAt: new Date()}))
+        return createdTimeline;
       });
       await Promise.all(timelines);
       if ('status' in changes && changes.status === LeadsStatus.PAST_CLIENT) {
@@ -300,14 +303,13 @@ export class LeadsService {
   }
 
   async findAll(options: ExtendedFindOptions<Leads>) {
-    options.relations = ['product', 'service', 'timelines', 'segments'];
-
+    options.relations = ['timelines', 'segments','tasks'];
     const leads = await this.leadsRepository.findAll(options);
     return leads;
   }
 
   async findAllWithSegmentId(options: ExtendedFindOptions<Leads>, id: number) {
-    options.relations = ['product', 'service', 'timelines', 'segments'];
+    options.relations = ['product', 'timelines', 'segments'];
     options.where = {
       segments: {
         id: id,

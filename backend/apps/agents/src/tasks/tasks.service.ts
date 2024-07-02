@@ -21,6 +21,7 @@ export class TasksService {
     const { leadId, customerId, ...rest } = createTaskDto;
     const task = new Tasks({ ...rest });
     const agent = await this.agentsService.getAgentByUserId(user.id);
+
     if (agent) {
       task.agent = agent;
     }
@@ -35,8 +36,10 @@ export class TasksService {
     task.dueDate = createTaskDto.dueDate;
     task.taskDesc = createTaskDto.taskDesc;
     task.priority = createTaskDto.priority;
+    this.leadsService.update(leadId, { updatedAt: new Date() });
 
-    return this.tasksRepository.create(task);
+    return await this.tasksRepository.create(task);
+
   }
 
   async findAll(options: ExtendedFindOptions<Tasks>) {
@@ -59,10 +62,17 @@ export class TasksService {
     task.taskDesc = updateTaskDto.taskDesc || task.taskDesc;
     task.priority = updateTaskDto.priority || task.priority;
     task.status = updateTaskDto.status || task.status;
-    return this.tasksRepository.findOneAndUpdate(
+
+    const updatedTask = this.tasksRepository.findOneAndUpdate(
       { where: { id: task.id } },
       task,
     );
+    if (updatedTask) {
+      if (task.lead) {
+        await this.leadsService.update(task.lead.id, { updatedAt: new Date() });
+      }
+    }
+    return updatedTask;
   }
 
   async remove(id: number): Promise<void> {

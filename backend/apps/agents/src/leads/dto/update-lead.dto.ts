@@ -50,6 +50,9 @@ export class UpdateLeadDto {
   source?: string;
 
   @IsOptional()
+  updatedAt: Date;
+
+  @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => UpdateProductInputDTO)
   product?: UpdateProductInputDTO;
@@ -59,7 +62,7 @@ export class UpdateLeadDto {
   @Type(() => UpdateServiceInputDTO)
   service?: UpdateServiceInputDTO;
 
-  @IsOptional()
-  @IsString({ message: 'Profile picture must be string' })
-  profilePicture: string;
+  // @IsOptional()
+  // @IsString({ message: 'Profile picture must be string' })
+  // profilePicture?: string;
 }

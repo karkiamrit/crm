@@ -170,7 +170,7 @@ export class LeadsController {
   @ApiOperation({ summary: 'Get all leads' })
   @ApiBearerAuth()
   async findAll(@Query() query: any) {
-    return this.leadsService.findAll(query);
+    return await this.leadsService.findAll(query);
   }
 
   @Get('segment/:id')

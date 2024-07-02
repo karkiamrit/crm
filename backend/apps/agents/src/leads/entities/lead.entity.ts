@@ -52,6 +52,9 @@ export class Leads extends AbstractEntity<Leads> {
   @CreateDateColumn()
   createdAt: Date;
 
+  @Column({ nullable: true })
+  updatedAt: Date;
+
   @OneToMany(() => Tasks, (task) => task.lead)
   tasks: Tasks[];
 

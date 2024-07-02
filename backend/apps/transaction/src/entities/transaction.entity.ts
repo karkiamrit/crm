@@ -64,6 +64,7 @@ export class Transaction extends AbstractEntity<Transaction> {
   @OneToMany(() => TransactionTask, (task) => task.transaction, {
     eager: true,
     nullable: true,
+    onDelete: 'CASCADE',
   })
   tasks: TransactionTask[];
 }
