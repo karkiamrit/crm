@@ -53,7 +53,7 @@ export class Leads extends AbstractEntity<Leads> {
   createdAt: Date;
 
   @Column({ nullable: true })
-  updatedAt: Date;
+  updatedTime: Date;
 
   @OneToMany(() => Tasks, (task) => task.lead)
   tasks: Tasks[];

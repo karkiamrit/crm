@@ -50,7 +50,7 @@ export class UpdateLeadDto {
   source?: string;
 
   @IsOptional()
-  updatedAt: Date;
+  updatedTime: Date;
 
   @IsOptional()
   @ValidateNested({ each: true })

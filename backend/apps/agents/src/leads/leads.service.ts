@@ -202,21 +202,15 @@ export class LeadsService {
     const changes = {};
 
     const attributes = [
-      'product',
-      'service',
       'address',
       'details',
       'status',
       'phone',
       'email',
       'name',
-      'priority',
-      'source',
-      'profilePicture',
       'revenuePotential',
-      'updatedAt'
     ];
-
+    lead.updatedTime = updateLeadsDto.updatedTime;
     attributes.forEach((attribute) => {
       if (
         updateLeadsDto[attribute] !== undefined &&
@@ -230,7 +224,7 @@ export class LeadsService {
     if (hasChanges) {
       // Apply all changes in one go to the lead
       Object.assign(lead, changes);
-      await this.leadsRepository.create(lead); // Use save() instead of create()
+      await this.leadsRepository.create(lead); 
 
       // Create and save timeline records
       const timelines = Object.entries(changes).map(async([attribute, value]) => {
@@ -241,7 +235,7 @@ export class LeadsService {
           // createdAt: new Date(),
         });
         const createdTimeline= await this.leadsTimelineRepository.create(timeline); // Save the timeline to the database
-        console.log(await this.update(lead.id, {updatedAt: new Date()}))
+        console.log(await this.update(lead.id, {updatedTime: new Date()}))
         return createdTimeline;
       });
       await Promise.all(timelines);
@@ -303,13 +297,13 @@ export class LeadsService {
   }
 
   async findAll(options: ExtendedFindOptions<Leads>) {
-    options.relations = ['timelines', 'segments','tasks'];
+    options.relations = ['segments','tasks'];
     const leads = await this.leadsRepository.findAll(options);
     return leads;
   }
 
   async findAllWithSegmentId(options: ExtendedFindOptions<Leads>, id: number) {
-    options.relations = ['product', 'timelines', 'segments'];
+    options.relations = ['product', 'segments'];
     options.where = {
       segments: {
         id: id,

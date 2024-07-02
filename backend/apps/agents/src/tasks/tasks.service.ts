@@ -36,7 +36,7 @@ export class TasksService {
     task.dueDate = createTaskDto.dueDate;
     task.taskDesc = createTaskDto.taskDesc;
     task.priority = createTaskDto.priority;
-    this.leadsService.update(leadId, { updatedAt: new Date() });
+    this.leadsService.update(leadId, { updatedTime: new Date() });
 
     return await this.tasksRepository.create(task);
 
@@ -69,7 +69,7 @@ export class TasksService {
     );
     if (updatedTask) {
       if (task.lead) {
-        await this.leadsService.update(task.lead.id, { updatedAt: new Date() });
+        await this.leadsService.update(task.lead.id, { updatedTime: new Date() });
       }
     }
     return updatedTask;
