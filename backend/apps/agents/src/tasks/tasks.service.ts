@@ -13,6 +13,7 @@ export class TasksService {
   constructor(
     private readonly tasksRepository: TasksRepository,
     private readonly leadsService: LeadsService,
+    private readonly leadsRepository: LeadsService,
     private readonly agentsService: AgentsService,
     private readonly customersService: CustomersService,
   ) {}
@@ -36,7 +37,7 @@ export class TasksService {
     task.dueDate = createTaskDto.dueDate;
     task.taskDesc = createTaskDto.taskDesc;
     task.priority = createTaskDto.priority;
-    this.leadsService.update(leadId, { updatedTime: new Date() });
+    await this.leadsRepository.update(leadId,{updatedTime: new Date()});
 
     return await this.tasksRepository.create(task);
 
@@ -63,7 +64,7 @@ export class TasksService {
     task.priority = updateTaskDto.priority || task.priority;
     task.status = updateTaskDto.status || task.status;
 
-    const updatedTask = this.tasksRepository.findOneAndUpdate(
+    const updatedTask = await this.tasksRepository.findOneAndUpdate(
       { where: { id: task.id } },
       task,
     );

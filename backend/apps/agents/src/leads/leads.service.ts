@@ -210,7 +210,7 @@ export class LeadsService {
       'name',
       'revenuePotential',
     ];
-    lead.updatedTime = updateLeadsDto.updatedTime;
+    lead.updatedTime = new Date();
     attributes.forEach((attribute) => {
       if (
         updateLeadsDto[attribute] !== undefined &&
@@ -220,10 +220,12 @@ export class LeadsService {
         hasChanges = true;
       }
     });
+    // await this.update(lead.id, {updatedTime: new Date()});
 
     if (hasChanges) {
       // Apply all changes in one go to the lead
       Object.assign(lead, changes);
+      
       await this.leadsRepository.create(lead); 
 
       // Create and save timeline records
@@ -235,7 +237,6 @@ export class LeadsService {
           // createdAt: new Date(),
         });
         const createdTimeline= await this.leadsTimelineRepository.create(timeline); // Save the timeline to the database
-        console.log(await this.update(lead.id, {updatedTime: new Date()}))
         return createdTimeline;
       });
       await Promise.all(timelines);
@@ -381,6 +382,12 @@ export class LeadsService {
     );
     return updatedSegment;
   }
+
+  // async updateTime(id: number): Promise<Leads> {
+  //   const lead = await this.leadsRepository.findOne({ id });
+  //   lead.updatedTime = new Date();
+  //   return await this.leadsRepository.findOneAndUpdate({ where: { id } }, lead);
+  // }
 
   // async addDocuments(id: number, documents: string[]): Promise<Leads> {
   //   const lead = await this.leadsRepository.findOne({ id });
