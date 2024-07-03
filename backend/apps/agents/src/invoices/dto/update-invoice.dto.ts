@@ -71,4 +71,20 @@ export class UpdateInvoiceDto {
   @ValidateNested({ each: true })
   @Type(() => UpdateProductInputDTO)
   products?: UpdateProductInputDTO[];
+
+  @IsOptional()
+  @IsString({ message: 'lead Address must be a string' })
+  leadAddress: string;
+
+  @IsOptional()
+  @IsString({ message: 'lead Country must be a string' })
+  leadCountry: string;
+
+  @IsOptional()
+  @IsString({ message: 'Sender Address must be a string' })
+  sendorAddress: string;
+
+  @IsOptional()
+  @IsString({ message: 'Sender Country must be a string' })
+  sendorCountry: string;
 }

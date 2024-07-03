@@ -11,12 +11,12 @@ import {
 } from 'typeorm';
 import { Product } from '../../shared/objects/products/products.entity';
 import { Agent } from '../../entities/agent.entity';
-import { Customers } from '../../customers/entities/customer.entity';
 import { InvoiceStatus } from '../../shared/data/enums/invoice.status.enum';
 import { Leads } from '../../leads/entities/lead.entity';
 
 @Entity()
 export class Invoice extends AbstractEntity<Invoice> {
+  
   @Column({ nullable: true })
   leadName: string;
 
@@ -60,9 +60,6 @@ export class Invoice extends AbstractEntity<Invoice> {
   @JoinColumn({ name: 'agentId', referencedColumnName: 'id' })
   agent: Agent;
 
-  // @ManyToOne(() => Customers, { eager: true, onDelete: 'CASCADE', nullable:true })
-  // @JoinColumn({ name: 'customerId', referencedColumnName: 'id' })
-  // customer: Customers;
 
   @ManyToOne(() => Leads, { eager: true, onDelete: 'CASCADE', nullable: true })
   @JoinColumn({ name: 'leadId', referencedColumnName: 'id' })
@@ -83,4 +80,19 @@ export class Invoice extends AbstractEntity<Invoice> {
 
   @Column({ nullable: true })
   sendorOrganization: string;
+
+  @Column({ nullable: true })
+  image: string;
+
+  @Column({ nullable: true })
+  leadAddress: string;
+
+  @Column({ nullable: true })
+  leadCountry: string;
+
+  @Column({ nullable: true })
+  sendorAddress: string;
+
+  @Column({ nullable: true })
+  sendorCountry: string;
 }
