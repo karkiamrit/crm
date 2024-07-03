@@ -32,7 +32,7 @@ export class InvoicesController {
   constructor(private readonly invoicesService: InvoicesService) {}
 
 
-  @Post()
+  @Post('/upload')
   @UseGuards(JwtAuthGuard)
   @Roles('Agent')
   @ApiOperation({ summary: 'Upload Image' })
@@ -60,7 +60,6 @@ export class InvoicesController {
   )
   async upload(
     @UploadedFile() file: Express.Multer.File,
-
   ) {
     if(file){
       return file.path;

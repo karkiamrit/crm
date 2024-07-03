@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -66,6 +67,10 @@ export class CreateLeadDto {
   @IsOptional()
   @IsString({ message: 'Profile picture must be string' })
   profilePicture?: string;
+
+  @IsOptional()
+  @IsArray()
+  tags?: string[];
 }
 
 export class LeadImportDto {

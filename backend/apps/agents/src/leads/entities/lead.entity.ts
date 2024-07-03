@@ -43,6 +43,9 @@ export class Leads extends AbstractEntity<Leads> {
   @Column({ unique: true })
   email: string;
 
+  @Column({ unique: true, type: 'simple-array' , nullable: true})
+  tags: string[];
+
   @Column()
   name: string;
 

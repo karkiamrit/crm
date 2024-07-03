@@ -614,7 +614,6 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
 
     Object.entries(where).forEach(([key, value], index) => {
       console.log(`Processing key: ${key}, value: ${value}`);
-
       const metadata = this.getMetadata();
       const relationNames = metadata.relations.map(
         (relation) => relation.propertyName,
@@ -651,15 +650,17 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
           '_operator' in value &&
           '_value' in value
         ) {
-          // New code to handle comparison operators
-          console.log(value + 'value is');
           const operator = value._operator; // could be '<', '>', '<=', '>=', etc.
           let val = value._value;
           let condition: any;
           if (isoDateTimeRegex.test(val)) {
             val = new Date(val);
             condition = `DATE_TRUNC('millisecond', entity.${key} AT TIME ZONE 'UTC') ${operator} :${key}`;
-          } else {
+          } else if (operator === 'LIKE') {
+            condition = `entity.${key} LIKE :${key}`;
+            val = `%${val}%`;
+          }
+          else {
             condition = `entity.${key} ${operator} :${key}`;
           }
 
@@ -678,12 +679,8 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
             index === 0
               ? qb.where(condition, parameters)
               : qb.andWhere(condition, parameters);
-          } else {
-            // const condition = `entity.${key} = :${key}`;
-            // const parameters = { [key]: value };
-            // index === 0
-            //   ? qb.where(condition, parameters)
-            //   : qb.andWhere(condition, parameters);
+          } 
+          else {
             let val = value;
             let condition: any;
             let parameters: any;
@@ -704,6 +701,7 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
               ? qb.where(condition, parameters)
               : qb.andWhere(condition, parameters);
           }
+         
         }
       } else {
         // If the property is a relation

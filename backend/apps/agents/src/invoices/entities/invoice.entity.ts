@@ -60,7 +60,6 @@ export class Invoice extends AbstractEntity<Invoice> {
   @JoinColumn({ name: 'agentId', referencedColumnName: 'id' })
   agent: Agent;
 
-
   @ManyToOne(() => Leads, { eager: true, onDelete: 'CASCADE', nullable: true })
   @JoinColumn({ name: 'leadId', referencedColumnName: 'id' })
   lead: Leads;

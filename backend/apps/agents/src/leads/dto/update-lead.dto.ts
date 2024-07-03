@@ -62,6 +62,9 @@ export class UpdateLeadDto {
   @Type(() => UpdateServiceInputDTO)
   service?: UpdateServiceInputDTO;
 
+  @IsOptional()
+  @IsArray()
+  tags?: string[];
   // @IsOptional()
   // @IsString({ message: 'Profile picture must be string' })
   // profilePicture?: string;
