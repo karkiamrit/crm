@@ -438,6 +438,7 @@ export interface ExtendedFindOptions<T>
   range?: RangeCondition[];
   query?: any;
   relations?: string[];
+  whereSelection?: 'and' | 'or';
 }
 
 export abstract class AbstractRepository<T extends AbstractEntity<T>> {
@@ -587,6 +588,7 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
         qb = qb.leftJoinAndSelect(`entity.${relation}`, relation);
       });
     }
+
     const { skip, take } = options;
 
     let orderOption = {};
@@ -667,7 +669,8 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
           const parameters = { [key]: val };
           index === 0
             ? qb.where(condition, parameters)
-            : qb.andWhere(condition, parameters);
+            : options.whereSelection === 'or' ? qb.orWhere(condition, parameters) : qb.andWhere(condition, parameters);
+   
         } else {
           // Treat enum properties as strings
           const propertyType = this.entityRepository.metadata.columns.find(

@@ -38,7 +38,7 @@ export class InvoicesController {
   @ApiOperation({ summary: 'Upload Image' })
   @ApiBearerAuth()
   @UseInterceptors(
-    FileInterceptor('image', {
+    FileInterceptor('file', {
       storage: diskStorage({
         destination: './uploads', // specify the path where the files should be saved
         filename: (req, file, callback) => {
@@ -62,9 +62,9 @@ export class InvoicesController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     if(file){
-      return file.path;
+      return {path: file.path};
     }
-    return 'No file uploaded';
+    return {error: 'No file uploaded'};
   }
 
   @Post()
