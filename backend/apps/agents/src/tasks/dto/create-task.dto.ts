@@ -5,10 +5,12 @@ import {
   IsString,
   IsDate,
   IsNumber,
+  IsArray,
 } from 'class-validator';
 import { Priority } from '../../shared/data';
 import { TaskType } from '../../shared/data/enums/task-type.enum';
 import { TaskStatus } from './enums/task-status.enum';
+import { ToDoType } from './enums/todo-type.enum';
 
 export class CreateTaskDto {
   @IsNotEmpty({ message: 'Name is required' })
@@ -17,6 +19,9 @@ export class CreateTaskDto {
 
   @IsNotEmpty({ message: 'Due date is required' })
   dueDate?: Date;
+
+  @IsOptional()
+  reminderDate?: Date;
 
   @IsOptional({ message: 'Start date is required' })
   startDate?: Date;
@@ -54,4 +59,14 @@ export class CreateTaskDto {
     message: 'TaskType not Lead or Agent',
   })
   taskType?: TaskType;
+
+  @IsOptional()
+  @IsEnum(ToDoType, {
+    message: 'Task Type not matched',
+  })
+  todoType?: ToDoType;
+
+  @IsOptional()
+  @IsArray()
+  subTasks: string[];
 }

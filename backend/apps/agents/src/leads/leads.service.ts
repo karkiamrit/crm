@@ -40,7 +40,6 @@ export class LeadsService {
     } else {
       newSegment = Number(createLeadDto.segment);
     }
-
     const { revenuePotential, ...rest } = createLeadDto;
     // Convert CreateTimelineInputDTO[] to LeadTimeline[]
     let product: Product, service: Service, timelines: LeadTimeline[];
@@ -62,6 +61,7 @@ export class LeadsService {
     if (agent) {
       lead.agentId = agent.id;
     }
+    lead.updatedTime= new Date();
 
     let createdLead = await this.leadsRepository.create(lead);
     console.log(newSegment);

@@ -13,11 +13,15 @@ import { Customers } from '../../customers/entities/customer.entity';
 import { Leads } from '../../leads/entities/lead.entity';
 import { TaskType } from '../../shared/data/enums/task-type.enum';
 import { TaskStatus } from '../dto/enums/task-status.enum';
+import { ToDoType } from '../dto/enums/todo-type.enum';
 
 @Entity()
 export class Tasks extends AbstractEntity<Tasks> {
   @Column()
   dueDate: Date;
+
+  @Column({nullable:true})
+  reminderDate: Date;
 
   @Column({ nullable: true })
   startDate: Date;
@@ -27,6 +31,9 @@ export class Tasks extends AbstractEntity<Tasks> {
 
   @Column()
   taskDesc: string;
+
+  @Column({type:'simple-array', nullable: true})
+  subTasks: string[]
 
   @Column({ type: 'enum', enum: TaskStatus, default: TaskStatus.PENDING })
   status: TaskStatus;
@@ -44,6 +51,14 @@ export class Tasks extends AbstractEntity<Tasks> {
     default: TaskType.LEAD,
   })
   taskType: TaskType;
+
+  @Column({
+    type: 'enum',
+    enum: ToDoType,
+    default: ToDoType.EVENT,
+    nullable:true
+  })
+  todoType: ToDoType;
 
   @ManyToOne(() => Agent, { nullable: true, eager: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'agentId' })
