@@ -154,7 +154,9 @@ export class CampaignsService {
       if (!segment) {
         return { status: 'error', message: 'Segment not found' };
       }
-      for (const lead of segment.leads) {
+      campaign.notification.subject= campaign.description || "Campaign Alert";
+
+      for (const lead of segment.leads ) {
         const result = await this.sendEmail(
           username,
           lead.email,

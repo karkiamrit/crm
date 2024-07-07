@@ -47,7 +47,7 @@ export class NotesController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async findAll(@Query() query: any) {
     return this.notesService.findAll(query);
   }

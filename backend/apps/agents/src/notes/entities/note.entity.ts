@@ -7,8 +7,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { Leads } from '../../leads/entities/lead.entity';
-import { Customers } from '../../customers/entities/customer.entity';
+import { Tasks } from '../../tasks/entities/task.entity';
 
 @Entity('notes')
 export class Note extends AbstractEntity<Note> {
@@ -18,13 +17,13 @@ export class Note extends AbstractEntity<Note> {
   @Column()
   author: string;
 
-  @ManyToOne(() => Leads, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'leadId' })
-  lead: Leads;
+  @ManyToOne(() => Tasks, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'taskId' })
+  task: Tasks;
 
-  @ManyToOne(() => Customers, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'customerId' })
-  customer: Customers;
+  // @ManyToOne(() => Customers, { onDelete: 'CASCADE' })
+  // @JoinColumn({ name: 'customerId' })
+  // customer: Customers;
 
   @CreateDateColumn()
   createdAt: Date;

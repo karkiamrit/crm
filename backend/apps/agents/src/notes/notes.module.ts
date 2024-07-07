@@ -8,13 +8,13 @@ import { Note } from './entities/note.entity';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CustomersModule } from '../customers/customers.module';
+import { TasksModule } from '../tasks/tasks.module';
 
 @Module({
   imports: [
     DatabaseModule,
     DatabaseModule.forFeature([Note, NotesRepository]),
-    forwardRef(() => LeadsModule),
-    forwardRef(() => CustomersModule),
+    TasksModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: 'apps/agent/.env',

@@ -4,30 +4,24 @@ import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import { ExtendedFindOptions, User } from '@app/common';
 import { NotesRepository } from './notes.repository';
-import { LeadsService } from '../leads/leads.service';
 import { CustomersService } from '../customers/customers.service';
+import { TasksService } from '../tasks/tasks.service';
 
 @Injectable()
 export class NotesService {
   constructor(
     private readonly notesRepository: NotesRepository,
-    private readonly leadService: LeadsService,
-    private readonly customerService: CustomersService,
+    private readonly taskService: TasksService,
   ) {}
 
   async create(createNoteDto: CreateNoteDto, user: User) {
     try {
       const content = createNoteDto.content;
       const note = new Note({ content });
-      if (createNoteDto.leadId) {
-        const leadId = createNoteDto.leadId;
-        const lead = await this.leadService.getOne(leadId);
-        note.lead = lead;
-      }
-      if (createNoteDto.customerId) {
-        const customerId = createNoteDto.customerId;
-        const customer = await this.customerService.getOne(customerId);
-        note.customer = customer;
+      if (createNoteDto.taskId) {
+        const taskId = createNoteDto.taskId;
+        const task = await this.taskService.findOne(taskId);
+        note.task = task;
       }
       note.userId = user.id;
 
@@ -66,7 +60,7 @@ export class NotesService {
   }
 
   async findAll(options: ExtendedFindOptions<Note>) {
-    options.relations = ['lead'];
+    options.relations = ['task'];
     return this.notesRepository.findAll(options);
   }
 
