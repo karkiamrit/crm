@@ -33,7 +33,7 @@ export class TasksService {
     task.dueDate = createTaskDto.dueDate;
     task.taskDesc = createTaskDto.taskDesc;
     task.priority = createTaskDto.priority;
-    task.subTasks = createTaskDto.subTasks;
+    // task.subTasks = createTaskDto.subTasks;
     task.todoType = createTaskDto.todoType;
     task.reminderDate = createTaskDto.reminderDate;
     await this.leadsRepository.update(leadId,{updatedTime: new Date()});
@@ -62,7 +62,7 @@ export class TasksService {
     task.taskDesc = updateTaskDto.taskDesc || task.taskDesc;
     task.priority = updateTaskDto.priority || task.priority;
     task.status = updateTaskDto.status || task.status;
-    task.subTasks = updateTaskDto.subTasks || task.subTasks;
+    // task.subTasks = updateTaskDto.subTasks || task.subTasks;
     task.reminderDate = updateTaskDto.reminderDate || task.reminderDate;
     const updatedTask = await this.tasksRepository.findOneAndUpdate(
       { where: { id: task.id } },

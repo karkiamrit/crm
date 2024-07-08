@@ -68,5 +68,5 @@ export class CreateTaskDto {
 
   @IsOptional()
   @IsArray()
-  subTasks: string[];
+  comment: string[];
 }

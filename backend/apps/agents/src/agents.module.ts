@@ -20,6 +20,7 @@ import { InvoicesModule } from './invoices/invoices.module';
 import { TasksModule } from './tasks/tasks.module';
 import { EmailsModule } from './emails/emails.module';
 import { PhoneModule } from './phone/phone.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { PhoneModule } from './phone/phone.module';
     TasksModule,
     EmailsModule,
     PhoneModule,
+    CommentsModule
   ],
   controllers: [AgentsController],
   providers: [AgentsService, AgentsRepository],

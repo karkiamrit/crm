@@ -36,7 +36,7 @@ export class UpdateTaskDto {
 
   @IsOptional()
   @IsArray()
-  subTasks: string[];
+  comment: string[];
 
   @IsOptional()
   reminderDate?: Date;
@@ -48,4 +48,5 @@ export class UpdateTaskDto {
   // @IsOptional()
   // @IsNumber({},{message: 'LeadId must be a number'})
   // leadId?: number;
+  
 }

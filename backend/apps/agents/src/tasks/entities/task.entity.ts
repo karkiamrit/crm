@@ -33,7 +33,7 @@ export class Tasks extends AbstractEntity<Tasks> {
   taskDesc: string;
 
   @Column({type:'simple-array', nullable: true})
-  subTasks: string[]
+  comment: string[];
 
   @Column({ type: 'enum', enum: TaskStatus, default: TaskStatus.PENDING })
   status: TaskStatus;
