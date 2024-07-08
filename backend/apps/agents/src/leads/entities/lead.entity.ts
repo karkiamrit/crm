@@ -43,6 +43,9 @@ export class Leads extends AbstractEntity<Leads> {
   @Column({ unique: true })
   email: string;
 
+  @Column({ unique: true, type: 'simple-array' , nullable: true})
+  tags: string[];
+
   @Column()
   name: string;
 
@@ -51,6 +54,9 @@ export class Leads extends AbstractEntity<Leads> {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @Column({ nullable: true })
+  updatedTime: Date;
 
   @OneToMany(() => Tasks, (task) => task.lead)
   tasks: Tasks[];

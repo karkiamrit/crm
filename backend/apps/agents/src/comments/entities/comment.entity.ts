@@ -8,22 +8,23 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Tasks } from '../../tasks/entities/task.entity';
+import { Note } from '../../notes/entities/note.entity';
 
-@Entity('notes')
-export class Note extends AbstractEntity<Note> {
+@Entity('comments')
+export class Comment extends AbstractEntity<Comment> {
   @Column()
   userId: number;
 
   @Column()
   author: string;
 
-  @ManyToOne(() => Tasks, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Tasks, { onDelete: 'CASCADE', nullable: true})
   @JoinColumn({ name: 'taskId' })
   task: Tasks;
 
-  // @ManyToOne(() => Customers, { onDelete: 'CASCADE' })
-  // @JoinColumn({ name: 'customerId' })
-  // customer: Customers;
+  @ManyToOne(() => Note, { onDelete: 'CASCADE', nullable: true})
+  @JoinColumn({ name: 'noteId' })
+  subTask: Note;
 
   @CreateDateColumn()
   createdAt: Date;

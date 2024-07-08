@@ -1,6 +1,7 @@
-import { IsOptional, IsEnum, IsString, IsNumber } from 'class-validator';
+import { IsOptional, IsEnum, IsString, IsNumber, IsArray } from 'class-validator';
 import { Priority } from '../../shared/data';
 import { TaskStatus } from './enums/task-status.enum';
+import { ToDoType } from './enums/todo-type.enum';
 
 export class UpdateTaskDto {
   @IsOptional()
@@ -27,6 +28,19 @@ export class UpdateTaskDto {
   @IsOptional({ message: 'Priority is optional' })
   status?: TaskStatus;
 
+  @IsOptional()
+  @IsEnum(ToDoType, {
+    message: 'Task Type not matched',
+  })
+  todoType?: ToDoType;
+
+  @IsOptional()
+  @IsArray()
+  comment: string[];
+
+  @IsOptional()
+  reminderDate?: Date;
+
   // @IsOptional()
   // @IsNumber({},{message: 'Status must be a number'})
   // customerId?: number;
@@ -34,4 +48,5 @@ export class UpdateTaskDto {
   // @IsOptional()
   // @IsNumber({},{message: 'LeadId must be a number'})
   // leadId?: number;
+  
 }

@@ -1,12 +1,15 @@
 import { PartialType } from '@nestjs/swagger';
-import { CreateNoteDto } from './create-note.dto';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { CreateCommentDto } from './create-comment.dto';
 
-export class UpdateNoteDto extends PartialType(CreateNoteDto) {
+export class UpdateCommentDto extends PartialType(CreateCommentDto) {
   @IsOptional()
   @IsNumber()
   taskId: number;
 
+  @IsOptional()
+  @IsNumber({}, { message: 'Task Id must be a number' })
+  subTaskId?: number;
   // @IsOptional()
   // @IsNumber()
   // customerId: number;

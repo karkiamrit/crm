@@ -1,5 +1,4 @@
 import {
-  IsDate,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -82,4 +81,25 @@ export class CreateInvoiceDto {
   @IsOptional()
   @IsNumber({}, { message: 'lead Id should be a number' })
   leadId?: number;
+
+  @IsOptional()
+  @IsString({message: 'Profile Picture must be a string'})
+  image: string;
+
+  @IsOptional()
+  @IsString({ message: 'lead Address must be a string' })
+  leadAddress: string;
+
+  @IsOptional()
+  @IsString({ message: 'lead Country must be a string' })
+  leadCountry: string;
+
+  @IsOptional()
+  @IsString({ message: 'Sender Address must be a string' })
+  sendorAddress: string;
+
+  @IsOptional()
+  @IsString({ message: 'Sender Country must be a string' })
+  sendorCountry: string;
 }
+

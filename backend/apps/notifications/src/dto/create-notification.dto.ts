@@ -27,9 +27,10 @@ export class CreateNotificationsDto {
     description: 'The subject of the notification.',
     example: 'Notification Subject',
   })
-  @IsString()
+  @IsString() 
+  @IsOptional()
   subject: string;
-
+  
   @IsOptional()
   @IsString()
   json_content?: string;

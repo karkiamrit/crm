@@ -31,6 +31,42 @@ import { extname } from 'path';
 export class InvoicesController {
   constructor(private readonly invoicesService: InvoicesService) {}
 
+
+  @Post('/upload')
+  @UseGuards(JwtAuthGuard)
+  @Roles('Agent')
+  @ApiOperation({ summary: 'Upload Image' })
+  @ApiBearerAuth()
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads', // specify the path where the files should be saved
+        filename: (req, file, callback) => {
+          const name = Date.now() + extname(file.originalname); // generate a unique filename
+          callback(null, name);
+        },
+      }),
+      fileFilter: (req, file, callback) => {
+        // Only accept images
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif|webp)$/)) {
+          // Reject file
+          return callback(new Error('Only image files are allowed!'), false);
+        }
+        // Accept file
+        callback(null, true);
+      },
+      limits: { fileSize: 1024 * 1024 }, // Limit the file size to 1MB
+    }),
+  )
+  async upload(
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if(file){
+      return {path: file.path};
+    }
+    return {error: 'No file uploaded'};
+  }
+
   @Post()
   @UseGuards(JwtAuthGuard)
   @Roles('Agent')

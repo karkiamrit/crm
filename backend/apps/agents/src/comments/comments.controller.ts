@@ -9,23 +9,23 @@ import {
   Get,
   Query,
 } from '@nestjs/common';
-import { CreateNoteDto } from './dto/create-note.dto';
-import { UpdateNoteDto } from './dto/update-note.dto';
-import { NotesService } from './notes.service';
+import { CreateCommentDto } from './dto/create-comment.dto';
+import { UpdateCommentDto } from './dto/update-comment.dto';
+import { CommentsService } from './comments.service';
 import { CurrentUser, JwtAuthGuard, Roles, User } from '@app/common';
 
-@Controller('notes')
-export class NotesController {
-  constructor(private readonly notesService: NotesService) {}
+@Controller('comments')
+export class CommentsController {
+  constructor(private readonly commentsService: CommentsService) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
   @Roles('Agent')
   async create(
-    @Body() createNoteDto: CreateNoteDto,
+    @Body() createCommentDto: CreateCommentDto,
     @CurrentUser() user: User,
   ) {
-    return this.notesService.create(createNoteDto, user);
+    return this.commentsService.create(createCommentDto, user);
   }
 
   @Put(':id')
@@ -33,28 +33,28 @@ export class NotesController {
   @Roles('Agent')
   async update(
     @Param('id') id: number,
-    @Body() updateNoteDto: UpdateNoteDto,
+    @Body() updateCommentDto: UpdateCommentDto,
     @CurrentUser() user: User,
   ) {
-    return this.notesService.update(id, updateNoteDto, user);
+    return this.commentsService.update(id, updateCommentDto, user);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @Roles('Agent')
   async delete(@Param('id') id: number) {
-    return this.notesService.delete(id);
+    return this.commentsService.delete(id);
   }
 
   @Get()
   // @UseGuards(JwtAuthGuard)
   async findAll(@Query() query: any) {
-    return this.notesService.findAll(query);
+    return this.commentsService.findAll(query);
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   async getOne(@Param('id') id: number) {
-    return this.notesService.getOne(id);
+    return this.commentsService.getOne(id);
   }
 }

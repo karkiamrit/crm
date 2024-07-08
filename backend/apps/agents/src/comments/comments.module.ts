@@ -1,20 +1,21 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { NotesService } from './notes.service';
-import { NotesController } from './notes.controller';
-import { NotesRepository } from './notes.repository';
+import { CommentsService } from './comments.service';
+import { CommentsController } from './comments.controller';
+import { CommentsRepository } from './comments.repository';
 import { LeadsModule } from '../leads/leads.module';
 import { AUTH_SERVICE, DatabaseModule } from '@app/common';
-import { Note } from './entities/note.entity';
+import { Comment } from './entities/comment.entity';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { CustomersModule } from '../customers/customers.module';
 import { TasksModule } from '../tasks/tasks.module';
+import { NotesModule } from '../notes/notes.module';
 
 @Module({
   imports: [
     DatabaseModule,
-    DatabaseModule.forFeature([Note, NotesRepository]),
+    DatabaseModule.forFeature([Comment, CommentsRepository]),
     TasksModule,
+    NotesModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: 'apps/agent/.env',
@@ -33,8 +34,8 @@ import { TasksModule } from '../tasks/tasks.module';
       },
     ]),
   ],
-  controllers: [NotesController],
-  providers: [NotesService, NotesRepository],
-  exports: [NotesService],
+  controllers: [CommentsController],
+  providers: [CommentsService, CommentsRepository],
+  exports: [CommentsService],
 })
-export class NotesModule {}
+export class CommentsModule {}

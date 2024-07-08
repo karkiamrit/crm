@@ -40,7 +40,6 @@ export class LeadsService {
     } else {
       newSegment = Number(createLeadDto.segment);
     }
-
     const { revenuePotential, ...rest } = createLeadDto;
     // Convert CreateTimelineInputDTO[] to LeadTimeline[]
     let product: Product, service: Service, timelines: LeadTimeline[];
@@ -62,6 +61,7 @@ export class LeadsService {
     if (agent) {
       lead.agentId = agent.id;
     }
+    lead.updatedTime= new Date();
 
     let createdLead = await this.leadsRepository.create(lead);
     console.log(newSegment);
@@ -202,20 +202,15 @@ export class LeadsService {
     const changes = {};
 
     const attributes = [
-      'product',
-      'service',
       'address',
       'details',
       'status',
       'phone',
       'email',
       'name',
-      'priority',
-      'source',
-      'profilePicture',
       'revenuePotential',
     ];
-
+    lead.updatedTime = new Date();
     attributes.forEach((attribute) => {
       if (
         updateLeadsDto[attribute] !== undefined &&
@@ -225,21 +220,24 @@ export class LeadsService {
         hasChanges = true;
       }
     });
+    // await this.update(lead.id, {updatedTime: new Date()});
 
     if (hasChanges) {
       // Apply all changes in one go to the lead
       Object.assign(lead, changes);
-      await this.leadsRepository.create(lead); // Use save() instead of create()
+      
+      await this.leadsRepository.create(lead); 
 
       // Create and save timeline records
-      const timelines = Object.entries(changes).map(([attribute, value]) => {
+      const timelines = Object.entries(changes).map(async([attribute, value]) => {
         const timeline = new LeadTimeline({
           lead,
           attribute,
           value: value as string, // Cast the value to string
           // createdAt: new Date(),
         });
-        return this.leadsTimelineRepository.create(timeline); // Save the timeline to the database
+        const createdTimeline= await this.leadsTimelineRepository.create(timeline); // Save the timeline to the database
+        return createdTimeline;
       });
       await Promise.all(timelines);
       if ('status' in changes && changes.status === LeadsStatus.PAST_CLIENT) {
@@ -300,14 +298,13 @@ export class LeadsService {
   }
 
   async findAll(options: ExtendedFindOptions<Leads>) {
-    options.relations = ['product', 'service', 'timelines', 'segments'];
-
+    options.relations = ['segments','tasks'];
     const leads = await this.leadsRepository.findAll(options);
     return leads;
   }
 
   async findAllWithSegmentId(options: ExtendedFindOptions<Leads>, id: number) {
-    options.relations = ['product', 'service', 'timelines', 'segments'];
+    options.relations = ['product', 'segments'];
     options.where = {
       segments: {
         id: id,
@@ -385,6 +382,12 @@ export class LeadsService {
     );
     return updatedSegment;
   }
+
+  // async updateTime(id: number): Promise<Leads> {
+  //   const lead = await this.leadsRepository.findOne({ id });
+  //   lead.updatedTime = new Date();
+  //   return await this.leadsRepository.findOneAndUpdate({ where: { id } }, lead);
+  // }
 
   // async addDocuments(id: number, documents: string[]): Promise<Leads> {
   //   const lead = await this.leadsRepository.findOne({ id });

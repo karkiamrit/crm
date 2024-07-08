@@ -17,7 +17,7 @@ export class Notification extends AbstractEntity<Notification> {
   @Column({ nullable: true })
   json_content: string;
 
-  @Column()
+  @Column({nullable:true})
   subject: string;
 
   @Column({ nullable: true })
