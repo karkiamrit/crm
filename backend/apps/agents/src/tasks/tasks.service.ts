@@ -62,6 +62,7 @@ export class TasksService {
     task.taskDesc = updateTaskDto.taskDesc || task.taskDesc;
     task.priority = updateTaskDto.priority || task.priority;
     task.status = updateTaskDto.status || task.status;
+    task.todoType = updateTaskDto.todoType || task.todoType;
     // task.subTasks = updateTaskDto.subTasks || task.subTasks;
     task.reminderDate = updateTaskDto.reminderDate || task.reminderDate;
     const updatedTask = await this.tasksRepository.findOneAndUpdate(

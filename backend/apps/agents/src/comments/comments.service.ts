@@ -74,6 +74,7 @@ export class CommentsService {
   }
 
   async findAll(options: ExtendedFindOptions<Comment>) {
+    options.relations=['task','subTask']
     return this.commentsRepository.findAll(options);
   }
 
