@@ -62,7 +62,7 @@ export class TasksService {
     }
     return task;
   }
-    
+
 
   // async update(id: number, updateTaskDto: UpdateTaskDto): Promise<Tasks> {
   //   const task = await this.findOne(id);
@@ -125,10 +125,10 @@ export class TasksService {
         await this.leadsTimelineRepository.create(timeline);
       }
     }
-  
+    const updateTask= new Tasks({ ...task, ...updateTaskDto });
     const updatedTask = await this.tasksRepository.findOneAndUpdate(
       { where: { id: task.id } },
-      task,
+      updateTask,
     );
     if (updatedTask && task.lead) {
       await this.leadsService.update(task.lead.id, { updatedTime: new Date() },user);
