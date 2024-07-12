@@ -17,6 +17,12 @@ export class Timeline extends AbstractEntity<Timeline> {
   @Column()
   value: string;
 
+  @Column({nullable:true})
+  createdBy: string;
+
+  @Column({nullable:true})
+  previousValue: string;
+  
   @CreateDateColumn()
   createdAt: Date;
 

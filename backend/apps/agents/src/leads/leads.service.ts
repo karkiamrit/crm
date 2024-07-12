@@ -42,7 +42,7 @@ export class LeadsService {
     }
     const { revenuePotential, ...rest } = createLeadDto;
     // Convert CreateTimelineInputDTO[] to LeadTimeline[]
-    let product: Product, service: Service, timelines: LeadTimeline[];
+    let product: Product, service: Service;
     // Convert CreateProductInputDTO to Product
     if (createLeadDto.product) {
       product = new Product(createLeadDto.product);
@@ -191,7 +191,7 @@ export class LeadsService {
 
   //   return leadToReturn;
   // }
-  async update(id: number, updateLeadsDto: UpdateLeadDto) {
+  async update(id: number, updateLeadsDto: UpdateLeadDto, user: User) {
     const lead = await this.leadsRepository.findOne({ id });
     if (!lead) {
       throw new NotFoundException(`Lead with ID ${id} not found`);
@@ -224,21 +224,21 @@ export class LeadsService {
 
     if (hasChanges) {
       // Apply all changes in one go to the lead
-      Object.assign(lead, changes);
       
       await this.leadsRepository.create(lead); 
-
       // Create and save timeline records
       const timelines = Object.entries(changes).map(async([attribute, value]) => {
         const timeline = new LeadTimeline({
           lead,
           attribute,
           value: value as string, // Cast the value to string
-          // createdAt: new Date(),
+          previousValue: lead[attribute] as string, // Cast the previous value to string,
+          createdBy: user.email
         });
         const createdTimeline= await this.leadsTimelineRepository.create(timeline); // Save the timeline to the database
         return createdTimeline;
       });
+      Object.assign(lead, changes);
       await Promise.all(timelines);
       if ('status' in changes && changes.status === LeadsStatus.PAST_CLIENT) {
         await this.handleLeadConversion(lead); // Abstract the lead completion logic into a separate method.
@@ -253,6 +253,8 @@ export class LeadsService {
     };
     return updatedLead;
   }
+
+
   private async handleLeadConversion(lead: Leads) {
     // Create a customer from the lead information
     await this.leadsRepository.findOneAndDelete({ id: lead.id });
@@ -341,6 +343,11 @@ export class LeadsService {
         lead: {
           id,
         },
+      },
+      skip: 0,
+      take:10,
+      order: {
+        createdAt: 'DESC',
       },
       relations: ['lead'],
     });

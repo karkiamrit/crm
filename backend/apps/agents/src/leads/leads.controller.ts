@@ -130,8 +130,8 @@ export class LeadsController {
     description: 'The id of the lead to update',
   })
   @ApiBody({ type: UpdateLeadDto })
-  async update(@Param('id') id: number, @Body() updateLeadsDto: UpdateLeadDto) {
-    return this.leadsService.update(id, updateLeadsDto);
+  async update(@Param('id') id: number, @Body() updateLeadsDto: UpdateLeadDto, @CurrentUser() user: User){
+    return this.leadsService.update(id, updateLeadsDto, user);
   }
 
   @Delete(':id')
@@ -254,15 +254,6 @@ export class LeadsController {
   @ApiBearerAuth()
   async getLeadTimeline(@Param('id') id: number) {
     return this.leadsService.leadsTimeline(id);
-  }
-
-  @Get('customertimeline/:id')
-  @UseGuards(JwtAuthGuard)
-  @Roles('Agent')
-  @ApiOperation({ summary: 'Get lead timeline' })
-  @ApiBearerAuth()
-  async getCustomerTimeline(@Param('id') id: number) {
-    return this.leadsService.customersTimeline(id);
   }
 
   // @Delete(':id/delete-document/:filename')

@@ -39,8 +39,8 @@ export class TasksController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
-  @Roles('Admin')
+  // @UseGuards(JwtAuthGuard)
+  // @Roles('Admin')
   @ApiOperation({ summary: 'Get all tasks' })
   @ApiBearerAuth()
   async findAll(@Query() query: any) {
@@ -72,8 +72,8 @@ export class TasksController {
     description: 'The id of the task to update',
   })
   @ApiBody({ type: UpdateTaskDto })
-  async update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
-    return this.tasksService.update(+id, updateTaskDto);
+  async update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto, @CurrentUser() user: User){
+    return this.tasksService.update(+id, updateTaskDto,user);
   }
 
   @Delete(':id')

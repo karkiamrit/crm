@@ -9,11 +9,13 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { LeadsModule } from '../leads/leads.module';
 import { AgentsModule } from '../agents.module';
 import { CustomersModule } from '../customers/customers.module';
+import { LeadTimelineRepository } from '../shared/objects/timelines/leads.timelines.repository';
+import { LeadTimeline } from '../shared/objects/timelines/timelines.entity';
 
 @Module({
   imports: [
     DatabaseModule,
-    DatabaseModule.forFeature([Tasks]),
+    DatabaseModule.forFeature([Tasks, LeadTimeline]),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: 'apps/agent/.env',
@@ -36,7 +38,7 @@ import { CustomersModule } from '../customers/customers.module';
     forwardRef(() => CustomersModule),
   ],
   controllers: [TasksController],
-  providers: [TasksService, TasksRepository],
+  providers: [TasksService, TasksRepository, LeadTimelineRepository],
   exports: [TasksService, TasksRepository],
 })
 export class TasksModule {}
