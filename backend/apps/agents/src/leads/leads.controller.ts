@@ -358,12 +358,13 @@ export class LeadsController {
       });
     }
     const workbook = new Workbook();
+    const normalizeHeader = (header: string) => header.toLowerCase();
 
     await workbook.csv.readFile(file.path);
 
     const worksheet = workbook.getWorksheet(1);
     const requiredHeaders = ['phone', 'email', 'name'].map(
-      this.normalizeHeader,
+      normalizeHeader,
     );
     const optionalHeaders = [
       'address',
@@ -371,8 +372,8 @@ export class LeadsController {
       'status',
       'type',
       'source',
-    ].map(this.normalizeHeader);
-    const headers = (worksheet.getRow(1).values as string[]).slice(1);
+    ].map(normalizeHeader);
+    const headers = (worksheet.getRow(1).values as string[]).map(normalizeHeader).slice(1);
     const missingHeaders = requiredHeaders.filter((h) => !headers.includes(h));
     if (missingHeaders.length > 0) {
       throw new NotFoundException(
@@ -394,6 +395,7 @@ export class LeadsController {
         'email',
         'name',
         'source',
+        'updatedTime'
       ].forEach((header) => {
         const index = headers.indexOf(header);
         if (index !== -1) {
@@ -411,6 +413,7 @@ export class LeadsController {
       if (segment) {
         lead['bucket'] = segment;
       }
+      lead['updatedTime']= new Date();
       leads.push(lead);
     });
     try {
@@ -425,13 +428,13 @@ export class LeadsController {
     return header.toLowerCase().trim();
   }
 
-  private normalizeEnumValue(value: any, enumObject: any): string {
-    const normalizedValue = String(value).toUpperCase().trim();
-    const matchedEnumKey = Object.keys(enumObject).find(
-      (key) => key.substring(0, 3) === normalizedValue.substring(0, 3),
-    );
-    return matchedEnumKey ? enumObject[matchedEnumKey] : normalizedValue;
-  }
+  // private normalizeEnumValue(value: any, enumObject: any): string {
+  //   const normalizedValue = String(value).toUpperCase().trim();
+  //   const matchedEnumKey = Object.keys(enumObject).find(
+  //     (key) => key.substring(0, 3) === normalizedValue.substring(0, 3),
+  //   );
+  //   return matchedEnumKey ? enumObject[matchedEnumKey] : normalizedValue;
+  // }
 
   @EventPattern('get_lead_by_id')
   async getCustomerName(data: { id: number }) {
