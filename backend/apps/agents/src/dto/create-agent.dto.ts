@@ -33,5 +33,6 @@ export class CreateAgentsDto {
 }
 
 export class CreateAgentsDtoWithDocuments extends CreateAgentsDto {
+  @ApiProperty({ type: [String], description: 'The documents associated with the agent.', example: ['Document1', 'Document2'] })
   documents: string[];
 }

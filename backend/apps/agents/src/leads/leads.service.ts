@@ -300,7 +300,7 @@ export class LeadsService {
   }
 
   async findAll(options: ExtendedFindOptions<Leads>) {
-    options.relations = ['segments','tasks'];
+    options.relations = [];
     const leads = await this.leadsRepository.findAll(options);
     return leads;
   }

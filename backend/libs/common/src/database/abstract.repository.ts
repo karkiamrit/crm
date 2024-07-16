@@ -461,27 +461,9 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
     return result;
   }
 
-  // async findOne(where: FindOptionsWhere<T>): Promise<T> {
-  //   return await this.entityRepository.findOne({ where });
-  // }
   async findOne(where: FindOptionsWhere<T>, relations?: string[]): Promise<T> {
     return await this.entityRepository.findOne({ where, relations });
   }
-
-  // async findOneAndUpdate(
-  //   where: FindOptionsWhere<T>,
-  //   partialEntity: QueryDeepPartialEntity<T>, //subset of properties that exist on our entity that we want to update
-  // ) {
-  //   const updateResult = await this.entityRepository.update(
-  //     where,
-  //     partialEntity,
-  //   );
-  //   if (!updateResult.affected) {
-  //     this.logger.warn('Entity not found with where', where);
-  //     throw new NotFoundException('Entity not found ');
-  //   }
-  //   return this.findOne(where);
-  // }
 
   async findOneAndUpdate(
     where: FindOneOptions<T>,
@@ -544,10 +526,6 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
       return { data, total }; // Return an object with the properties 'data' and 'total'
     }
 
-    // // If where is not a function, use the existing implementation
-    // const validProperties = this.entityRepository.metadata.columns.map(
-    //   (column) => column.propertyName,
-    // );
 
     const validProperties = [
       ...this.entityRepository.metadata.columns.map(
@@ -557,14 +535,7 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
         (relation) => relation.propertyName,
       ),
     ];
-
-    // const where = Object.keys(options).reduce((conditions, key) => {
-    //   if (validProperties.includes(key) && key !== 'range' && key !== 'order') {
-    //     conditions[key] = options[key];
-    //   }
-    //   return conditions;
-    // }, {} as FindOptionsWhere<T>);
-
+    
     const where = Object.keys(options).reduce((conditions, key) => {
       if (key === 'where') {
         Object.keys(options[key]).forEach((nestedKey) => {

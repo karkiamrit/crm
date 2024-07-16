@@ -29,6 +29,7 @@ import {
   ApiParam,
   ApiBody,
   ApiResponse,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { UpdateLeadDto } from './dto/update-lead.dto';
 import { Leads } from './entities/lead.entity';
@@ -40,6 +41,7 @@ import { Agent } from '../entities/agent.entity';
 import { SegmentsRepository } from '../segments/segments.repository';
 import { Segment } from '../segments/entities/segment.entity';
 import { EventPattern } from '@nestjs/microservices';
+import { RangeCondition } from '../../../../libs/common/src/database/abstract.repository';
 
 @Controller('leads')
 export class LeadsController {
@@ -130,7 +132,11 @@ export class LeadsController {
     description: 'The id of the lead to update',
   })
   @ApiBody({ type: UpdateLeadDto })
-  async update(@Param('id') id: number, @Body() updateLeadsDto: UpdateLeadDto, @CurrentUser() user: User){
+  async update(
+    @Param('id') id: number,
+    @Body() updateLeadsDto: UpdateLeadDto,
+    @CurrentUser() user: User,
+  ) {
     return this.leadsService.update(id, updateLeadsDto, user);
   }
 
@@ -169,6 +175,30 @@ export class LeadsController {
   // @Roles('Admin')
   @ApiOperation({ summary: 'Get all leads' })
   @ApiBearerAuth()
+  // @ApiQuery({
+  //   name: 'where',
+  //   required: false,
+  //   style: 'deepObject',
+  //   explode: true,
+  //   description: 'Advanced filtering criteria',
+  //   example: { '[_operator]': 'LIKE', '[_value]': 'raj' },
+  // })
+  @ApiQuery({
+    name: 'range',
+    required: false,
+    description: 'Range for filtering',
+    example: [{ property: 'name', lower: 'a', upper: 'b' }],
+  })
+  @ApiQuery({
+    name: 'query',
+    required: false,
+    description: 'Additional query parameters',
+  })
+  @ApiQuery({
+    name: 'whereSelection',
+    required: false,
+    description: 'Selection criteria: "and" or "or" for advance where filter',
+  })
   async findAll(@Query() query: any) {
     return await this.leadsService.findAll(query);
   }
@@ -291,11 +321,6 @@ export class LeadsController {
       { header: 'Revenue Potential', key: 'revenuePotential', width: 15 },
       { header: 'Created At', key: 'createdAt', width: 20 },
       { header: 'Source', key: 'source', width: 15 },
-      // { header: 'Documents', key: 'documents', width: 15 },
-      // { header: 'Agent Id', key: 'agentId', width: 10 },
-      // { header: 'Product Id', key: 'productId', width: 10 },
-      // { header: 'Service Id', key: 'serviceId', width: 10 },
-      // { header: 'Segments', key: 'segments', width: 30 },
     ];
 
     // Add rows to the worksheet
@@ -363,9 +388,7 @@ export class LeadsController {
     await workbook.csv.readFile(file.path);
 
     const worksheet = workbook.getWorksheet(1);
-    const requiredHeaders = ['phone', 'email', 'name'].map(
-      normalizeHeader,
-    );
+    const requiredHeaders = ['phone', 'email', 'name'].map(normalizeHeader);
     const optionalHeaders = [
       'address',
       'details',
@@ -373,7 +396,9 @@ export class LeadsController {
       'type',
       'source',
     ].map(normalizeHeader);
-    const headers = (worksheet.getRow(1).values as string[]).map(normalizeHeader).slice(1);
+    const headers = (worksheet.getRow(1).values as string[])
+      .map(normalizeHeader)
+      .slice(1);
     const missingHeaders = requiredHeaders.filter((h) => !headers.includes(h));
     if (missingHeaders.length > 0) {
       throw new NotFoundException(
@@ -395,7 +420,7 @@ export class LeadsController {
         'email',
         'name',
         'source',
-        'updatedTime'
+        'updatedTime',
       ].forEach((header) => {
         const index = headers.indexOf(header);
         if (index !== -1) {
@@ -413,7 +438,7 @@ export class LeadsController {
       if (segment) {
         lead['bucket'] = segment;
       }
-      lead['updatedTime']= new Date();
+      lead['updatedTime'] = new Date();
       leads.push(lead);
     });
     try {
@@ -424,9 +449,10 @@ export class LeadsController {
       throw new InternalServerErrorException('Error creating leads');
     }
   }
-  private normalizeHeader(header: string): string {
-    return header.toLowerCase().trim();
-  }
+
+  // private normalizeHeader(header: string): string {
+  //   return header.toLowerCase().trim();
+  // }
 
   // private normalizeEnumValue(value: any, enumObject: any): string {
   //   const normalizedValue = String(value).toUpperCase().trim();

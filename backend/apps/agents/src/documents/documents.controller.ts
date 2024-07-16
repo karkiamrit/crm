@@ -20,7 +20,9 @@ import { DocumentsService } from './documents.service';
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { UpdateDocumentDto } from './dto/update-document.dto';
 import { CurrentUser, JwtAuthGuard, Roles, User } from '@app/common';
+import { ApiBody, ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 
+@ApiTags('documents')
 @Controller('documents')
 export class DocumentsController {
   constructor(private readonly documentsService: DocumentsService) {}
@@ -31,9 +33,9 @@ export class DocumentsController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: './uploads', // specify the path where the files should be saved
+        destination: './uploads',
         filename: (req, file, callback) => {
-          const name = Date.now() + extname(file.originalname); // generate a unique filename
+          const name = Date.now() + extname(file.originalname);
           callback(null, name);
         },
       }),
@@ -45,11 +47,14 @@ export class DocumentsController {
         ) {
           return callback(new Error('Only document files are allowed!'), false);
         }
-        // Accept file
         callback(null, true);
       },
     }),
   )
+  @ApiOperation({ summary: 'Create a new document' })
+  @ApiBody({ type: CreateDocumentDto })
+  @ApiResponse({ status: 201, description: 'The document has been successfully created.'})
+  @ApiResponse({ status: 403, description: 'Forbidden.'})
   create(
     @UploadedFile() file: Express.Multer.File,
     @Body() createDocumentDto: CreateDocumentDto,
@@ -62,6 +67,9 @@ export class DocumentsController {
   @Get()
   @UseGuards(JwtAuthGuard)
   @Roles('Agent')
+  @ApiOperation({ summary: 'Find all documents' })
+  @ApiResponse({ status: 200, description: 'List of all documents.'})
+  @ApiResponse({ status: 403, description: 'Forbidden.'})
   findAll(@Query() query: any) {
     return this.documentsService.findAll(query);
   }
@@ -69,6 +77,9 @@ export class DocumentsController {
   @Get('lead/:id')
   @UseGuards(JwtAuthGuard)
   @Roles('Agent')
+  @ApiOperation({ summary: 'Find all documents by lead ID' })
+  @ApiResponse({ status: 200, description: 'List of all documents for a specific lead.'})
+  @ApiResponse({ status: 403, description: 'Forbidden.'})
   findAllByLeadId(@Query() query: any, @Param('id') id: number) {
     return this.documentsService.findAllByLeadId(query, id);
   }
@@ -76,6 +87,9 @@ export class DocumentsController {
   @Get('customer/:id')
   @UseGuards(JwtAuthGuard)
   @Roles('Agent')
+  @ApiOperation({ summary: 'Find all documents by customer ID' })
+  @ApiResponse({ status: 200, description: 'List of all documents for a specific customer.'})
+  @ApiResponse({ status: 403, description: 'Forbidden.'})
   findAllByCustomerId(@Query() query: any, @Param('id') id: number) {
     return this.documentsService.findAllByCustomerId(query, id);
   }
@@ -83,6 +97,9 @@ export class DocumentsController {
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @Roles('Agent')
+  @ApiOperation({ summary: 'Find one document by ID' })
+  @ApiResponse({ status: 200, description: 'The document with the matching ID.'})
+  @ApiResponse({ status: 403, description: 'Forbidden.'})
   findOne(@Param('id') id: string) {
     return this.documentsService.getOne(+id);
   }
@@ -99,6 +116,10 @@ export class DocumentsController {
       }),
     }),
   )
+  @ApiOperation({ summary: 'Update a document' })
+  @ApiBody({ type: UpdateDocumentDto })
+  @ApiResponse({ status: 200, description: 'The document has been successfully updated.'})
+  @ApiResponse({ status: 403, description: 'Forbidden.'})
   update(
     @Param('id') id: string,
     @UploadedFile() documentFile: Express.Multer.File,
@@ -114,45 +135,11 @@ export class DocumentsController {
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @Roles('Agent')
+  @ApiOperation({ summary: 'Delete a document' })
+  @ApiResponse({ status: 200, description: 'The document has been successfully deleted.'})
+  @ApiResponse({ status: 403, description: 'Forbidden.'})
   remove(@Param('id') id: string) {
     return this.documentsService.remove(+id);
   }
 
-  //only for test of notification
-  @Post('webhook')
-  async handleWebhook(
-    @Body('mandrill_events') mandrillEvents: any[],
-  ): Promise<string> {
-    try {
-      // Process the webhook data here...
-      for (const event of mandrillEvents) {
-        console.log(event);
-        // Process each event...
-      }
-
-      // If everything is successful, return a success message
-      return 'Webhook received!';
-    } catch (error) {
-      console.error(`Failed to process webhook: ${error}`);
-      throw new HttpException(
-        'Failed to process webhook',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-  // @Post(':id/append')
-  // @UseInterceptors(
-  //   FileInterceptor('documentFile', {
-  //     storage: diskStorage({
-  //       destination: './uploads',
-  //       filename: (req, file, callback) => {
-  //         const name = Date.now() + extname(file.originalname);
-  //         callback(null, name);
-  //       },
-  //     }),
-  //   }),
-  // )
-  // append(@Param('id') id: string, @UploadedFile() documentFile: Express.Multer.File) {
-  //   return this.documentsService.append(+id, documentFile.path);
-  // }
 }

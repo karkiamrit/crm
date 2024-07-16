@@ -38,6 +38,13 @@ export class TasksService {
     // task.subTasks = createTaskDto.subTasks;
     task.todoType = createTaskDto.todoType;
     task.reminderDate = createTaskDto.reminderDate;
+    if(createTaskDto.startDate){
+      task.startDate = createTaskDto.startDate;
+    }
+    else{
+      task.startDate = createTaskDto.dueDate;
+
+    }
     const timeline = new LeadTimeline({
       lead: task.lead,
       attribute: 'task',
@@ -91,6 +98,7 @@ export class TasksService {
     const properties = [
       'name',
       'dueDate',
+      'startDate',
       'taskDesc',
       'priority',
       'status',
@@ -102,7 +110,7 @@ export class TasksService {
       const newValue = updateTaskDto[property];
       const oldValue = task[property];
     
-      if (newValue && (property === 'dueDate' || property === 'reminderDate')) {
+      if (newValue && (property === 'dueDate' || property === 'reminderDate' || property === 'startDate')) {
         // Convert dates to ISO strings before comparing
         if (new Date(newValue).toISOString() !== new Date(oldValue).toISOString()) {
           // Dates are different, create timeline
