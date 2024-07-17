@@ -29,7 +29,6 @@ export class LeadsService {
     private readonly customerTimelineRepository: CustomerTimelineRepository,
     private readonly customerService: CustomersService,
     private readonly leadsTimelineRepository: LeadTimelineRepository,
-
     private readonly segmentsRepository: SegmentsRepository,
   ) {}
 
@@ -305,11 +304,22 @@ export class LeadsService {
     return this.leadsRepository.findOneAndDelete({ id });
   }
 
-  async findAll(options: ExtendedFindOptions<Leads>) {
+  async findAllWithoutTimeline(options: ExtendedFindOptions<Leads>) {
     options.relations = [];
     const leads = await this.leadsRepository.findAll(options);
     return leads;
   }
+
+  async findAll(options: ExtendedFindOptions<Leads>) {
+    options.relations = [];
+    const leads = await this.leadsRepository.findAll(options);
+    for (let lead of leads.data) {
+        const id = lead.id;
+        const latestActivity = await this.leadsTimelineRepository.findRecent({lead: {id: id}}, "createdAt");
+        (lead as any).latestActivity = latestActivity;
+    }
+    return leads;
+}
 
   async findAllWithSegmentId(options: ExtendedFindOptions<Leads>, id: number) {
     options.relations = ['product', 'segments'];

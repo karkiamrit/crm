@@ -405,6 +405,7 @@ import {
   DeepPartial,
   EntityManager,
   FindOneOptions,
+  FindOptionsOrder,
   FindOptionsWhere,
   Repository,
   SelectQueryBuilder,
@@ -464,7 +465,19 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
   async findOne(where: FindOptionsWhere<T>, relations?: string[]): Promise<T> {
     return await this.entityRepository.findOne({ where, relations });
   }
-
+  async findRecent(
+    where: FindOptionsWhere<T>,
+    orderBy: keyof T,
+    relations?: string[],
+  ): Promise<T> {
+    return await this.entityRepository.findOne({
+      where,
+      relations,
+      order: {
+        [orderBy as keyof T]: 'DESC',
+      } as FindOptionsOrder<T>,
+    });
+  }
   async findOneAndUpdate(
     where: FindOneOptions<T>,
     partialEntity: QueryDeepPartialEntity<T>,
@@ -526,7 +539,6 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
       return { data, total }; // Return an object with the properties 'data' and 'total'
     }
 
-
     const validProperties = [
       ...this.entityRepository.metadata.columns.map(
         (column) => column.propertyName,
@@ -535,7 +547,7 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
         (relation) => relation.propertyName,
       ),
     ];
-    
+
     const where = Object.keys(options).reduce((conditions, key) => {
       if (key === 'where') {
         Object.keys(options[key]).forEach((nestedKey) => {
@@ -632,16 +644,16 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
           } else if (operator === 'LIKE') {
             condition = `entity.${key} LIKE :${key}`;
             val = `%${val}%`;
-          }
-          else {
+          } else {
             condition = `entity.${key} ${operator} :${key}`;
           }
 
           const parameters = { [key]: val };
           index === 0
             ? qb.where(condition, parameters)
-            : options.whereSelection === 'or' ? qb.orWhere(condition, parameters) : qb.andWhere(condition, parameters);
-   
+            : options.whereSelection === 'or'
+              ? qb.orWhere(condition, parameters)
+              : qb.andWhere(condition, parameters);
         } else {
           // Treat enum properties as strings
           const propertyType = this.entityRepository.metadata.columns.find(
@@ -653,8 +665,7 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
             index === 0
               ? qb.where(condition, parameters)
               : qb.andWhere(condition, parameters);
-          } 
-          else {
+          } else {
             let val = value;
             let condition: any;
             let parameters: any;
@@ -675,7 +686,6 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
               ? qb.where(condition, parameters)
               : qb.andWhere(condition, parameters);
           }
-         
         }
       } else {
         // If the property is a relation

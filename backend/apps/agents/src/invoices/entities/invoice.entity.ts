@@ -29,16 +29,16 @@ export class Invoice extends AbstractEntity<Invoice> {
   @Column({ nullable: true })
   notes: string;
 
-  @Column({ type: 'float' })
+  @Column({ type: 'float',nullable:true })
   subTotal: number;
 
-  @Column({ type: 'float' })
+  @Column({ type: 'float', nullable:true })
   tax: number;
 
-  @Column({ default: InvoiceStatus.PENDING, type: 'enum', enum: InvoiceStatus })
+  @Column({ default: InvoiceStatus.PENDING, type: 'enum', enum: InvoiceStatus , nullable:true})
   status: InvoiceStatus;
 
-  @Column({ type: 'float' })
+  @Column({ type: 'float', nullable:true })
   total: number;
 
   @Column({ nullable: true, type: 'float' })
@@ -47,13 +47,13 @@ export class Invoice extends AbstractEntity<Invoice> {
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column()
+  @Column({nullable:true})
   dueDate: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Column()
+  @Column({nullable:true})
   remarks: string;
 
   @ManyToOne(() => Agent, { eager: true, onDelete: 'CASCADE', nullable: true })
