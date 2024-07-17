@@ -61,7 +61,7 @@ export class LeadsService {
     if (agent) {
       lead.agentId = agent.id;
     }
-    lead.updatedTime= new Date();
+    lead.updatedTime = new Date();
 
     let createdLead = await this.leadsRepository.create(lead);
     console.log(newSegment);
@@ -224,20 +224,22 @@ export class LeadsService {
 
     if (hasChanges) {
       // Apply all changes in one go to the lead
-      
-      await this.leadsRepository.create(lead); 
+
       // Create and save timeline records
-      const timelines = Object.entries(changes).map(async([attribute, value]) => {
-        const timeline = new LeadTimeline({
-          lead,
-          attribute,
-          value: value as string, // Cast the value to string
-          previousValue: lead[attribute] as string, // Cast the previous value to string,
-          createdBy: user.email
-        });
-        const createdTimeline= await this.leadsTimelineRepository.create(timeline); // Save the timeline to the database
-        return createdTimeline;
-      });
+      const timelines = Object.entries(changes).map(
+        async ([attribute, value]) => {
+          const timeline = new LeadTimeline({
+            lead,
+            attribute,
+            value: value as string, // Cast the value to string
+            previousValue: lead[attribute] as string, // Cast the previous value to string,
+            createdBy: user.email,
+          });
+          const createdTimeline =
+            await this.leadsTimelineRepository.create(timeline); // Save the timeline to the database
+          return createdTimeline;
+        },
+      );
       Object.assign(lead, changes);
       await Promise.all(timelines);
       if ('status' in changes && changes.status === LeadsStatus.PAST_CLIENT) {
@@ -247,13 +249,17 @@ export class LeadsService {
     }
 
     // Prepare and return the updated lead information
+    await this.leadsRepository.findOneAndUpdate(
+      { where: { id: lead.id } },
+      lead,
+    );
+
     const updatedLead = {
       ...lead,
       timelines: lead.timelines.map(({ lead, ...rest }) => rest),
     };
     return updatedLead;
   }
-
 
   private async handleLeadConversion(lead: Leads) {
     // Create a customer from the lead information
@@ -345,7 +351,7 @@ export class LeadsService {
         },
       },
       skip: 0,
-      take:10,
+      take: 10,
       order: {
         createdAt: 'DESC',
       },

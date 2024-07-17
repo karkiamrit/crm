@@ -15,3 +15,4 @@ http://localhost:8006/leads?where[id][_operator]=<&where[id][_value]=10
 You can replace `<` with any operator such as `<`, `>`, `LIKE`, `<=`, `>=`, etc.
 
 Range based filter available in swagger api lead/get documentation
+
