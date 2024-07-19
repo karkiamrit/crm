@@ -1,5 +1,6 @@
 import {
   Body,
+  ConflictException,
   Controller,
   Delete,
   Get,
@@ -95,7 +96,7 @@ export class LeadsController {
     };
 
     if (await this.leadsService.findOne(createLeadsDto.email)) {
-      throw new InternalServerErrorException('Lead with email already exists');
+      throw new ConflictException('A lead with this email already exists');
     }
     const { ...createLeadsDtoWithDocuments } = createLeadsDtoSeperated;
     if (
@@ -119,6 +120,19 @@ export class LeadsController {
       user,
       agent,
     );
+  }
+
+  @Post('dolphy/create')
+  @ApiOperation({ summary: 'Create a new lead' })
+  @ApiBearerAuth()
+  @ApiBody({ type: CreateLeadDto })
+  async dolphyCreate(
+    @Body() createLeadsDto: CreateLeadDto,
+  ) {
+    if (await this.leadsService.findOne(createLeadsDto.email)) {
+      return null;
+    }
+    return await this.leadsService.create(createLeadsDto);
   }
 
   @Put(':id')

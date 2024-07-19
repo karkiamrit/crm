@@ -7,7 +7,6 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AgentsModule } from '../agents.module';
 import { CustomerTimeline } from '../shared/objects/timelines/timelines.entity';
 import { Product } from '../shared/objects/products/products.entity';
-import { Service } from '../shared/objects/services/services.entity';
 import { Customers } from './entities/customer.entity';
 import { CustomerTimelineRepository } from '../shared/objects/timelines/customers.timelines.repository';
 import { CustomersController } from './customers.controller';
@@ -26,7 +25,6 @@ import { SegmentsModule } from '../segments/segments.module';
       Customers,
       CustomerTimeline,
       Product,
-      Service,
       CustomerTimelineRepository,
     ]),
     ConfigModule.forRoot({

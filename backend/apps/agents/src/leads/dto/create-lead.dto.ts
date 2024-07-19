@@ -41,7 +41,7 @@ export class CreateLeadDto {
   type?: LeadType;
 
   @ApiProperty({ description: 'The phone number of the lead' })
-  @IsNotEmpty({ message: 'Phone number is required' })
+  @IsOptional({ message: 'Phone number is required' })
   @IsString({ message: 'Phone number must be string' })
   phone: string;
 

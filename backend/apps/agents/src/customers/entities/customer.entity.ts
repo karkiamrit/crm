@@ -12,9 +12,7 @@ import {
 } from 'typeorm';
 import { CustomerTimeline } from '../../shared/objects/timelines/timelines.entity';
 import { Product } from '../../shared/objects/products/products.entity';
-import { Service } from '../../shared/objects/services/services.entity';
 import { LeadType } from '../../shared/data';
-import { Invoice } from '../../invoices/entities/invoice.entity';
 import { Document } from '../../documents/entities/document.entity';
 import { Tasks } from '../../tasks/entities/task.entity';
 import { Segment } from '../../segments/entities/segment.entity';
@@ -57,10 +55,6 @@ export class Customers extends AbstractEntity<Customers> {
 
   @OneToMany(() => Tasks, (task) => task.customer, { nullable: true })
   tasks: Tasks[];
-
-  @OneToOne(() => Service, { eager: true, nullable: true, cascade: true })
-  @JoinColumn({ name: 'serviceId' })
-  service: Service;
 
   @OneToMany(() => Document, (document) => document.customer, {
     nullable: true,

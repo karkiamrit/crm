@@ -21,6 +21,7 @@ import { TasksModule } from './tasks/tasks.module';
 import { EmailsModule } from './emails/emails.module';
 import { PhoneModule } from './phone/phone.module';
 import { CommentsModule } from './comments/comments.module';
+import { ServicesModule } from './services/services.module';
 
 @Module({
   imports: [
@@ -61,6 +62,7 @@ import { CommentsModule } from './comments/comments.module';
     forwardRef(() => NotesModule),
     forwardRef(() => CustomersModule),
     forwardRef(() => SegmentsModule),
+    ServicesModule,
     DocumentsModule,
     InvoicesModule,
     TasksModule,

@@ -61,7 +61,6 @@ import {
   LeadTimeline,
 } from '../shared/objects/timelines/timelines.entity';
 import { Product } from '../shared/objects/products/products.entity';
-import { Service } from '../shared/objects/services/services.entity';
 import { LeadTimelineRepository } from '../shared/objects/timelines/leads.timelines.repository';
 import { CustomerTimelineRepository } from '../shared/objects/timelines/customers.timelines.repository';
 import { CustomersModule } from '../customers/customers.module';
@@ -77,7 +76,6 @@ import { SegmentsModule } from '../segments/segments.module';
       Leads,
       LeadTimeline,
       Product,
-      Service,
       CustomerTimeline,
     ]),
     TimelineRepositoryModule,

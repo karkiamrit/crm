@@ -11,7 +11,6 @@ import {
 } from 'typeorm';
 import { LeadTimeline } from '../../shared/objects/timelines/timelines.entity';
 import { Product } from '../../shared/objects/products/products.entity';
-import { Service } from '../../shared/objects/services/services.entity';
 import { Segment } from '../../segments/entities/segment.entity';
 import { Document } from '../../documents/entities/document.entity';
 import { LeadsStatus, LeadType } from '../../shared/data';
@@ -58,7 +57,7 @@ export class Leads extends AbstractEntity<Leads> {
   @Column({ nullable: true })
   updatedTime: Date;
 
-  @OneToMany(() => Tasks, (task) => task.lead)
+  @OneToMany(() => Tasks, (task) => task.lead,{nullable:true})
   tasks: Tasks[];
 
   @Column({ nullable: true })
@@ -77,9 +76,8 @@ export class Leads extends AbstractEntity<Leads> {
   @JoinColumn({ name: 'productId' })
   product: Product;
 
-  @OneToOne(() => Service, { eager: true, nullable: true, cascade: true })
-  @JoinColumn({ name: 'serviceId' })
-  service: Service;
+  // @OneToMany(() => Service, (service) => service.lead, { eager: true, cascade: true })
+  // services: Service[];
 
   @Column({ nullable: true })
   profilePicture: string;

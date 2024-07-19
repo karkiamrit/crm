@@ -7,7 +7,6 @@ import { ExtendedFindOptions, User } from '@app/common';
 
 import { AgentsService } from '../agents.service';
 import { Agent } from '../entities/agent.entity';
-import { Service } from '../shared/objects/services/services.entity';
 import {
   CustomerTimeline,
   LeadTimeline,
@@ -41,19 +40,16 @@ export class LeadsService {
     }
     const { revenuePotential, ...rest } = createLeadDto;
     // Convert CreateTimelineInputDTO[] to LeadTimeline[]
-    let product: Product, service: Service;
+    let product: Product;
     // Convert CreateProductInputDTO to Product
     if (createLeadDto.product) {
       product = new Product(createLeadDto.product);
     }
-    if (createLeadDto.service) {
-      service = new Service(createLeadDto.service);
-    }
+
     let updatedRevenuePotential = Number(createLeadDto.revenuePotential);
     // Create a new Leads entity
     const lead = new Leads({
       ...rest,
-      service,
       product,
       revenuePotential: updatedRevenuePotential,
     });
@@ -77,18 +73,15 @@ export class LeadsService {
 
   async createMany(createLeadDtos: CreateLeadDto[]) {
     const leads = createLeadDtos.map((dto) => {
-      let product: Product, service: Service;
+      let product: Product;
       if (dto.product) {
         product = new Product(dto.product);
-      }
-      if (dto.service) {
-        service = new Service(dto.service);
       }
       const { revenuePotential, ...rest } = dto;
       let updatedRevenuePotential = Number(dto.revenuePotential);
       return new Leads({
         ...rest,
-        service,
+
         product,
         revenuePotential: updatedRevenuePotential,
       });

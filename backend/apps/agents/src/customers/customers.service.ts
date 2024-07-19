@@ -10,7 +10,6 @@ import { unlink } from 'fs';
 import { AgentsService } from '../agents.service';
 import { join } from 'path';
 import { Agent } from '../entities/agent.entity';
-import { Service } from '../shared/objects/services/services.entity';
 import { CustomerTimeline } from '../shared/objects/timelines/timelines.entity';
 import { Product } from '../shared/objects/products/products.entity';
 import { CustomerTimelineRepository } from '../shared/objects/timelines/customers.timelines.repository';
@@ -25,18 +24,15 @@ export class CustomersService {
 
   async create(createCustomerDto: CreateCustomerDto, agent?: Agent) {
     // Convert CreateTimelineInputDTO[] to CustomerTimeline[]
-    let product: Product, service: Service, timelines: CustomerTimeline[];
+    let product: Product, timelines: CustomerTimeline[];
     // Convert CreateProductInputDTO to Product
     if (createCustomerDto.product) {
       product = new Product(createCustomerDto.product);
     }
-    if (createCustomerDto.service) {
-      service = new Service(createCustomerDto.service);
-    }
+
     // Create a new Customers entity
     const customer = new Customers({
       ...createCustomerDto,
-      service,
       product,
     });
     if (agent) {
@@ -50,18 +46,15 @@ export class CustomersService {
 
   async createMany(createCustomerDtos: CreateCustomerDto[]) {
     const customers = createCustomerDtos.map((dto) => {
-      let product: Product, service: Service;
+      let product: Product;
       if (dto.product) {
         product = new Product(dto.product);
       }
-      if (dto.service) {
-        service = new Service(dto.service);
-      }
+   
       const { revenuePotential, ...rest } = dto;
       let updatedRevenuePotential = Number(dto.revenuePotential);
       return new Customers({
         ...rest,
-        service,
         product,
       });
     });

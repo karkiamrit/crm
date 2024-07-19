@@ -56,7 +56,7 @@ export class CreateCustomerDto {
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => CreateServiceInputDTO)
-  service: CreateServiceInputDTO;
+  service?: CreateServiceInputDTO;
 
   @ApiProperty({ example: 'http://example.com/profile.jpg', description: 'The profile picture of the customer' })
   @IsOptional()
