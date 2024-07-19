@@ -74,7 +74,7 @@ export class Leads extends AbstractEntity<Leads> {
 
   @OneToOne(() => Product, { eager: true, nullable: true, cascade: true })
   @JoinColumn({ name: 'productId' })
-  product: Product;
+  product?: Product;
 
   // @OneToMany(() => Service, (service) => service.lead, { eager: true, cascade: true })
   // services: Service[];

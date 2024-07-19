@@ -132,7 +132,7 @@ export class LeadsController {
     if (await this.leadsService.findOne(createLeadsDto.email)) {
       return null;
     }
-    return await this.leadsService.create(createLeadsDto);
+    return await this.leadsService.dolphyCreate(createLeadsDto);
   }
 
   @Put(':id')

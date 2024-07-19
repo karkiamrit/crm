@@ -71,6 +71,20 @@ export class LeadsService {
     return createdLead;
   }
 
+  async dolphyCreate(createLeadDto: CreateLeadDto) {
+    const { revenuePotential, ...rest } = createLeadDto;
+    let updatedRevenuePotential = Number(createLeadDto.revenuePotential);
+    // Create a new Leads entity
+    const lead = new Leads({
+      ...rest,
+      revenuePotential: updatedRevenuePotential,
+      product: new Product(createLeadDto.product), 
+    });
+    lead.updatedTime = new Date();
+    let createdLead = await this.leadsRepository.create(lead);
+    return createdLead;
+  }
+
   async createMany(createLeadDtos: CreateLeadDto[]) {
     const leads = createLeadDtos.map((dto) => {
       let product: Product;
@@ -307,12 +321,15 @@ export class LeadsService {
     options.relations = [];
     const leads = await this.leadsRepository.findAll(options);
     for (let lead of leads.data) {
-        const id = lead.id;
-        const latestActivity = await this.leadsTimelineRepository.findRecent({lead: {id: id}}, "createdAt");
-        (lead as any).latestActivity = latestActivity;
+      const id = lead.id;
+      const latestActivity = await this.leadsTimelineRepository.findRecent(
+        { lead: { id: id } },
+        'createdAt',
+      );
+      (lead as any).latestActivity = latestActivity;
     }
     return leads;
-}
+  }
 
   async findAllWithSegmentId(options: ExtendedFindOptions<Leads>, id: number) {
     options.relations = ['product', 'segments'];
