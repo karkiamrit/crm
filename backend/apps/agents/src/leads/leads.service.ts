@@ -350,6 +350,7 @@ export class LeadsService {
   }
 
   async findOne(email: string) {
+    console.log(email)
     return this.leadsRepository.findOne({ email: email });
   }
 
@@ -364,7 +365,7 @@ export class LeadsService {
   }
 
   async leadsTimeline(id: number) {
-    return this.leadsTimelineRepository.findAll({
+    return this.leadsTimelineRepository.findAll({ 
       where: {
         lead: {
           id,

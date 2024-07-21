@@ -130,8 +130,8 @@ export class LeadsController {
     @Body() createLeadsDto: CreateLeadDto,
   ) {
     if (await this.leadsService.findOne(createLeadsDto.email)) {
-      return null;
-    }
+      return true;
+    } 
     return await this.leadsService.dolphyCreate(createLeadsDto);
   }
 

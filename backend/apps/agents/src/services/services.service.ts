@@ -18,7 +18,7 @@ export class ServicesService {
     createServiceDto: CreateServiceDto,
   ): Promise<Service> {
     const {leadEmail,...rest} = createServiceDto;
-    const lead = await this.leadsService.findOne( leadEmail );
+    const lead = await this.leadsService.findOne(  leadEmail );
 
     if (!lead) {
       throw new NotFoundException(`Lead with email ${createServiceDto.leadEmail} not found`);
@@ -35,6 +35,7 @@ export class ServicesService {
   async findAll(
     options: ExtendedFindOptions<Service>,
   ): Promise<{ data: Service[]; total: number }> {
+    options.relations = ['lead'];
     const result = await this.servicesRepository.findAll(options);
     const data = result.data;
     const total = result.total;

@@ -1,6 +1,6 @@
 import { AbstractEntity } from '@app/common';
 import { Leads } from 'apps/agents/src/leads/entities/lead.entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 @Entity()
 export class Service extends AbstractEntity<Service> {
@@ -17,5 +17,8 @@ export class Service extends AbstractEntity<Service> {
   })
   @JoinColumn({ name: 'leadId' })
   lead: Leads;
+
+  @CreateDateColumn()
+  createdAt: Date;
 
 }
